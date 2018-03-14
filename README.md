@@ -28,7 +28,7 @@ will create the `main` executable. `main --help` for help.
 
 However ... it can be difficult to build and configure the model and its supporting libraries. The Makefile expects MKLROOT and OPENBLAS_ROOT to be set in the environment. At the time of writing, the required version of GSL (that supports sparse GMRES) was only available on GNU's Savannah git servers. Lastly, rDIM has a large linear solve in the model, which is accomplished by MKL's PARDISO MPI-based library. Other solvers work, though not well / fast / without tinkering with the make file.
 
-This code has been tested primarily on Debian GNU/Linux and RHEL with icc/icpc (sorry) and to a less extent, gcc/g++. It has not been tested on MacOS, Unix, Windows or with clang, pgc or mpich.
+This code has been tested primarily on Debian GNU/Linux and RHEL with icc/icpc (sorry) and to a lesser extent, gcc/g++. It has not been tested on MacOS, Unix, Windows or with clang, pgc or mpich.
 
 
 Please cite as follows:
@@ -56,9 +56,9 @@ Document Influence Model (DIM):
 
 Regression-based Document Influence Model (rDIM):
 
-@article{gerrish2010language,
+@article{gerow2018influence,
   title={Measuring Discursive Influence Across Scholarship},
-  author={Gerow, Aaron and Hu, Yuening and Boyd-Graber, Jordan and Blei, David and Evans, James},
+  author={Gerow, Aaron and Hu, Yuening and Boyd-Graber, Jordan and Blei M, David and Evans, James A},
   journal={Proceedings of the National Academy of Sciences},
   year={2018}
 }
