@@ -1,0 +1,989 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-linear-algebra_002c-BLAS"></a>
+<a name="index-matrix_002c-operations"></a>
+<a name="index-vector_002c-operations"></a>
+<a name="index-BLAS"></a>
+<a name="index-CBLAS"></a>
+<a name="index-Basic-Linear-Algebra-Subroutines-_0028BLAS_0029"></a>
+
+<p>The Basic Linear Algebra Subprograms (<small>BLAS</small>) define a set of fundamental
+operations on vectors and matrices which can be used to create optimized
+higher-level linear algebra functionality.
+</p>
+<p>The library provides a low-level layer which corresponds directly to the
+C-language <small>BLAS</small> standard, referred to here as &ldquo;<small>CBLAS</small>&rdquo;, and a
+higher-level interface for operations on GSL vectors and matrices.
+Users who are interested in simple operations on GSL vector and matrix
+objects should use the high-level layer described
+in this chapter.  The functions are declared in the file
+&lsquo;<tt>gsl_blas.h</tt>&rsquo; and should satisfy the needs of most users.  
+</p>
+<p>Note that GSL matrices are implemented using dense-storage so the
+interface only includes the corresponding dense-storage <small>BLAS</small>
+functions.  The full <small>BLAS</small> functionality for band-format and
+packed-format matrices is available through the low-level <small>CBLAS</small>
+interface.  Similarly, GSL vectors are restricted to positive strides,
+whereas the low-level <small>CBLAS</small> interface supports negative
+strides as specified in the <small>BLAS</small> standard.<a name="DOCF1" href="#FOOT1">(1)</a>
+</p> 
+<p>The interface for the <code>gsl_cblas</code> layer is specified in the file
+&lsquo;<tt>gsl_cblas.h</tt>&rsquo;.  This interface corresponds to the <small>BLAS</small> Technical
+Forum&rsquo;s standard for the C interface to legacy <small>BLAS</small>
+implementations. Users who have access to other conforming <small>CBLAS</small>
+implementations can use these in place of the version provided by the
+library.  Note that users who have only a Fortran <small>BLAS</small> library can
+use a <small>CBLAS</small> conformant wrapper to convert it into a <small>CBLAS</small>
+library.  A reference <small>CBLAS</small> wrapper for legacy Fortran
+implementations exists as part of the <small>CBLAS</small> standard and can
+be obtained from Netlib.  The complete set of <small>CBLAS</small> functions is
+listed in an appendix (@pxref{GSL CBLAS Library}).
+</p>
+<p>There are three levels of <small>BLAS</small> operations,
+</p>
+<dl compact="compact">
+<dt> <b>Level 1</b></dt>
+<dd><p>Vector operations, e.g. <em>y = \alpha x + y</em>
+</p></dd>
+<dt> <b>Level 2</b></dt>
+<dd><p>Matrix-vector operations, e.g. <em>y = \alpha A x + \beta y</em>
+</p></dd>
+<dt> <b>Level 3</b></dt>
+<dd><p>Matrix-matrix operations, e.g. <em>C = \alpha A B + C</em>
+</p></dd>
+</dl>
+
+<p>Each routine has a name which specifies the operation, the type of
+matrices involved and their precisions.  Some of the most common
+operations and their names are given below,
+</p>
+<dl compact="compact">
+<dt> <b>DOT</b></dt>
+<dd><p>scalar product, <em>x^T y</em>
+</p></dd>
+<dt> <b>AXPY</b></dt>
+<dd><p>vector sum, <em>\alpha x + y</em>
+</p></dd>
+<dt> <b>MV</b></dt>
+<dd><p>matrix-vector product, <em>A x</em>
+</p></dd>
+<dt> <b>SV</b></dt>
+<dd><p>matrix-vector solve, <em>inv(A) x</em>
+</p></dd>
+<dt> <b>MM</b></dt>
+<dd><p>matrix-matrix product, <em>A B</em>
+</p></dd>
+<dt> <b>SM</b></dt>
+<dd><p>matrix-matrix solve, <em>inv(A) B</em>
+</p></dd>
+</dl>
+
+<p>The types of matrices are,
+</p>
+<dl compact="compact">
+<dt> <b>GE</b></dt>
+<dd><p>general
+</p></dd>
+<dt> <b>GB</b></dt>
+<dd><p>general band
+</p></dd>
+<dt> <b>SY</b></dt>
+<dd><p>symmetric
+</p></dd>
+<dt> <b>SB</b></dt>
+<dd><p>symmetric band
+</p></dd>
+<dt> <b>SP</b></dt>
+<dd><p>symmetric packed
+</p></dd>
+<dt> <b>HE</b></dt>
+<dd><p>hermitian
+</p></dd>
+<dt> <b>HB</b></dt>
+<dd><p>hermitian band
+</p></dd>
+<dt> <b>HP</b></dt>
+<dd><p>hermitian packed
+</p></dd>
+<dt> <b>TR</b></dt>
+<dd><p>triangular 
+</p></dd>
+<dt> <b>TB</b></dt>
+<dd><p>triangular band
+</p></dd>
+<dt> <b>TP</b></dt>
+<dd><p>triangular packed
+</p></dd>
+</dl>
+
+<p>Each operation is defined for four precisions,
+</p>
+<dl compact="compact">
+<dt> <b>S</b></dt>
+<dd><p>single real
+</p></dd>
+<dt> <b>D</b></dt>
+<dd><p>double real
+</p></dd>
+<dt> <b>C</b></dt>
+<dd><p>single complex
+</p></dd>
+<dt> <b>Z</b></dt>
+<dd><p>double complex
+</p></dd>
+</dl>
+
+<p>Thus, for example, the name <small>SGEMM</small> stands for &ldquo;single-precision
+general matrix-matrix multiply&rdquo; and <small>ZGEMM</small> stands for
+&ldquo;double-precision complex matrix-matrix multiply&rdquo;.
+</p>
+<p>Note that the vector and matrix arguments to BLAS functions must not
+be aliased, as the results are undefined when the underlying arrays
+overlap (@pxref{Aliasing of arrays}). 
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#GSL-BLAS-Interface">1. GSL BLAS Interface</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#BLAS-Examples">2. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#BLAS-References-and-Further-Reading">3. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="GSL-BLAS-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Level-1-GSL-BLAS-Interface" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="GSL-BLAS-Interface-1"></a>
+<h2 class="section">1. GSL BLAS Interface</h2>
+
+<p>GSL provides dense vector and matrix objects, based on the relevant
+built-in types.  The library provides an interface to the <small>BLAS</small>
+operations which apply to these objects.  The interface to this
+functionality is given in the file &lsquo;<tt>gsl_blas.h</tt>&rsquo;.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Level-1-GSL-BLAS-Interface">1.1 Level 1</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Level-2-GSL-BLAS-Interface">1.2 Level 2</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Level-3-GSL-BLAS-Interface">1.3 Level 3</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Level-1-GSL-BLAS-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-2-GSL-BLAS-Interface" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-1"></a>
+<h3 class="subsection">1.1 Level 1</h3>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsdsdot"></a><u>Function:</u> int <b>gsl_blas_sdsdot</b><i> (float <var>alpha</var>, const gsl_vector_float * <var>x</var>, const gsl_vector_float * <var>y</var>, float * <var>result</var>)</i></dt>
+<dd><a name="index-DOT_002c-Level_002d1-BLAS"></a>
+<p>This function computes the sum <em>\alpha + x^T y</em> for the vectors
+<var>x</var> and <var>y</var>, returning the result in <var>result</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsdot"></a><u>Function:</u> int <b>gsl_blas_sdot</b><i> (const gsl_vector_float * <var>x</var>, const gsl_vector_float * <var>y</var>, float * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsdot"></a><u>Function:</u> int <b>gsl_blas_dsdot</b><i> (const gsl_vector_float * <var>x</var>, const gsl_vector_float * <var>y</var>, double * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fddot"></a><u>Function:</u> int <b>gsl_blas_ddot</b><i> (const gsl_vector * <var>x</var>, const gsl_vector * <var>y</var>, double * <var>result</var>)</i></dt>
+<dd><p>These functions compute the scalar product <em>x^T y</em> for the vectors
+<var>x</var> and <var>y</var>, returning the result in <var>result</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcdotu"></a><u>Function:</u> int <b>gsl_blas_cdotu</b><i> (const gsl_vector_complex_float * <var>x</var>, const gsl_vector_complex_float * <var>y</var>, gsl_complex_float * <var>dotu</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzdotu"></a><u>Function:</u> int <b>gsl_blas_zdotu</b><i> (const gsl_vector_complex * <var>x</var>, const gsl_vector_complex * <var>y</var>, gsl_complex * <var>dotu</var>)</i></dt>
+<dd><p>These functions compute the complex scalar product <em>x^T y</em> for the
+vectors <var>x</var> and <var>y</var>, returning the result in <var>dotu</var>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcdotc"></a><u>Function:</u> int <b>gsl_blas_cdotc</b><i> (const gsl_vector_complex_float * <var>x</var>, const gsl_vector_complex_float * <var>y</var>, gsl_complex_float * <var>dotc</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzdotc"></a><u>Function:</u> int <b>gsl_blas_zdotc</b><i> (const gsl_vector_complex * <var>x</var>, const gsl_vector_complex * <var>y</var>, gsl_complex * <var>dotc</var>)</i></dt>
+<dd><p>These functions compute the complex conjugate scalar product <em>x^H
+y</em> for the vectors <var>x</var> and <var>y</var>, returning the result in
+<var>dotc</var>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsnrm2"></a><u>Function:</u> float <b>gsl_blas_snrm2</b><i> (const gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdnrm2"></a><u>Function:</u> double <b>gsl_blas_dnrm2</b><i> (const gsl_vector * <var>x</var>)</i></dt>
+<dd><a name="index-NRM2_002c-Level_002d1-BLAS"></a>
+<p>These functions compute the Euclidean norm 
+<em>||x||_2 = \sqrt \sum x_i^2</em> of the vector <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fscnrm2"></a><u>Function:</u> float <b>gsl_blas_scnrm2</b><i> (const gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdznrm2"></a><u>Function:</u> double <b>gsl_blas_dznrm2</b><i> (const gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions compute the Euclidean norm of the complex vector <var>x</var>,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsasum"></a><u>Function:</u> float <b>gsl_blas_sasum</b><i> (const gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdasum"></a><u>Function:</u> double <b>gsl_blas_dasum</b><i> (const gsl_vector * <var>x</var>)</i></dt>
+<dd><a name="index-ASUM_002c-Level_002d1-BLAS"></a>
+<p>These functions compute the absolute sum <em>\sum |x_i|</em> of the
+elements of the vector <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fscasum"></a><u>Function:</u> float <b>gsl_blas_scasum</b><i> (const gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdzasum"></a><u>Function:</u> double <b>gsl_blas_dzasum</b><i> (const gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions compute the sum of the magnitudes of the real and
+imaginary parts of the complex vector <var>x</var>, 
+<em>\sum |\Re(x_i)| + |\Im(x_i)|</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fisamax"></a><u>Function:</u> CBLAS_INDEX_t <b>gsl_blas_isamax</b><i> (const gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fidamax"></a><u>Function:</u> CBLAS_INDEX_t <b>gsl_blas_idamax</b><i> (const gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005ficamax"></a><u>Function:</u> CBLAS_INDEX_t <b>gsl_blas_icamax</b><i> (const gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fizamax"></a><u>Function:</u> CBLAS_INDEX_t <b>gsl_blas_izamax</b><i> (const gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><a name="index-AMAX_002c-Level_002d1-BLAS"></a>
+<p>These functions return the index of the largest element of the vector
+<var>x</var>. The largest element is determined by its absolute magnitude for
+real vectors and by the sum of the magnitudes of the real and imaginary
+parts <em>|\Re(x_i)| + |\Im(x_i)|</em> for complex vectors.  If the
+largest value occurs several times then the index of the first
+occurrence is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsswap"></a><u>Function:</u> int <b>gsl_blas_sswap</b><i> (gsl_vector_float * <var>x</var>, gsl_vector_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdswap"></a><u>Function:</u> int <b>gsl_blas_dswap</b><i> (gsl_vector * <var>x</var>, gsl_vector * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcswap"></a><u>Function:</u> int <b>gsl_blas_cswap</b><i> (gsl_vector_complex_float * <var>x</var>, gsl_vector_complex_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzswap"></a><u>Function:</u> int <b>gsl_blas_zswap</b><i> (gsl_vector_complex * <var>x</var>, gsl_vector_complex * <var>y</var>)</i></dt>
+<dd><a name="index-SWAP_002c-Level_002d1-BLAS"></a>
+<p>These functions exchange the elements of the vectors <var>x</var> and <var>y</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fscopy"></a><u>Function:</u> int <b>gsl_blas_scopy</b><i> (const gsl_vector_float * <var>x</var>, gsl_vector_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdcopy"></a><u>Function:</u> int <b>gsl_blas_dcopy</b><i> (const gsl_vector * <var>x</var>, gsl_vector * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fccopy"></a><u>Function:</u> int <b>gsl_blas_ccopy</b><i> (const gsl_vector_complex_float * <var>x</var>, gsl_vector_complex_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzcopy"></a><u>Function:</u> int <b>gsl_blas_zcopy</b><i> (const gsl_vector_complex * <var>x</var>, gsl_vector_complex * <var>y</var>)</i></dt>
+<dd><a name="index-COPY_002c-Level_002d1-BLAS"></a>
+<p>These functions copy the elements of the vector <var>x</var> into the vector
+<var>y</var>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsaxpy"></a><u>Function:</u> int <b>gsl_blas_saxpy</b><i> (float <var>alpha</var>, const gsl_vector_float * <var>x</var>, gsl_vector_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdaxpy"></a><u>Function:</u> int <b>gsl_blas_daxpy</b><i> (double <var>alpha</var>, const gsl_vector * <var>x</var>, gsl_vector * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcaxpy"></a><u>Function:</u> int <b>gsl_blas_caxpy</b><i> (const gsl_complex_float <var>alpha</var>, const gsl_vector_complex_float * <var>x</var>, gsl_vector_complex_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzaxpy"></a><u>Function:</u> int <b>gsl_blas_zaxpy</b><i> (const gsl_complex <var>alpha</var>, const gsl_vector_complex * <var>x</var>, gsl_vector_complex * <var>y</var>)</i></dt>
+<dd><a name="index-AXPY_002c-Level_002d1-BLAS"></a>
+<a name="index-DAXPY_002c-Level_002d1-BLAS"></a>
+<a name="index-SAXPY_002c-Level_002d1-BLAS"></a>
+<p>These functions compute the sum <em>y = \alpha x + y</em> for the vectors
+<var>x</var> and <var>y</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsscal"></a><u>Function:</u> void <b>gsl_blas_sscal</b><i> (float <var>alpha</var>, gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdscal"></a><u>Function:</u> void <b>gsl_blas_dscal</b><i> (double <var>alpha</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcscal"></a><u>Function:</u> void <b>gsl_blas_cscal</b><i> (const gsl_complex_float <var>alpha</var>, gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzscal"></a><u>Function:</u> void <b>gsl_blas_zscal</b><i> (const gsl_complex <var>alpha</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcsscal"></a><u>Function:</u> void <b>gsl_blas_csscal</b><i> (float <var>alpha</var>, gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzdscal"></a><u>Function:</u> void <b>gsl_blas_zdscal</b><i> (double <var>alpha</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><a name="index-SCAL_002c-Level_002d1-BLAS"></a>
+<p>These functions rescale the vector <var>x</var> by the multiplicative factor
+<var>alpha</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsrotg"></a><u>Function:</u> int <b>gsl_blas_srotg</b><i> (float <var>a</var>[], float <var>b</var>[], float <var>c</var>[], float <var>s</var>[])</i></dt>
+<dt><a name="index-gsl_005fblas_005fdrotg"></a><u>Function:</u> int <b>gsl_blas_drotg</b><i> (double <var>a</var>[], double <var>b</var>[], double <var>c</var>[], double <var>s</var>[])</i></dt>
+<dd><a name="index-ROTG_002c-Level_002d1-BLAS"></a>
+<a name="index-Givens-Rotation_002c-BLAS"></a>
+<p>These functions compute a Givens rotation <em>(c,s)</em> which zeroes the
+vector <em>(a,b)</em>,
+The variables <var>a</var> and <var>b</var> are overwritten by the routine.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsrot"></a><u>Function:</u> int <b>gsl_blas_srot</b><i> (gsl_vector_float * <var>x</var>, gsl_vector_float * <var>y</var>, float <var>c</var>, float <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdrot"></a><u>Function:</u> int <b>gsl_blas_drot</b><i> (gsl_vector * <var>x</var>, gsl_vector * <var>y</var>, const double <var>c</var>, const double <var>s</var>)</i></dt>
+<dd><p>These functions apply a Givens rotation <em>(x&rsquo;, y&rsquo;) = (c x + s y, -s
+x + c y)</em> to the vectors <var>x</var>, <var>y</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsrotmg"></a><u>Function:</u> int <b>gsl_blas_srotmg</b><i> (float <var>d1</var>[], float <var>d2</var>[], float <var>b1</var>[], float <var>b2</var>, float <var>P</var>[])</i></dt>
+<dt><a name="index-gsl_005fblas_005fdrotmg"></a><u>Function:</u> int <b>gsl_blas_drotmg</b><i> (double <var>d1</var>[], double <var>d2</var>[], double <var>b1</var>[], double <var>b2</var>, double <var>P</var>[])</i></dt>
+<dd><a name="index-Modified-Givens-Rotation_002c-BLAS"></a>
+<a name="index-Givens-Rotation_002c-Modified_002c-BLAS"></a>
+<p>These functions compute a modified Givens transformation.  The modified
+Givens transformation is defined in the original Level-1 <small>BLAS</small>
+specification, given in the references.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsrotm"></a><u>Function:</u> int <b>gsl_blas_srotm</b><i> (gsl_vector_float * <var>x</var>, gsl_vector_float * <var>y</var>, const float <var>P</var>[])</i></dt>
+<dt><a name="index-gsl_005fblas_005fdrotm"></a><u>Function:</u> int <b>gsl_blas_drotm</b><i> (gsl_vector * <var>x</var>, gsl_vector * <var>y</var>, const double <var>P</var>[])</i></dt>
+<dd><p>These functions apply a modified Givens transformation.  
+</p></dd></dl>
+
+<hr size="6">
+<a name="Level-2-GSL-BLAS-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-1-GSL-BLAS-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-3-GSL-BLAS-Interface" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-2"></a>
+<h3 class="subsection">1.2 Level 2</h3>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsgemv"></a><u>Function:</u> int <b>gsl_blas_sgemv</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, const gsl_vector_float * <var>x</var>, float <var>beta</var>, gsl_vector_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdgemv"></a><u>Function:</u> int <b>gsl_blas_dgemv</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, const gsl_vector * <var>x</var>, double <var>beta</var>, gsl_vector * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcgemv"></a><u>Function:</u> int <b>gsl_blas_cgemv</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_vector_complex_float * <var>x</var>, const gsl_complex_float <var>beta</var>, gsl_vector_complex_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzgemv"></a><u>Function:</u> int <b>gsl_blas_zgemv</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_vector_complex * <var>x</var>, const gsl_complex <var>beta</var>, gsl_vector_complex * <var>y</var>)</i></dt>
+<dd><a name="index-GEMV_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the matrix-vector product and sum <em>y =
+\alpha op(A) x + \beta y</em>, where <em>op(A) = A</em>,
+<em>A^T</em>, <em>A^H</em> for <var>TransA</var> = <code>CblasNoTrans</code>,
+<code>CblasTrans</code>, <code>CblasConjTrans</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fstrmv"></a><u>Function:</u> int <b>gsl_blas_strmv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_float * <var>A</var>, gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdtrmv"></a><u>Function:</u> int <b>gsl_blas_dtrmv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix * <var>A</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fctrmv"></a><u>Function:</u> int <b>gsl_blas_ctrmv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_complex_float * <var>A</var>, gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fztrmv"></a><u>Function:</u> int <b>gsl_blas_ztrmv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_complex * <var>A</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><a name="index-TRMV_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the matrix-vector product 
+<em>x = op(A) x</em> for the triangular matrix <var>A</var>, where
+<em>op(A) = A</em>, <em>A^T</em>, <em>A^H</em> for <var>TransA</var> =
+<code>CblasNoTrans</code>, <code>CblasTrans</code>, <code>CblasConjTrans</code>.  When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle of <var>A</var> is
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+of <var>A</var> is used.  If <var>Diag</var> is <code>CblasNonUnit</code> then the
+diagonal of the matrix is used, but if <var>Diag</var> is <code>CblasUnit</code>
+then the diagonal elements of the matrix <var>A</var> are taken as unity and
+are not referenced.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fstrsv"></a><u>Function:</u> int <b>gsl_blas_strsv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_float * <var>A</var>, gsl_vector_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdtrsv"></a><u>Function:</u> int <b>gsl_blas_dtrsv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix * <var>A</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fctrsv"></a><u>Function:</u> int <b>gsl_blas_ctrsv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_complex_float * <var>A</var>, gsl_vector_complex_float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fztrsv"></a><u>Function:</u> int <b>gsl_blas_ztrsv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_matrix_complex * <var>A</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><a name="index-TRSV_002c-Level_002d2-BLAS"></a>
+<p>These functions compute <em>inv(op(A)) x</em> for <var>x</var>, where
+<em>op(A) = A</em>, <em>A^T</em>, <em>A^H</em> for <var>TransA</var> =
+<code>CblasNoTrans</code>, <code>CblasTrans</code>, <code>CblasConjTrans</code>.  When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle of <var>A</var> is
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+of <var>A</var> is used.  If <var>Diag</var> is <code>CblasNonUnit</code> then the
+diagonal of the matrix is used, but if <var>Diag</var> is <code>CblasUnit</code>
+then the diagonal elements of the matrix <var>A</var> are taken as unity and
+are not referenced.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssymv"></a><u>Function:</u> int <b>gsl_blas_ssymv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, const gsl_vector_float * <var>x</var>, float <var>beta</var>, gsl_vector_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsymv"></a><u>Function:</u> int <b>gsl_blas_dsymv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, const gsl_vector * <var>x</var>, double <var>beta</var>, gsl_vector * <var>y</var>)</i></dt>
+<dd><a name="index-SYMV_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the matrix-vector product and sum <em>y =
+\alpha A x + \beta y</em> for the symmetric matrix <var>A</var>.  Since the
+matrix <var>A</var> is symmetric only its upper half or lower half need to be
+stored.  When <var>Uplo</var> is <code>CblasUpper</code> then the upper triangle
+and diagonal of <var>A</var> are used, and when <var>Uplo</var> is
+<code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fchemv"></a><u>Function:</u> int <b>gsl_blas_chemv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_vector_complex_float * <var>x</var>, const gsl_complex_float <var>beta</var>, gsl_vector_complex_float * <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzhemv"></a><u>Function:</u> int <b>gsl_blas_zhemv</b><i> (CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_vector_complex * <var>x</var>, const gsl_complex <var>beta</var>, gsl_vector_complex * <var>y</var>)</i></dt>
+<dd><a name="index-HEMV_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the matrix-vector product and sum <em>y =
+\alpha A x + \beta y</em> for the hermitian matrix <var>A</var>.  Since the
+matrix <var>A</var> is hermitian only its upper half or lower half need to be
+stored.  When <var>Uplo</var> is <code>CblasUpper</code> then the upper triangle
+and diagonal of <var>A</var> are used, and when <var>Uplo</var> is
+<code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.  The imaginary elements of the diagonal are automatically assumed
+to be zero and are not referenced.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsger"></a><u>Function:</u> int <b>gsl_blas_sger</b><i> (float <var>alpha</var>, const gsl_vector_float * <var>x</var>, const gsl_vector_float * <var>y</var>, gsl_matrix_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdger"></a><u>Function:</u> int <b>gsl_blas_dger</b><i> (double <var>alpha</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>y</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcgeru"></a><u>Function:</u> int <b>gsl_blas_cgeru</b><i> (const gsl_complex_float <var>alpha</var>, const gsl_vector_complex_float * <var>x</var>, const gsl_vector_complex_float * <var>y</var>, gsl_matrix_complex_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzgeru"></a><u>Function:</u> int <b>gsl_blas_zgeru</b><i> (const gsl_complex <var>alpha</var>, const gsl_vector_complex * <var>x</var>, const gsl_vector_complex * <var>y</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><a name="index-GER_002c-Level_002d2-BLAS"></a>
+<a name="index-GERU_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the rank-1 update <em>A = \alpha x y^T + A</em> of
+the matrix <var>A</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcgerc"></a><u>Function:</u> int <b>gsl_blas_cgerc</b><i> (const gsl_complex_float <var>alpha</var>, const gsl_vector_complex_float * <var>x</var>, const gsl_vector_complex_float * <var>y</var>, gsl_matrix_complex_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzgerc"></a><u>Function:</u> int <b>gsl_blas_zgerc</b><i> (const gsl_complex <var>alpha</var>, const gsl_vector_complex * <var>x</var>, const gsl_vector_complex * <var>y</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><a name="index-GERC_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the conjugate rank-1 update <em>A = \alpha x
+y^H + A</em> of the matrix <var>A</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssyr"></a><u>Function:</u> int <b>gsl_blas_ssyr</b><i> (CBLAS_UPLO_t <var>Uplo</var>, float <var>alpha</var>, const gsl_vector_float * <var>x</var>, gsl_matrix_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsyr"></a><u>Function:</u> int <b>gsl_blas_dsyr</b><i> (CBLAS_UPLO_t <var>Uplo</var>, double <var>alpha</var>, const gsl_vector * <var>x</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dd><a name="index-SYR_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the symmetric rank-1 update <em>A = \alpha x
+x^T + A</em> of the symmetric matrix <var>A</var>.  Since the matrix <var>A</var> is
+symmetric only its upper half or lower half need to be stored.  When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle and diagonal of
+<var>A</var> are used, and when <var>Uplo</var> is <code>CblasLower</code> then the
+lower triangle and diagonal of <var>A</var> are used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcher"></a><u>Function:</u> int <b>gsl_blas_cher</b><i> (CBLAS_UPLO_t <var>Uplo</var>, float <var>alpha</var>, const gsl_vector_complex_float * <var>x</var>, gsl_matrix_complex_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzher"></a><u>Function:</u> int <b>gsl_blas_zher</b><i> (CBLAS_UPLO_t <var>Uplo</var>, double <var>alpha</var>, const gsl_vector_complex * <var>x</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><a name="index-HER_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the hermitian rank-1 update <em>A = \alpha x
+x^H + A</em> of the hermitian matrix <var>A</var>.  Since the matrix <var>A</var> is
+hermitian only its upper half or lower half need to be stored.  When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle and diagonal of
+<var>A</var> are used, and when <var>Uplo</var> is <code>CblasLower</code> then the
+lower triangle and diagonal of <var>A</var> are used.  The imaginary elements
+of the diagonal are automatically set to zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssyr2"></a><u>Function:</u> int <b>gsl_blas_ssyr2</b><i> (CBLAS_UPLO_t <var>Uplo</var>, float <var>alpha</var>, const gsl_vector_float * <var>x</var>, const gsl_vector_float * <var>y</var>, gsl_matrix_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsyr2"></a><u>Function:</u> int <b>gsl_blas_dsyr2</b><i> (CBLAS_UPLO_t <var>Uplo</var>, double <var>alpha</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>y</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dd><a name="index-SYR2_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the symmetric rank-2 update <em>A = \alpha x
+y^T + \alpha y x^T + A</em> of the symmetric matrix <var>A</var>.  Since the
+matrix <var>A</var> is symmetric only its upper half or lower half need to be
+stored.  When <var>Uplo</var> is <code>CblasUpper</code> then the upper triangle
+and diagonal of <var>A</var> are used, and when <var>Uplo</var> is
+<code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcher2"></a><u>Function:</u> int <b>gsl_blas_cher2</b><i> (CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex_float <var>alpha</var>, const gsl_vector_complex_float * <var>x</var>, const gsl_vector_complex_float * <var>y</var>, gsl_matrix_complex_float * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzher2"></a><u>Function:</u> int <b>gsl_blas_zher2</b><i> (CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex <var>alpha</var>, const gsl_vector_complex * <var>x</var>, const gsl_vector_complex * <var>y</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><a name="index-HER2_002c-Level_002d2-BLAS"></a>
+<p>These functions compute the hermitian rank-2 update <em>A = \alpha x
+y^H + \alpha^* y x^H + A</em> of the hermitian matrix <var>A</var>.  Since the
+matrix <var>A</var> is hermitian only its upper half or lower half need to be
+stored.  When <var>Uplo</var> is <code>CblasUpper</code> then the upper triangle
+and diagonal of <var>A</var> are used, and when <var>Uplo</var> is
+<code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.  The imaginary elements of the diagonal are automatically set to zero.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Level-3-GSL-BLAS-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-2-GSL-BLAS-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-3"></a>
+<h3 class="subsection">1.3 Level 3</h3>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fsgemm"></a><u>Function:</u> int <b>gsl_blas_sgemm</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_TRANSPOSE_t <var>TransB</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, const gsl_matrix_float * <var>B</var>, float <var>beta</var>, gsl_matrix_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdgemm"></a><u>Function:</u> int <b>gsl_blas_dgemm</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_TRANSPOSE_t <var>TransB</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, const gsl_matrix * <var>B</var>, double <var>beta</var>, gsl_matrix * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcgemm"></a><u>Function:</u> int <b>gsl_blas_cgemm</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_TRANSPOSE_t <var>TransB</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_matrix_complex_float * <var>B</var>, const gsl_complex_float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzgemm"></a><u>Function:</u> int <b>gsl_blas_zgemm</b><i> (CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_TRANSPOSE_t <var>TransB</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>B</var>, const gsl_complex <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-GEMM_002c-Level_002d3-BLAS"></a>
+<p>These functions compute the matrix-matrix product and sum <em>C =
+\alpha op(A) op(B) + \beta C</em> where <em>op(A) = A</em>, <em>A^T</em>,
+<em>A^H</em> for <var>TransA</var> = <code>CblasNoTrans</code>, <code>CblasTrans</code>,
+<code>CblasConjTrans</code> and similarly for the parameter <var>TransB</var>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssymm"></a><u>Function:</u> int <b>gsl_blas_ssymm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, const gsl_matrix_float * <var>B</var>, float <var>beta</var>, gsl_matrix_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsymm"></a><u>Function:</u> int <b>gsl_blas_dsymm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, const gsl_matrix * <var>B</var>, double <var>beta</var>, gsl_matrix * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcsymm"></a><u>Function:</u> int <b>gsl_blas_csymm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_matrix_complex_float * <var>B</var>, const gsl_complex_float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzsymm"></a><u>Function:</u> int <b>gsl_blas_zsymm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>B</var>, const gsl_complex <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-SYMM_002c-Level_002d3-BLAS"></a>
+<p>These functions compute the matrix-matrix product and sum <em>C =
+\alpha A B + \beta C</em> for <var>Side</var> is <code>CblasLeft</code> and <em>C =
+\alpha B A + \beta C</em> for <var>Side</var> is <code>CblasRight</code>, where the
+matrix <var>A</var> is symmetric.  When <var>Uplo</var> is <code>CblasUpper</code> then
+the upper triangle and diagonal of <var>A</var> are used, and when <var>Uplo</var>
+is <code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fchemm"></a><u>Function:</u> int <b>gsl_blas_chemm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_matrix_complex_float * <var>B</var>, const gsl_complex_float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzhemm"></a><u>Function:</u> int <b>gsl_blas_zhemm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>B</var>, const gsl_complex <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-HEMM_002c-Level_002d3-BLAS"></a>
+<p>These functions compute the matrix-matrix product and sum <em>C =
+\alpha A B + \beta C</em> for <var>Side</var> is <code>CblasLeft</code> and <em>C =
+\alpha B A + \beta C</em> for <var>Side</var> is <code>CblasRight</code>, where the
+matrix <var>A</var> is hermitian.  When <var>Uplo</var> is <code>CblasUpper</code> then
+the upper triangle and diagonal of <var>A</var> are used, and when <var>Uplo</var>
+is <code>CblasLower</code> then the lower triangle and diagonal of <var>A</var> are
+used.  The imaginary elements of the diagonal are automatically set to
+zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fstrmm"></a><u>Function:</u> int <b>gsl_blas_strmm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, gsl_matrix_float * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdtrmm"></a><u>Function:</u> int <b>gsl_blas_dtrmm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, gsl_matrix * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fctrmm"></a><u>Function:</u> int <b>gsl_blas_ctrmm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, gsl_matrix_complex_float * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fztrmm"></a><u>Function:</u> int <b>gsl_blas_ztrmm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, gsl_matrix_complex * <var>B</var>)</i></dt>
+<dd><a name="index-TRMM_002c-Level_002d3-BLAS"></a>
+<p>These functions compute the matrix-matrix product <em>B = \alpha op(A)
+B</em> for <var>Side</var> is <code>CblasLeft</code> and <em>B = \alpha B op(A)</em> for
+<var>Side</var> is <code>CblasRight</code>.  The matrix <var>A</var> is triangular and
+<em>op(A) = A</em>, <em>A^T</em>, <em>A^H</em> for <var>TransA</var> =
+<code>CblasNoTrans</code>, <code>CblasTrans</code>, <code>CblasConjTrans</code>. When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle of <var>A</var> is
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+of <var>A</var> is used.  If <var>Diag</var> is <code>CblasNonUnit</code> then the
+diagonal of <var>A</var> is used, but if <var>Diag</var> is <code>CblasUnit</code> then
+the diagonal elements of the matrix <var>A</var> are taken as unity and are
+not referenced.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fstrsm"></a><u>Function:</u> int <b>gsl_blas_strsm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, gsl_matrix_float * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdtrsm"></a><u>Function:</u> int <b>gsl_blas_dtrsm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, gsl_matrix * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fctrsm"></a><u>Function:</u> int <b>gsl_blas_ctrsm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, gsl_matrix_complex_float * <var>B</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fztrsm"></a><u>Function:</u> int <b>gsl_blas_ztrsm</b><i> (CBLAS_SIDE_t <var>Side</var>, CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>TransA</var>, CBLAS_DIAG_t <var>Diag</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, gsl_matrix_complex * <var>B</var>)</i></dt>
+<dd><a name="index-TRSM_002c-Level_002d3-BLAS"></a>
+<p>These functions compute the inverse-matrix matrix product 
+<em>B = \alpha op(inv(A))B</em> for <var>Side</var> is 
+<code>CblasLeft</code> and <em>B = \alpha B op(inv(A))</em> for
+<var>Side</var> is <code>CblasRight</code>.  The matrix <var>A</var> is triangular and
+<em>op(A) = A</em>, <em>A^T</em>, <em>A^H</em> for <var>TransA</var> =
+<code>CblasNoTrans</code>, <code>CblasTrans</code>, <code>CblasConjTrans</code>. When
+<var>Uplo</var> is <code>CblasUpper</code> then the upper triangle of <var>A</var> is
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+of <var>A</var> is used.  If <var>Diag</var> is <code>CblasNonUnit</code> then the
+diagonal of <var>A</var> is used, but if <var>Diag</var> is <code>CblasUnit</code> then
+the diagonal elements of the matrix <var>A</var> are taken as unity and are
+not referenced.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssyrk"></a><u>Function:</u> int <b>gsl_blas_ssyrk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, float <var>beta</var>, gsl_matrix_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsyrk"></a><u>Function:</u> int <b>gsl_blas_dsyrk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, double <var>beta</var>, gsl_matrix * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcsyrk"></a><u>Function:</u> int <b>gsl_blas_csyrk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_complex_float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzsyrk"></a><u>Function:</u> int <b>gsl_blas_zsyrk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_complex <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-SYRK_002c-Level_002d3-BLAS"></a>
+<p>These functions compute a rank-k update of the symmetric matrix <var>C</var>,
+<em>C = \alpha A A^T + \beta C</em> when <var>Trans</var> is
+<code>CblasNoTrans</code> and <em>C = \alpha A^T A + \beta C</em> when
+<var>Trans</var> is <code>CblasTrans</code>.  Since the matrix <var>C</var> is symmetric
+only its upper half or lower half need to be stored.  When <var>Uplo</var> is
+<code>CblasUpper</code> then the upper triangle and diagonal of <var>C</var> are
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+and diagonal of <var>C</var> are used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcherk"></a><u>Function:</u> int <b>gsl_blas_cherk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzherk"></a><u>Function:</u> int <b>gsl_blas_zherk</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, double <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, double <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-HERK_002c-Level_002d3-BLAS"></a>
+<p>These functions compute a rank-k update of the hermitian matrix <var>C</var>,
+<em>C = \alpha A A^H + \beta C</em> when <var>Trans</var> is
+<code>CblasNoTrans</code> and <em>C = \alpha A^H A + \beta C</em> when
+<var>Trans</var> is <code>CblasConjTrans</code>.  Since the matrix <var>C</var> is hermitian
+only its upper half or lower half need to be stored.  When <var>Uplo</var> is
+<code>CblasUpper</code> then the upper triangle and diagonal of <var>C</var> are
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+and diagonal of <var>C</var> are used.  The imaginary elements of the
+diagonal are automatically set to zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fssyr2k"></a><u>Function:</u> int <b>gsl_blas_ssyr2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, float <var>alpha</var>, const gsl_matrix_float * <var>A</var>, const gsl_matrix_float * <var>B</var>, float <var>beta</var>, gsl_matrix_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fdsyr2k"></a><u>Function:</u> int <b>gsl_blas_dsyr2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, double <var>alpha</var>, const gsl_matrix * <var>A</var>, const gsl_matrix * <var>B</var>, double <var>beta</var>, gsl_matrix * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fcsyr2k"></a><u>Function:</u> int <b>gsl_blas_csyr2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_matrix_complex_float * <var>B</var>, const gsl_complex_float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzsyr2k"></a><u>Function:</u> int <b>gsl_blas_zsyr2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>B</var>, const gsl_complex <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-SYR2K_002c-Level_002d3-BLAS"></a>
+<p>These functions compute a rank-2k update of the symmetric matrix <var>C</var>,
+<em>C = \alpha A B^T + \alpha B A^T + \beta C</em> when <var>Trans</var> is
+<code>CblasNoTrans</code> and <em>C = \alpha A^T B + \alpha B^T A + \beta C</em> when
+<var>Trans</var> is <code>CblasTrans</code>.  Since the matrix <var>C</var> is symmetric
+only its upper half or lower half need to be stored.  When <var>Uplo</var> is
+<code>CblasUpper</code> then the upper triangle and diagonal of <var>C</var> are
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+and diagonal of <var>C</var> are used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fblas_005fcher2k"></a><u>Function:</u> int <b>gsl_blas_cher2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex_float <var>alpha</var>, const gsl_matrix_complex_float * <var>A</var>, const gsl_matrix_complex_float * <var>B</var>, float <var>beta</var>, gsl_matrix_complex_float * <var>C</var>)</i></dt>
+<dt><a name="index-gsl_005fblas_005fzher2k"></a><u>Function:</u> int <b>gsl_blas_zher2k</b><i> (CBLAS_UPLO_t <var>Uplo</var>, CBLAS_TRANSPOSE_t <var>Trans</var>, const gsl_complex <var>alpha</var>, const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>B</var>, double <var>beta</var>, gsl_matrix_complex * <var>C</var>)</i></dt>
+<dd><a name="index-HER2K_002c-Level_002d3-BLAS"></a>
+<p>These functions compute a rank-2k update of the hermitian matrix <var>C</var>,
+<em>C = \alpha A B^H + \alpha^* B A^H + \beta C</em> when <var>Trans</var> is
+<code>CblasNoTrans</code> and <em>C = \alpha A^H B + \alpha^* B^H A + \beta C</em> when
+<var>Trans</var> is <code>CblasConjTrans</code>.  Since the matrix <var>C</var> is hermitian
+only its upper half or lower half need to be stored.  When <var>Uplo</var> is
+<code>CblasUpper</code> then the upper triangle and diagonal of <var>C</var> are
+used, and when <var>Uplo</var> is <code>CblasLower</code> then the lower triangle
+and diagonal of <var>C</var> are used.  The imaginary elements of the
+diagonal are automatically set to zero.
+</p></dd></dl>
+
+<hr size="6">
+<a name="BLAS-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-3-GSL-BLAS-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#BLAS-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">2. Examples</h2>
+
+<p>The following program computes the product of two matrices using the
+Level-3 <small>BLAS</small> function <small>DGEMM</small>,
+The matrices are stored in row major order, according to the C convention 
+for arrays.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_blas.h&gt;
+
+int
+main (void)
+{
+  double a[] = { 0.11, 0.12, 0.13,
+                 0.21, 0.22, 0.23 };
+
+  double b[] = { 1011, 1012,
+                 1021, 1022,
+                 1031, 1032 };
+
+  double c[] = { 0.00, 0.00,
+                 0.00, 0.00 };
+
+  gsl_matrix_view A = gsl_matrix_view_array(a, 2, 3);
+  gsl_matrix_view B = gsl_matrix_view_array(b, 3, 2);
+  gsl_matrix_view C = gsl_matrix_view_array(c, 2, 2);
+
+  /* Compute C = A B */
+
+  gsl_blas_dgemm (CblasNoTrans, CblasNoTrans,
+                  1.0, &amp;A.matrix, &amp;B.matrix,
+                  0.0, &amp;C.matrix);
+
+  printf (&quot;[ %g, %g\n&quot;, c[0], c[1]);
+  printf (&quot;  %g, %g ]\n&quot;, c[2], c[3]);
+
+  return 0;  
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out
+<pre class="verbatim">[ 367.76, 368.12
+  674.06, 674.72 ]</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="BLAS-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#BLAS-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#BLAS-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">3. References and Further Reading</h2>
+
+<p>Information on the <small>BLAS</small> standards, including both the legacy and
+updated interface standards, is available online from the <small>BLAS</small>
+Homepage and <small>BLAS</small> Technical Forum web-site.
+</p>
+<ul class="toc">
+<li>
+<cite>BLAS Homepage</cite> <br>
+<a href="http://www.netlib.org/blas/">http://www.netlib.org/blas/</a>
+</li><li>
+<cite>BLAS Technical Forum</cite> <br>
+<a href="http://www.netlib.org/blas/blast-forum/">http://www.netlib.org/blas/blast-forum/</a>
+</li></ul>
+
+<p>The following papers contain the specifications for Level 1, Level 2 and
+Level 3 <small>BLAS</small>.
+</p>
+<ul class="toc">
+<li>
+C. Lawson, R. Hanson, D. Kincaid, F. Krogh, &ldquo;Basic Linear Algebra
+Subprograms for Fortran Usage&rdquo;, <cite>ACM Transactions on Mathematical
+Software</cite>, Vol. 5 (1979), Pages 308&ndash;325.
+
+</li><li>
+J.J. Dongarra, J. DuCroz, S. Hammarling, R. Hanson, &ldquo;An Extended Set of
+Fortran Basic Linear Algebra Subprograms&rdquo;, <cite>ACM Transactions on
+Mathematical Software</cite>, Vol. 14, No. 1 (1988), Pages 1&ndash;32.
+
+</li><li>
+J.J. Dongarra, I. Duff, J. DuCroz, S. Hammarling, &ldquo;A Set of
+Level 3 Basic Linear Algebra Subprograms&rdquo;, <cite>ACM Transactions on
+Mathematical Software</cite>, Vol. 16 (1990), Pages 1&ndash;28.
+</li></ul>
+
+<p>Postscript versions of the latter two papers are available from
+<a href="http://www.netlib.org/blas/">http://www.netlib.org/blas/</a>. A <small>CBLAS</small> wrapper for Fortran <small>BLAS</small>
+libraries is available from the same location.
+</p><hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>In the low-level
+<small>CBLAS</small> interface, a negative stride accesses the vector elements
+in reverse order, i.e. the <em>i</em>-th element is given by
+<em>(N-i)*|incx|</em> for <em>incx &lt; 0</em>.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GSL-BLAS-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

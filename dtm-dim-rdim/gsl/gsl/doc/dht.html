@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-discrete-Hankel-transforms"></a>
+<a name="index-Hankel-transforms_002c-discrete"></a>
+<a name="index-transforms_002c-Hankel"></a>
+<p>This chapter describes functions for performing Discrete Hankel
+Transforms (DHTs). The functions are declared in the header file
+&lsquo;<tt>gsl_dht.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Discrete-Hankel-Transform-Definition">1. Definitions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Discrete-Hankel-Transform-Functions">2. Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Discrete-Hankel-Transform-References">3. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Discrete-Hankel-Transform-Definition"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Definitions"></a>
+<h2 class="section">1. Definitions</h2>
+
+<p>The discrete Hankel transform acts on a vector of sampled data, where
+the samples are assumed to have been taken at points related to the
+zeros of a Bessel function of fixed order; compare this to the case of
+the discrete Fourier transform, where samples are taken at points
+related to the zeroes of the sine or cosine function.
+</p>
+<p>Starting with its definition, the Hankel transform (or Bessel transform) of
+order <em>\nu</em> of a function <em>f</em> with <em>\nu &gt; -1/2</em> is defined as
+(see Johnson, 1987 and Lemoine, 1994)
+</p>
+<p>If the integral exists, <em>F_\nu</em> is called the Hankel transformation
+of <em>f</em>. The reverse transform is given by
+</p>
+<p>where <em>\int_0^\infty f(t) t^1/2 dt</em> must exist and be
+absolutely convergent, and where <em>f(t)</em> satisfies Dirichlet&rsquo;s
+conditions (of limited total fluctuations) in the interval
+<em>[0,\infty]</em>.
+</p>
+<p>Now the discrete Hankel transform works on a discrete function
+<em>f</em>, which is sampled on points <em>n=1...M</em> located at
+positions <em>t_n=(j_\nu,n/j_\nu,M) X</em> in real space and
+at <em>u_n=j_\nu,n/X</em> in reciprocal space. Here,
+<em>j_\nu,m</em> are the m-th zeros of the Bessel function
+<em>J_\nu(x)</em> arranged in ascending order. Moreover, the
+discrete functions are assumed to be band limited, so
+<em>f(t_n)=0</em> and <em>F(u_n)=0</em> for <em>n&gt;M</em>. Accordingly,
+the function <em>f</em> is defined on the interval <em>[0,X]</em>.
+</p>
+<p>Following the work of Johnson, 1987 and
+Lemoine, 1994, the discrete Hankel transform is given by
+It is this discrete expression which defines the discrete Hankel
+transform calculated by GSL. In GSL, forward and backward transforms
+are defined equally and calculate <em>F_\nu(u_m)</em>.
+Following Johnson, the backward transform reads
+Obviously, using the forward transform instead of the backward transform gives an
+additional factor <em>X^4/j_\nu,M^2=t_m^2/u_m^2</em>.
+</p>
+<p>The kernel in the summation above defines the matrix of the
+<em>\nu</em>-Hankel transform of size <em>M-1</em>. The coefficients of
+this matrix, being dependent on <em>\nu</em> and <em>M</em>, must be
+precomputed and stored; the <code>gsl_dht</code> object encapsulates this
+data. The allocation function <code>gsl_dht_alloc</code> returns a
+<code>gsl_dht</code> object which must be properly initialized with
+<code>gsl_dht_init</code> before it can be used to perform transforms on data
+sample vectors, for fixed <em>\nu</em> and <em>M</em>, using the
+<code>gsl_dht_apply</code> function. The implementation allows to define the
+length <em>X</em> of the fundamental interval, for convenience, while
+discrete Hankel transforms are often defined on the unit interval
+instead of <em>[0,X]</em>.
+</p>
+<p>Notice that by assumption <em>f(t)</em> vanishes at the endpoints
+of the interval, consistent with the inversion formula
+and the sampling formula given above. Therefore, this transform
+corresponds to an orthogonal expansion in eigenfunctions
+of the Dirichlet problem for the Bessel differential equation.
+</p>
+<hr size="6">
+<a name="Discrete-Hankel-Transform-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-References" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Functions"></a>
+<h2 class="section">2. Functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005falloc"></a><u>Function:</u> gsl_dht * <b>gsl_dht_alloc</b><i> (size_t <var>size</var>)</i></dt>
+<dd><a name="index-gsl_005fdht"></a>
+<p>This function allocates a Discrete Hankel transform object of size
+<var>size</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005finit"></a><u>Function:</u> int <b>gsl_dht_init</b><i> (gsl_dht * <var>t</var>, double <var>nu</var>, double <var>xmax</var>)</i></dt>
+<dd><p>This function initializes the transform <var>t</var> for the given values of
+<var>nu</var> and <var>xmax</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005fnew"></a><u>Function:</u> gsl_dht * <b>gsl_dht_new</b><i> (size_t <var>size</var>, double <var>nu</var>, double <var>xmax</var>)</i></dt>
+<dd><p>This function allocates a Discrete Hankel transform object of size
+<var>size</var> and initializes it for the given values of <var>nu</var> and
+<var>xmax</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005ffree"></a><u>Function:</u> void <b>gsl_dht_free</b><i> (gsl_dht * <var>t</var>)</i></dt>
+<dd><p>This function frees the transform <var>t</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005fapply"></a><u>Function:</u> int <b>gsl_dht_apply</b><i> (const gsl_dht * <var>t</var>, double * <var>f_in</var>, double * <var>f_out</var>)</i></dt>
+<dd><p>This function applies the transform <var>t</var> to the array <var>f_in</var>
+whose size is equal to the size of the transform.  The result is stored
+in the array <var>f_out</var> which must be of the same length.   
+</p>
+<p>Applying this function to its output gives the original data
+multiplied by <em>(1/j_(\nu,M))^2</em>, up to numerical errors.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005fx_005fsample"></a><u>Function:</u> double <b>gsl_dht_x_sample</b><i> (const gsl_dht * <var>t</var>, int <var>n</var>)</i></dt>
+<dd><p>This function returns the value of the <var>n</var>-th sample point in the unit interval,
+<em>(j_\nu,n+1/j_\nu,M) X</em>. These are the
+points where the function <em>f(t)</em> is assumed to be sampled.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fdht_005fk_005fsample"></a><u>Function:</u> double <b>gsl_dht_k_sample</b><i> (const gsl_dht * <var>t</var>, int <var>n</var>)</i></dt>
+<dd><p>This function returns the value of the <var>n</var>-th sample point in &ldquo;k-space&rdquo;,
+<em>j_\nu,n+1/X</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Discrete-Hankel-Transform-References"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">3. References and Further Reading</h2>
+
+<p>The algorithms used by these functions are described in the following papers,
+</p>
+<ul class="toc">
+<li>
+H. Fisk Johnson, Comp. Phys. Comm. 43, 181 (1987).
+</li></ul>
+
+<ul class="toc">
+<li>
+D. Lemoine, J. Chem. Phys. 101, 3936 (1994).
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Discrete-Hankel-Transform-Definition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

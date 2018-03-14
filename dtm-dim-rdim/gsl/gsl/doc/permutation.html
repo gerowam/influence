@@ -1,0 +1,816 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-permutations"></a>
+
+<p>This chapter describes functions for creating and manipulating
+permutations. A permutation <em>p</em> is represented by an array of
+<em>n</em> integers in the range 0 to <em>n-1</em>, where each value
+<em>p_i</em> occurs once and only once.  The application of a permutation
+<em>p</em> to a vector <em>v</em> yields a new vector <em>v&rsquo;</em> where
+<em>v&rsquo;_i = v_p_i</em>. 
+For example, the array <em>(0,1,3,2)</em> represents a permutation
+which exchanges the last two elements of a four element vector.
+The corresponding identity permutation is <em>(0,1,2,3)</em>.   
+</p>
+<p>Note that the permutations produced by the linear algebra routines
+correspond to the exchange of matrix columns, and so should be considered
+as applying to row-vectors in the form <em>v&rsquo; = v P</em> rather than
+column-vectors, when permuting the elements of a vector.
+</p>
+<p>The functions described in this chapter are defined in the header file
+&lsquo;<tt>gsl_permutation.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#The-Permutation-struct">1. The Permutation struct</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutation-allocation">2. Permutation allocation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Accessing-permutation-elements">3. Accessing permutation elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutation-properties">4. Permutation properties</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutation-functions">5. Permutation functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Applying-Permutations">6. Applying Permutations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reading-and-writing-permutations">7. Reading and writing permutations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutations-in-cyclic-form">8. Permutations in cyclic form</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutation-Examples">9. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Permutation-References-and-Further-Reading">10. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="The-Permutation-struct"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Permutation-allocation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Permutation-allocation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="The-Permutation-struct-1"></a>
+<h2 class="section">1. The Permutation struct</h2>
+<a name="index-gsl_005fpermutation"></a>
+<p>A permutation is defined by a structure containing two components, the size
+of the permutation and a pointer to the permutation array.  The elements
+of the permutation array are all of type <code>size_t</code>.  The
+<code>gsl_permutation</code> structure looks like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  size_t size;
+  size_t * data;
+} gsl_permutation;
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="Permutation-allocation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-permutation-elements" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-permutation-elements" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Permutation-allocation-1"></a>
+<h2 class="section">2. Permutation allocation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005falloc"></a><u>Function:</u> gsl_permutation * <b>gsl_permutation_alloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><p>This function allocates memory for a new permutation of size <var>n</var>.
+The permutation is not initialized and its elements are undefined.  Use
+the function <code>gsl_permutation_calloc</code> if you want to create a
+permutation which is initialized to the identity. A null pointer is
+returned if insufficient memory is available to create the permutation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fcalloc"></a><u>Function:</u> gsl_permutation * <b>gsl_permutation_calloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><p>This function allocates memory for a new permutation of size <var>n</var> and
+initializes it to the identity. A null pointer is returned if
+insufficient memory is available to create the permutation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005finit"></a><u>Function:</u> void <b>gsl_permutation_init</b><i> (gsl_permutation * <var>p</var>)</i></dt>
+<dd><a name="index-identity-permutation"></a>
+<p>This function initializes the permutation <var>p</var> to the identity, i.e.
+<em>(0,1,2,&hellip;,n-1)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005ffree"></a><u>Function:</u> void <b>gsl_permutation_free</b><i> (gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function frees all the memory used by the permutation <var>p</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fmemcpy"></a><u>Function:</u> int <b>gsl_permutation_memcpy</b><i> (gsl_permutation * <var>dest</var>, const gsl_permutation * <var>src</var>)</i></dt>
+<dd><p>This function copies the elements of the permutation <var>src</var> into the
+permutation <var>dest</var>.  The two permutations must have the same size.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Accessing-permutation-elements"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Permutation-allocation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-properties" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Permutation-allocation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-properties" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Accessing-permutation-elements-1"></a>
+<h2 class="section">3. Accessing permutation elements</h2>
+
+<p>The following functions can be used to access and manipulate
+permutations.
+</p>
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fget"></a><u>Function:</u> size_t <b>gsl_permutation_get</b><i> (const gsl_permutation * <var>p</var>, const size_t <var>i</var>)</i></dt>
+<dd><p>This function returns the value of the <var>i</var>-th element of the
+permutation <var>p</var>.  If <var>i</var> lies outside the allowed range of 0 to
+<em><var>n</var>-1</em> then the error handler is invoked and 0 is returned.  @inlinefn{}
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fswap"></a><u>Function:</u> int <b>gsl_permutation_swap</b><i> (gsl_permutation * <var>p</var>, const size_t <var>i</var>, const size_t <var>j</var>)</i></dt>
+<dd><a name="index-exchanging-permutation-elements"></a>
+<a name="index-swapping-permutation-elements"></a>
+<p>This function exchanges the <var>i</var>-th and <var>j</var>-th elements of the
+permutation <var>p</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Permutation-properties"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Accessing-permutation-elements" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Accessing-permutation-elements" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Permutation-properties-1"></a>
+<h2 class="section">4. Permutation properties</h2>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fsize"></a><u>Function:</u> size_t <b>gsl_permutation_size</b><i> (const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function returns the size of the permutation <var>p</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fdata"></a><u>Function:</u> size_t * <b>gsl_permutation_data</b><i> (const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function returns a pointer to the array of elements in the
+permutation <var>p</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fvalid"></a><u>Function:</u> int <b>gsl_permutation_valid</b><i> (const gsl_permutation * <var>p</var>)</i></dt>
+<dd><a name="index-checking-permutation-for-validity"></a>
+<a name="index-testing-permutation-for-validity"></a>
+<p>This function checks that the permutation <var>p</var> is valid.  The <var>n</var>
+elements should contain each of the numbers 0 to <em><var>n</var>-1</em> once and only
+once.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Permutation-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Permutation-properties" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Applying-Permutations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Permutation-properties" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Applying-Permutations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Permutation-functions-1"></a>
+<h2 class="section">5. Permutation functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005freverse"></a><u>Function:</u> void <b>gsl_permutation_reverse</b><i> (gsl_permutation * <var>p</var>)</i></dt>
+<dd><a name="index-reversing-a-permutation"></a>
+<p>This function reverses the elements of the permutation <var>p</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005finverse"></a><u>Function:</u> int <b>gsl_permutation_inverse</b><i> (gsl_permutation * <var>inv</var>, const gsl_permutation * <var>p</var>)</i></dt>
+<dd><a name="index-inverting-a-permutation"></a>
+<p>This function computes the inverse of the permutation <var>p</var>, storing
+the result in <var>inv</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fnext"></a><u>Function:</u> int <b>gsl_permutation_next</b><i> (gsl_permutation * <var>p</var>)</i></dt>
+<dd><a name="index-iterating-through-permutations"></a>
+<p>This function advances the permutation <var>p</var> to the next permutation
+in lexicographic order and returns <code>GSL_SUCCESS</code>.  If no further
+permutations are available it returns <code>GSL_FAILURE</code> and leaves
+<var>p</var> unmodified.  Starting with the identity permutation and
+repeatedly applying this function will iterate through all possible
+permutations of a given order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fprev"></a><u>Function:</u> int <b>gsl_permutation_prev</b><i> (gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function steps backwards from the permutation <var>p</var> to the
+previous permutation in lexicographic order, returning
+<code>GSL_SUCCESS</code>.  If no previous permutation is available it returns
+<code>GSL_FAILURE</code> and leaves <var>p</var> unmodified.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Applying-Permutations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Permutation-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-permutations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Permutation-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-permutations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Applying-Permutations-1"></a>
+<h2 class="section">6. Applying Permutations</h2>
+
+<dl>
+<dt><a name="index-gsl_005fpermute"></a><u>Function:</u> int <b>gsl_permute</b><i> (const size_t * <var>p</var>, double * <var>data</var>, size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function applies the permutation <var>p</var> to the array <var>data</var> of
+size <var>n</var> with stride <var>stride</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermute_005finverse"></a><u>Function:</u> int <b>gsl_permute_inverse</b><i> (const size_t * <var>p</var>, double * <var>data</var>, size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function applies the inverse of the permutation <var>p</var> to the
+array <var>data</var> of size <var>n</var> with stride <var>stride</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermute_005fvector"></a><u>Function:</u> int <b>gsl_permute_vector</b><i> (const gsl_permutation * <var>p</var>, gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function applies the permutation <var>p</var> to the elements of the
+vector <var>v</var>, considered as a row-vector acted on by a permutation
+matrix from the right, <em>v&rsquo; = v P</em>.  The <em>j</em>-th column of the
+permutation matrix <em>P</em> is given by the <em><var>p</var>_j</em>-th column of the
+identity matrix. The permutation <var>p</var> and the vector <var>v</var> must
+have the same length.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermute_005fvector_005finverse"></a><u>Function:</u> int <b>gsl_permute_vector_inverse</b><i> (const gsl_permutation * <var>p</var>, gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function applies the inverse of the permutation <var>p</var> to the
+elements of the vector <var>v</var>, considered as a row-vector acted on by
+an inverse permutation matrix from the right, <em>v&rsquo; = v P^T</em>.  Note
+that for permutation matrices the inverse is the same as the transpose.
+The <em>j</em>-th column of the permutation matrix <em>P</em> is given by
+the <em><var>p</var>_j</em>-th column of the identity matrix. The permutation <var>p</var>
+and the vector <var>v</var> must have the same length.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fmul"></a><u>Function:</u> int <b>gsl_permutation_mul</b><i> (gsl_permutation * <var>p</var>, const gsl_permutation * <var>pa</var>, const gsl_permutation * <var>pb</var>)</i></dt>
+<dd><p>This function combines the two permutations <var>pa</var> and <var>pb</var> into a
+single permutation <var>p</var>, where <em><var>p</var> = <var>pa</var> * <var>pb</var></em>. 
+The permutation <var>p</var> is equivalent to applying <var>pb</var> first and
+then <var>pa</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Reading-and-writing-permutations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Applying-Permutations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutations-in-cyclic-form" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Applying-Permutations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutations-in-cyclic-form" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reading-and-writing-permutations-1"></a>
+<h2 class="section">7. Reading and writing permutations</h2>
+
+<p>The library provides functions for reading and writing permutations to a
+file as binary data or formatted text.
+</p>
+<dl>
+<dt><a name="index-gsl_005fpermutation_005ffwrite"></a><u>Function:</u> int <b>gsl_permutation_fwrite</b><i> (FILE * <var>stream</var>, const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function writes the elements of the permutation <var>p</var> to the
+stream <var>stream</var> in binary format.  The function returns
+<code>GSL_EFAILED</code> if there was a problem writing to the file.  Since the
+data is written in the native binary format it may not be portable
+between different architectures.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005ffread"></a><u>Function:</u> int <b>gsl_permutation_fread</b><i> (FILE * <var>stream</var>, gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function reads into the permutation <var>p</var> from the open stream
+<var>stream</var> in binary format.  The permutation <var>p</var> must be
+preallocated with the correct length since the function uses the size of
+<var>p</var> to determine how many bytes to read.  The function returns
+<code>GSL_EFAILED</code> if there was a problem reading from the file.  The
+data is assumed to have been written in the native binary format on the
+same architecture.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005ffprintf"></a><u>Function:</u> int <b>gsl_permutation_fprintf</b><i> (FILE * <var>stream</var>, const gsl_permutation * <var>p</var>, const char * <var>format</var>)</i></dt>
+<dd><p>This function writes the elements of the permutation <var>p</var>
+line-by-line to the stream <var>stream</var> using the format specifier
+<var>format</var>, which should be suitable for a type of <var>size_t</var>. 
+In ISO C99 the type modifier <code>z</code> represents <code>size_t</code>, so
+<code>&quot;%zu\n&quot;</code> is a suitable format.<a name="DOCF1" href="#FOOT1">(1)</a>
+The function returns <code>GSL_EFAILED</code> if there was a problem writing
+to the file.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005ffscanf"></a><u>Function:</u> int <b>gsl_permutation_fscanf</b><i> (FILE * <var>stream</var>, gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function reads formatted data from the stream <var>stream</var> into the
+permutation <var>p</var>.  The permutation <var>p</var> must be preallocated with
+the correct length since the function uses the size of <var>p</var> to
+determine how many numbers to read.  The function returns
+<code>GSL_EFAILED</code> if there was a problem reading from the file.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Permutations-in-cyclic-form"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reading-and-writing-permutations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-permutations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Permutations-in-cyclic-form-1"></a>
+<h2 class="section">8. Permutations in cyclic form</h2>
+
+<p>A permutation can be represented in both <em>linear</em> and <em>cyclic</em>
+notations.  The functions described in this section convert between the
+two forms.  The linear notation is an index mapping, and has already
+been described above.  The cyclic notation expresses a permutation as a
+series of circular rearrangements of groups of elements, or
+<em>cycles</em>.
+</p>
+<p>For example, under the cycle (1 2 3), 1 is replaced by 2, 2 is replaced
+by 3 and 3 is replaced by 1 in a circular fashion. Cycles of different
+sets of elements can be combined independently, for example (1 2 3) (4
+5) combines the cycle (1 2 3) with the cycle (4 5), which is an exchange
+of elements 4 and 5.  A cycle of length one represents an element which
+is unchanged by the permutation and is referred to as a <em>singleton</em>.
+</p>
+<p>It can be shown that every permutation can be decomposed into
+combinations of cycles.  The decomposition is not unique, but can always
+be rearranged into a standard <em>canonical form</em> by a reordering of
+elements.  The library uses the canonical form defined in Knuth&rsquo;s
+<cite>Art of Computer Programming</cite> (Vol 1, 3rd Ed, 1997) Section 1.3.3,
+p.178.
+</p>
+<p>The procedure for obtaining the canonical form given by Knuth is,
+</p>
+<ol>
+<li> Write all singleton cycles explicitly
+</li><li> Within each cycle, put the smallest number first
+</li><li> Order the cycles in decreasing order of the first number in the cycle.
+</li></ol>
+
+<p>For example, the linear representation (2 4 3 0 1) is represented as (1
+4) (0 2 3) in canonical form. The permutation corresponds to an
+exchange of elements 1 and 4, and rotation of elements 0, 2 and 3.
+</p>
+<p>The important property of the canonical form is that it can be
+reconstructed from the contents of each cycle without the brackets. In
+addition, by removing the brackets it can be considered as a linear
+representation of a different permutation. In the example given above
+the permutation (2 4 3 0 1) would become (1 4 0 2 3).  This mapping has
+many applications in the theory of permutations.
+</p>
+<dl>
+<dt><a name="index-gsl_005fpermutation_005flinear_005fto_005fcanonical"></a><u>Function:</u> int <b>gsl_permutation_linear_to_canonical</b><i> (gsl_permutation * <var>q</var>, const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function computes the canonical form of the permutation <var>p</var> and
+stores it in the output argument <var>q</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fcanonical_005fto_005flinear"></a><u>Function:</u> int <b>gsl_permutation_canonical_to_linear</b><i> (gsl_permutation * <var>p</var>, const gsl_permutation * <var>q</var>)</i></dt>
+<dd><p>This function converts a permutation <var>q</var> in canonical form back into
+linear form storing it in the output argument <var>p</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005finversions"></a><u>Function:</u> size_t <b>gsl_permutation_inversions</b><i> (const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function counts the number of inversions in the permutation
+<var>p</var>.  An inversion is any pair of elements that are not in order.
+For example, the permutation 2031 has three inversions, corresponding to
+the pairs (2,0) (2,1) and (3,1).  The identity permutation has no
+inversions.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005flinear_005fcycles"></a><u>Function:</u> size_t <b>gsl_permutation_linear_cycles</b><i> (const gsl_permutation * <var>p</var>)</i></dt>
+<dd><p>This function counts the number of cycles in the permutation <var>p</var>, given in linear form.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fpermutation_005fcanonical_005fcycles"></a><u>Function:</u> size_t <b>gsl_permutation_canonical_cycles</b><i> (const gsl_permutation * <var>q</var>)</i></dt>
+<dd><p>This function counts the number of cycles in the permutation <var>q</var>, given in canonical form.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Permutation-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Permutations-in-cyclic-form" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Permutations-in-cyclic-form" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Permutation-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">9. Examples</h2>
+<p>The example program below creates a random permutation (by shuffling the
+elements of the identity) and finds its inverse.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_rng.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+#include &lt;gsl/gsl_permutation.h&gt;
+
+int
+main (void) 
+{
+  const size_t N = 10;
+  const gsl_rng_type * T;
+  gsl_rng * r;
+
+  gsl_permutation * p = gsl_permutation_alloc (N);
+  gsl_permutation * q = gsl_permutation_alloc (N);
+
+  gsl_rng_env_setup();
+  T = gsl_rng_default;
+  r = gsl_rng_alloc (T);
+
+  printf (&quot;initial permutation:&quot;);  
+  gsl_permutation_init (p);
+  gsl_permutation_fprintf (stdout, p, &quot; %u&quot;);
+  printf (&quot;\n&quot;);
+
+  printf (&quot; random permutation:&quot;);  
+  gsl_ran_shuffle (r, p-&gt;data, N, sizeof(size_t));
+  gsl_permutation_fprintf (stdout, p, &quot; %u&quot;);
+  printf (&quot;\n&quot;);
+
+  printf (&quot;inverse permutation:&quot;);  
+  gsl_permutation_inverse (q, p);
+  gsl_permutation_fprintf (stdout, q, &quot; %u&quot;);
+  printf (&quot;\n&quot;);
+
+  gsl_permutation_free (p);
+  gsl_permutation_free (q);
+  gsl_rng_free (r);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+initial permutation: 0 1 2 3 4 5 6 7 8 9
+ random permutation: 1 3 5 2 7 6 0 4 9 8
+inverse permutation: 6 0 3 1 7 2 5 4 9 8
+</pre></td></tr></table>
+
+<p>The random permutation <code>p[i]</code> and its inverse <code>q[i]</code> are
+related through the identity <code>p[q[i]] = i</code>, which can be verified
+from the output.
+</p>
+<p>The next example program steps forwards through all possible third order
+permutations, starting from the identity,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_permutation.h&gt;
+
+int
+main (void) 
+{
+  gsl_permutation * p = gsl_permutation_alloc (3);
+
+  gsl_permutation_init (p);
+
+  do 
+   {
+      gsl_permutation_fprintf (stdout, p, &quot; %u&quot;);
+      printf (&quot;\n&quot;);
+   }
+  while (gsl_permutation_next(p) == GSL_SUCCESS);
+
+  gsl_permutation_free (p);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+ 0 1 2
+ 0 2 1
+ 1 0 2
+ 1 2 0
+ 2 0 1
+ 2 1 0
+</pre></td></tr></table>
+
+<p>The permutations are generated in lexicographic order.  To reverse the
+sequence, begin with the final permutation (which is the reverse of the
+identity) and replace <code>gsl_permutation_next</code> with
+<code>gsl_permutation_prev</code>.
+</p>
+<hr size="6">
+<a name="Permutation-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Permutation-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Permutation-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">10. References and Further Reading</h2>
+
+<p>The subject of permutations is covered extensively in Knuth&rsquo;s
+<cite>Sorting and Searching</cite>,
+</p>
+<ul class="toc">
+<li>
+Donald E. Knuth, <cite>The Art of Computer Programming: Sorting and
+Searching</cite> (Vol 3, 3rd Ed, 1997), Addison-Wesley, ISBN 0201896850.
+</li></ul>
+
+<p>For the definition of the <em>canonical form</em> see,
+</p>
+<ul class="toc">
+<li>
+Donald E. Knuth, <cite>The Art of Computer Programming: Fundamental
+Algorithms</cite> (Vol 1, 3rd Ed, 1997), Addison-Wesley, ISBN 0201896850.
+Section 1.3.3, <cite>An Unusual Correspondence</cite>, p.178&ndash;179.
+</li></ul>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>In versions of the 
+GNU C library prior to the ISO C99 standard, 
+the type modifier <code>Z</code> was used instead.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Permutation-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

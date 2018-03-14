@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-elliptic-integrals"></a>
+
+<p>The functions described in this section are declared in the header
+file &lsquo;<tt>gsl_sf_ellint.h</tt>&rsquo;.  Further information about the elliptic
+integrals can be found in Abramowitz &amp; Stegun, Chapter 17.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Definition-of-Legendre-Forms">1. Definition of Legendre Forms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Definition-of-Carlson-Forms">2. Definition of Carlson Forms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Legendre-Form-of-Complete-Elliptic-Integrals">3. Legendre Form of Complete Elliptic Integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Legendre-Form-of-Incomplete-Elliptic-Integrals">4. Legendre Form of Incomplete Elliptic Integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Carlson-Forms">5. Carlson Forms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+</table>
+
+<a name="Definition-of-Legendre-Forms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Carlson-Forms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Carlson-Forms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Definition-of-Legendre-Forms-1"></a>
+<h3 class="subsection">1. Definition of Legendre Forms</h3>
+<a name="index-Legendre-forms-of-elliptic-integrals"></a>
+<p>The Legendre forms of elliptic integrals <em>F(\phi,k)</em>,
+<em>E(\phi,k)</em> and <em>\Pi(\phi,k,n)</em> are defined by,
+The complete Legendre forms are denoted by <em>K(k) = F(\pi/2, k)</em> and
+<em>E(k) = E(\pi/2, k)</em>.  
+</p>
+<p>The notation used here is based on Carlson, <cite>Numerische
+Mathematik</cite> 33 (1979) 1 and differs slightly from that used by
+Abramowitz &amp; Stegun, where the functions are given in terms of the
+parameter <em>m = k^2</em> and <em>n</em> is replaced by <em>-n</em>.
+</p>
+<hr size="6">
+<a name="Definition-of-Carlson-Forms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Complete-Elliptic-Integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Complete-Elliptic-Integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Definition-of-Carlson-Forms-1"></a>
+<h3 class="subsection">2. Definition of Carlson Forms</h3>
+<a name="index-Carlson-forms-of-Elliptic-integrals"></a>
+<p>The Carlson symmetric forms of elliptical integrals <em>RC(x,y)</em>,
+<em>RD(x,y,z)</em>, <em>RF(x,y,z)</em> and <em>RJ(x,y,z,p)</em> are defined
+by,
+</p>
+<hr size="6">
+<a name="Legendre-Form-of-Complete-Elliptic-Integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Definition-of-Carlson-Forms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Incomplete-Elliptic-Integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Carlson-Forms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Incomplete-Elliptic-Integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Legendre-Form-of-Complete-Elliptic-Integrals-1"></a>
+<h3 class="subsection">3. Legendre Form of Complete Elliptic Integrals</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fKcomp"></a><u>Function:</u> double <b>gsl_sf_ellint_Kcomp</b><i> (double <var>k</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fKcomp_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_Kcomp_e</b><i> (double <var>k</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the complete elliptic integral <em>K(k)</em> to
+the accuracy specified by the mode variable <var>mode</var>.  
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameter <em>m = k^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fEcomp"></a><u>Function:</u> double <b>gsl_sf_ellint_Ecomp</b><i> (double <var>k</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fEcomp_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_Ecomp_e</b><i> (double <var>k</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the complete elliptic integral <em>E(k)</em> to the
+accuracy specified by the mode variable <var>mode</var>.
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameter <em>m = k^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fPcomp"></a><u>Function:</u> double <b>gsl_sf_ellint_Pcomp</b><i> (double <var>k</var>, double <var>n</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fPcomp_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_Pcomp_e</b><i> (double <var>k</var>, double <var>n</var>,  gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the complete elliptic integral <em>\Pi(k,n)</em> to the
+accuracy specified by the mode variable <var>mode</var>.
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameters <em>m = k^2</em> and <em>\sin^2(\alpha) = k^2</em>, with the
+change of sign <em>n \to -n</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Legendre-Form-of-Incomplete-Elliptic-Integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Legendre-Form-of-Complete-Elliptic-Integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Carlson-Forms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Complete-Elliptic-Integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Carlson-Forms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Legendre-Form-of-Incomplete-Elliptic-Integrals-1"></a>
+<h3 class="subsection">4. Legendre Form of Incomplete Elliptic Integrals</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fF"></a><u>Function:</u> double <b>gsl_sf_ellint_F</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fF_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_F_e</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>F(\phi,k)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameter <em>m = k^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fE"></a><u>Function:</u> double <b>gsl_sf_ellint_E</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fE_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_E_e</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>E(\phi,k)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameter <em>m = k^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fP"></a><u>Function:</u> double <b>gsl_sf_ellint_P</b><i> (double <var>phi</var>, double <var>k</var>, double <var>n</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fP_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_P_e</b><i> (double <var>phi</var>, double <var>k</var>, double <var>n</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>\Pi(\phi,k,n)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+Note that Abramowitz &amp; Stegun define this function in terms of the
+parameters <em>m = k^2</em> and <em>\sin^2(\alpha) = k^2</em>, with the
+change of sign <em>n \to -n</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fD"></a><u>Function:</u> double <b>gsl_sf_ellint_D</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fD_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_D_e</b><i> (double <var>phi</var>, double <var>k</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These functions compute the incomplete elliptic integral
+<em>D(\phi,k)</em> which is defined through the Carlson form <em>RD(x,y,z)</em>
+by the following relation, 
+</p>
+</dd></dl>
+
+
+<hr size="6">
+<a name="Carlson-Forms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Legendre-Form-of-Incomplete-Elliptic-Integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Form-of-Incomplete-Elliptic-Integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Carlson-Forms-1"></a>
+<h3 class="subsection">5. Carlson Forms</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fRC"></a><u>Function:</u> double <b>gsl_sf_ellint_RC</b><i> (double <var>x</var>, double <var>y</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fRC_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_RC_e</b><i> (double <var>x</var>, double <var>y</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>RC(x,y)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fRD"></a><u>Function:</u> double <b>gsl_sf_ellint_RD</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fRD_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_RD_e</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>RD(x,y,z)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fRF"></a><u>Function:</u> double <b>gsl_sf_ellint_RF</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fRF_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_RF_e</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>RF(x,y,z)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fellint_005fRJ"></a><u>Function:</u> double <b>gsl_sf_ellint_RJ</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, double <var>p</var>, gsl_mode_t <var>mode</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fellint_005fRJ_005fe"></a><u>Function:</u> int <b>gsl_sf_ellint_RJ_e</b><i> (double <var>x</var>, double <var>y</var>, double <var>z</var>, double <var>p</var>, gsl_mode_t <var>mode</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the incomplete elliptic integral <em>RJ(x,y,z,p)</em>
+to the accuracy specified by the mode variable <var>mode</var>.
+</p></dd></dl>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Definition-of-Legendre-Forms" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

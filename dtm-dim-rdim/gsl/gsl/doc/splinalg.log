@@ -1,0 +1,767 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdfetex 2014.4.25)  1 APR 2015 13:16
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**\catcode126=12 \def\normaltilde{~}\catcode126=13 \let~\normaltilde  \input ./
+splinalg.texi
+(./splinalg.texi
+./splinalg.texi:6: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.6 operate directly on the @code{gsl_
+                                      spmatrix} and @code{gsl_vector}
+? 
+./splinalg.texi:6: Interruption.
+<to be read again> 
+                   _
+l.6 operate directly on the @code{gsl_
+                                      spmatrix} and @code{gsl_vector}
+? q
+OK, entering \batchmode...
+./splinalg.texi:6: Extra }, or forgotten $.
+l.6 operate directly on the @code{gsl_spmatrix}
+                                                and @code{gsl_vector}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:8: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.8 
+    
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:11: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.11 @file{gsl_
+               splinalg.h}.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:11: Extra }, or forgotten $.
+l.11 @file{gsl_splinalg.h}
+                          .
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:12: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.12 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:27: Undefined control sequence.
+l.27 \beforedisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:31: Undefined control sequence.
+l.31 \afterdisplay
+                  
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:65: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   ^
+l.65 @var{x} onto a subspace of @math{{\bf R}^
+                                              n}. If we define a @math{m}-di...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:65: Extra }, or forgotten $.
+l.65 @var{x} onto a subspace of @math{{\bf R}^n}
+                                                . If we define a @math{m}-di...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:75: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.75 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (881.56386pt too wide) in paragraph at lines 63--75
+\tenrm ject-ing an ap-prox-i-mate so-lu-tion for @varx onto a sub-space of @mat
+h\tenbf R$[]\teni :Ifwedefinea\tenrm @\teni mathm \tensy ^^@ \teni dimensionals
+ubspace\tenrm @\teni math\tensy K\teni asthesubspaceofapproximationstothesoluti
+on\tenrm @\teni varx; then\tenrm @\teni mathmconstraintsmustbeimposedtodetermin
+ethenextapproximation:These\tenrm @\teni mathmconstraintsdefineanother\tenrm @\
+teni mathm \tensy ^^@|
+
+\hbox(6.94444+1.94444)x469.75499, glue set - 1.0
+.\tenrm j
+.\tenrm e
+.\tenrm c
+.\tenrm t
+.\discretionary
+..\tenrm -
+.etc.
+
+
+Overfull \hbox (885.78587pt too wide) in paragraph at lines 63--75
+\teni dimensionalsubspacedenotedby\tenrm @\teni math\tensy L\teni :Thesubspaced
+imension\tenrm @\teni mathmistypicallychosentobemuchsmallerthan\tenrm @\teni ma
+thninordertoreducethecomputationaleffortneededtogeneratethenextapproximatesolut
+ionvector:Themanyiterativealgorithmswhichexistdiffermainlyintheirchoiceof\tenrm
+ @\teni math\tensy K\teni and\tenrm @\teni math\tensy L\teni :$ |
+
+\hbox(6.94444+1.94444)x469.75499
+.\teni d
+.\teni i
+.\teni m
+.\teni e
+.\teni n
+.etc.
+
+./splinalg.texi:82: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.82 @deffn {Sparse Iterative Type} gsl_
+                                        splinalg_itersolve_gmres
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:89: Undefined control sequence.
+l.89 \beforedisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:93: Undefined control sequence.
+l.93 \afterdisplay
+                  
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:109: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.109 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (599.4072pt too wide) in paragraph at lines 82--109
+[]\tenrm @deffn Sparse It-er-a-tive Type gsl$[]\teni plinalg[]tersolve[]mres\te
+nrm @\teni cindexgmresThisspecifiestheGeneralizedMinimumResidualMethod\tenrm (\
+teni GMRES\tenrm )\teni :Thisisaprojectionmethodusing\tenrm @\teni math[]and\te
+nrm @\teni math[]where\tenrm @\teni math[]isthe\tenrm @\teni mathm \tensy ^^@|
+
+\hbox(7.5+2.86108)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm  (ligature ff)
+.etc.
+
+
+Overfull \hbox (26.27747pt too wide) in paragraph at lines 82--109
+\teni thKrylovsubspace\tenrm @\teni tex$$\tensy K[] \tenrm = \teni span []$$\te
+nrm @\teni endtex\tenrm @\teni ifinfo\tenrm @\teni exampleK[] \tenrm = \teni sp
+an\tenrm (\teni r[]; Ar[]; :::; A[]m \tensy ^^@|
+
+\hbox(8.87892+3.50006)x469.75499, glue set - 1.0
+.\teni t
+.\teni h
+.\teni K
+.\kern0.71527
+.\teni r
+.etc.
+
+
+Overfull \hbox (2041.76079pt too wide) in paragraph at lines 82--109
+\tenrm 1)\teni r[]\tenrm )@\teni endexample\tenrm @\teni endifinfoand\tenrm @\t
+eni math[]istheresidualvectoroftheinitialguess\tenrm @\teni math[]:If\tenrm @\t
+eni mathmissetequalto\tenrm @\teni mathn; thentheKrylovsubspaceis\tenrm @\teni 
+math[]andGMRESwillprovidetheexactsolution\tenrm @\teni varx:However; thegoalisf
+orthemethodtoarriveataverygoodapproximationto\tenrm @\teni varxusingamuchsmalle
+rsubspace\tenrm @\teni math[]:Bydefault; theGMRESmethodselects\tenrm @\teni mat
+h[]buttheusermayspecifyadifferentvaluefor\tenrm @\teni mathm:TheGMRESstoragereq
+uirementsgrowas\tenrm @\teni math[]andthenumberofflopsgrowas\tenrm @\teni math[
+]:$ |
+
+\hbox(8.14003+2.5)x469.75499
+.\tenrm 1
+.\tenrm )
+.\teni r
+.\hbox(4.51111+0.0)x4.48613, shifted 1.49998
+..\sevenrm 0
+.\tenrm )
+.etc.
+
+./splinalg.texi:110: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.110 In the below function @code{gsl_
+                                      splinalg_itersolve_iterate}, one
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:110: Extra }, or forgotten $.
+l.110 ...ion @code{gsl_splinalg_itersolve_iterate}
+                                                  , one
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:118: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.118 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (1478.83894pt too wide) in paragraph at lines 110--118
+[]\tenrm In the be-low func-tion @codegsl$[]\teni plinalg[]tersolve[]terate; on
+eGMRESiterationisdefinedasprojectingtheapproximatesolutionvectorontoeachKrylovs
+ubspace\tenrm @\teni math[]; andso\tenrm @\teni mathmcanbekeptsmallerby\tenrm "
+\teni restarting\tenrm "\teni themethodandcalling\tenrm @\teni code[]multipleti
+mes; providingtheupdatedapproximation\tenrm @\teni varxtoeachnewcall:Ifthemetho
+disnotadequatelyconverging; theusermaytryincreasingtheparameter\tenrm @\teni ma
+thm:$ |
+
+\hbox(6.94444+1.94444)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm I
+.\tenrm n
+.\glue 3.33333 plus 1.66666 minus 1.11111
+.\tenrm t
+.etc.
+
+./splinalg.texi:122: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.122 projection onto the subspace @math{{\cal K}_
+                                                  n = {\bf R}^n}. In these
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:122: Extra }, or forgotten $.
+l.122 ...he subspace @math{{\cal K}_n = {\bf R}^n}
+                                                  . In these
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:126: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.126 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (244.4529pt too wide) in paragraph at lines 119--126
+\tenrm jec-tion onto the sub-space @mathK$[] = \tenbf R[]\teni :Inthesecases; p
+reconditioningthelinearsystemcanhelp; butGSLdoesnotcurrentlyprovideanyprecondit
+ioners:\tenrm @\teni enddeffn$ |
+
+\hbox(6.94444+1.94444)x469.75499, glue set - 1.0
+.\tenrm j
+.\tenrm e
+.\tenrm c
+.\discretionary
+..\tenrm -
+.\tenrm t
+.etc.
+
+./splinalg.texi:133: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.133 @deftypefun {gsl_
+                       splinalg_itersolve *} gsl_splinalg_itersolve_alloc (c...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:133: Extra }, or forgotten $.
+l.133 @deftypefun {gsl_splinalg_itersolve *}
+                                             gsl_splinalg_itersolve_alloc (c...
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:140: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.140 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (440.06084pt too wide) in paragraph at lines 133--140
+[]\tenrm @deftypefun gsl$[]\teni plinalg[]tersolve \tensy ^^C \teni gsl[]plinal
+g[]tersolve[]lloc\tenrm (\teni constgsl[]plinalg[]tersolve[]ype \tensy ^^C \ten
+rm @\teni varT; constsize[]\tenrm @\teni varn; constsize[]\tenrm @\teni varm\te
+nrm )\teni Thisfunctionallocatesaworkspacefortheiterativesolutionof\tenrm @\ten
+i varn \tensy ^^@|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm f
+.etc.
+
+
+Overfull \hbox (652.82031pt too wide) in paragraph at lines 133--140
+\teni by \tensy ^^@ \tenrm @\teni varnsparsematrixsystems:Theiterativesolvertyp
+eisspecifiedby\tenrm @\teni varT:Theargument\tenrm @\teni varmspecifiesthesizeo
+fthesolutioncandidatesubspace\tenrm @\teni math[]:Thedimension\tenrm @\teni var
+mmaybesetto\tenrm 0\teni inwhichcaseareasonabledefaultvalueisused:\tenrm @\teni
+ enddeftypefun$ |
+
+\hbox(6.94444+1.94444)x469.75499, glue set - 1.0
+.\teni b
+.\teni y
+.\kern0.35878
+.\glue(\medmuskip) 2.22217 plus 1.11108 minus 2.22217
+.\tensy ^^@
+.etc.
+
+./splinalg.texi:141: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.141 @deftypefun void gsl_
+                           splinalg_itersolve_free (gsl_splinalg_itersolve *...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:144: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.144 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (235.38164pt too wide) in paragraph at lines 141--144
+[]\tenrm @deftypefun void gsl$[]\teni plinalg[]tersolve[]ree\tenrm (\teni gsl[]
+plinalg[]tersolve \tensy ^^C \tenrm @\teni varw\tenrm )\teni Thisfunctionfreest
+hememoryassociatedwiththeworkspace\tenrm @\teni varw:\tenrm @\teni enddeftypefu
+n$ |
+
+\hbox(7.5+2.86108)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm f
+.etc.
+
+./splinalg.texi:145: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.145 @deftypefun {const char *} gsl_
+                                     splinalg_itersolve_name (const gsl_spli...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:148: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.148 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (261.50441pt too wide) in paragraph at lines 145--148
+[]\tenrm @deftypefun const char * gsl$[]\teni plinalg[]tersolve[]ame\tenrm (\te
+ni constgsl[]plinalg[]tersolve \tensy ^^C \tenrm @\teni varw\tenrm )\teni Thisf
+unctionreturnsastringpointertothenameofthesolver:\tenrm @\teni enddeftypefun$ |
+
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm f
+.etc.
+
+./splinalg.texi:149: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.149 @deftypefun int gsl_
+                          splinalg_itersolve_iterate (const gsl_spmatrix *@v...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:159: Undefined control sequence.
+l.159 \beforedisplay
+                    
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:163: Undefined control sequence.
+l.163 \afterdisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:177: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.177 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (93.05527pt too wide) in paragraph at lines 149--177
+[]\tenrm @deftypefun int gsl$[]\teni plinalg[]tersolve[]terate\tenrm (\teni con
+stgsl[]pmatrix \tensy ^^C \tenrm @\teni varA; constgsl[]ector \tensy ^^C \tenrm
+ @\teni varb; constdouble\tenrm @\teni var[]; gsl[]ector \tensy ^^C|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm f
+.etc.
+
+
+Overfull \hbox (1690.28201pt too wide) in paragraph at lines 149--177
+\tenrm @\teni varx; gsl[]plinalg[]tersolve \tensy ^^C \tenrm @\teni varw\tenrm 
+)\teni Thisfunctionperformsoneiterationoftheiterativemethodforthesparselinearsy
+stemspecfiedbythematrix\tenrm @\teni varA; righthandsidevector\tenrm @\teni var
+bandsolutionvector\tenrm @\teni varx:Oninput; \tenrm @\teni varxmustbesettoanin
+itialguessforthesolution:Onoutput; \tenrm @\teni varxisupdatedtogivethecurrents
+olutionestimate:Theparameter\tenrm @\teni var[]specifiestherelativetolerancebet
+weentheresidualnormandnormof\tenrm @\teni varbinordertocheckforconvergence:When
+thefollowingconditionissatisfied \tenrm :|
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\tenrm @
+.\teni v
+.\kern0.35878
+.\teni a
+.\teni r
+.etc.
+
+
+Overfull \hbox (1451.86906pt too wide) in paragraph at lines 149--177
+\tenrm @\teni tex$$\tensy jj\teni Ax \tensy ^^@ \teni b\tensy jj ^^T \teni tol 
+\tensy ^^B jj\teni b\tensy jj$$\tenrm @\teni endtex\tenrm @\teni ifinfo\tenrm @
+\teni example\tensy jj\teni Ax \tensy ^^@ \teni b\tensy jj \teni <\tenrm = \ten
+i tol \tensy ^^C jj\teni b\tensy jj\tenrm @\teni endexample\tenrm @\teni endifi
+nfothemethodhasconverged; thefunctionreturns\tenrm @\teni code[]andthefinalsolu
+tionisprovidedin\tenrm @\teni varx:Otherwise; thefunctionreturns\tenrm @\teni c
+ode[]tosignalthatmoreiterationsarerequired:Here; \tenrm @\teni math[]represents
+theEuclideannorm:Theinputmatrix\tenrm @\teni varAmaybeintripletorcompressedcolu
+mnformat:\tenrm @\teni enddeftypefun$ |
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\tenrm @
+.\teni t
+.\teni e
+.\teni x
+.\mathoff
+.etc.
+
+./splinalg.texi:178: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.178 @deftypefun double gsl_
+                             splinalg_itersolve_normr (const gsl_splinalg_it...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:183: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.183 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (576.8547pt too wide) in paragraph at lines 178--183
+[]\tenrm @deftypefun dou-ble gsl$[]\teni plinalg[]tersolve[]ormr\tenrm (\teni c
+onstgsl[]plinalg[]tersolve \tensy ^^C \tenrm @\teni varw\tenrm )\teni Thisfunct
+ionreturnsthecurrentresidualnorm\tenrm @\teni math[]; whichisupdatedaftereachca
+llto\tenrm @\teni code[]:\tenrm @\teni enddeftypefun$ |
+
+\hbox(7.5+2.5)x469.75499, glue set - 1.0
+.\hbox(0.0+0.0)x20.0
+.\tenrm @
+.\tenrm d
+.\tenrm e
+.\tenrm f
+.etc.
+
+./splinalg.texi:191: Undefined control sequence.
+l.191 \beforedisplay
+                    
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:195: Undefined control sequence.
+l.195 \afterdisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:199: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \pi 
+l.199 u''(x) = f(x) = -\pi
+                          ^2 \sin(\pi x)
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:206: Undefined control sequence.
+l.206 \beforedisplay
+                    
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:210: Undefined control sequence.
+l.210 \afterdisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:223: Undefined control sequence.
+l.223 \beforedisplay
+                    
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:257: Undefined control sequence.
+l.257 \afterdisplay
+                   
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+./splinalg.texi:262: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.262 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (803.41617pt too wide) in paragraph at lines 194--262
+\tenrm @end tex @ifinfo @ex-am-ple u''(x) = f(x) = -$\teni ^^Y[] []\tenrm (\ten
+i ^^Yx\tenrm )@\teni endexample\tenrm @\teni endifinfowithboundaryconditions\te
+nrm @\teni math[]:Theanalyticsolutionofthissimpleproblemis\tenrm @\teni math[]:
+Wewillsolvethisproblembyfinitedifferencingthelefthandsidetogive\tenrm @\teni te
+x$$[] [] \tenrm =|
+
+\hbox(8.44843+3.44841)x469.75499, glue set - 1.0
+.\tenrm @
+.\tenrm e
+.\tenrm n
+.\tenrm d
+.\glue 3.33333 plus 1.66666 minus 1.11111
+.etc.
+
+
+Overfull \hbox (1425.49278pt too wide) in paragraph at lines 194--262
+\teni f[]$$\tenrm @\teni endtex\tenrm @\teni ifinfo\tenrm @\teni example\tenrm 
+1\teni =h[]\tenrm (\teni u[]i \tenrm + 1) \tensy ^^@ \tenrm 2\teni u[] \tenrm +
+ \teni u[]i \tensy ^^@ \tenrm 1)) = \teni f[]\tenrm @\teni endexample\tenrm @\t
+eni endifinfoDefiningagridof\tenrm @\teni mathNpoints; \tenrm @\teni math[]:Int
+hefinitedifferenceequationabove; \tenrm @\teni math[]areknownfromtheboundarycon
+ditions; sowewillonlyputtheequationsfor\tenrm @\teni math[]intothematrixsystem:
+Theresulting\tenrm @\teni math[]matrixequationis\tenrm @\teni tex$$[] [] [] \te
+nrm =|
+
+\hbox(40.27777+35.27776)x469.75499, glue set - 1.0
+.\teni f
+.\hbox(4.63193+0.0)x3.32928, shifted 1.49998
+..\seveni i
+.\mathoff
+.\mathon
+.\tenrm @
+.etc.
+
+
+Overfull \hbox (303.4659pt too wide) in paragraph at lines 194--262
+[]$$\tenrm @\teni endtexAnexampleprogramwhichconstructsandsolvesthissystemisgiv
+enbelow:ThesystemissolvedusingtheiterativeGMRESsolver:Hereistheoutputoftheprogr
+am \tenrm :$ |
+
+\hbox(40.5+35.49998)x469.75499
+.\hbox(40.5+35.49998)x43.55002
+..\vbox(0.39998+71.60072)x8.75002, shifted -38.10037
+...\hbox(0.39998+17.60019)x8.75002 []
+...\hbox(0.0+6.00006)x8.75002 []
+...\hbox(0.0+6.00006)x8.75002 []
+...\hbox(0.0+6.00006)x8.75002 []
+...\hbox(0.0+6.00006)x8.75002 []
+...etc.
+..\hbox(0.0+0.0)x0.0
+..\glue 1.66663
+..\vbox(40.5+35.49998)x22.71674
+...\hbox(7.5+2.5)x22.71674 []
+...\kern -12.0
+...\glue(\baselineskip) 2.55556
+...\hbox(6.94444+1.94444)x22.71674 []
+...\glue(\baselineskip) 3.11111
+...etc.
+..\glue 1.66663
+..etc.
+.\mathoff
+.\mathon
+.\tenrm @
+.\teni e
+.etc.
+
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+./splinalg.texi:273: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   _
+l.273 @center @image{sparse_
+                            poisson,6in}
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./splinalg.texi:273: Extra }, or forgotten $.
+l.273 @center @image{sparse_poisson,6in}
+                                        
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+./splinalg.texi:275: Missing $ inserted.
+<inserted text> 
+                $
+<to be read again> 
+                   \par 
+l.275 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+)
+! Emergency stop.
+<*> ...3 \let~\normaltilde  \input ./splinalg.texi
+                                                  
+*** (job aborted, no legal \end found)
+
+!  ==> Fatal error occurred, no output PDF file produced!

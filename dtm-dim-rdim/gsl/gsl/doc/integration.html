@@ -1,0 +1,1230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-quadrature"></a>
+<a name="index-numerical-integration-_0028quadrature_0029"></a>
+<a name="index-integration_002c-numerical-_0028quadrature_0029"></a>
+<a name="index-QUADPACK"></a>
+
+<p>This chapter describes routines for performing numerical integration
+(quadrature) of a function in one dimension.  There are routines for
+adaptive and non-adaptive integration of general functions, with
+specialised routines for specific cases.  These include integration over
+infinite and semi-infinite ranges, singular integrals, including
+logarithmic singularities, computation of Cauchy principal values and
+oscillatory integrals.  The library reimplements the algorithms used in
+<small>QUADPACK</small>, a numerical integration package written by Piessens,
+de Doncker-Kapenga, Ueberhuber and Kahaner.  Fortran code for <small>QUADPACK</small> is
+available on Netlib.  Also included are non-adaptive, fixed-order
+Gauss-Legendre integration routines with high precision coefficients
+by Pavel Holoborodko.
+</p>
+<p>The functions described in this chapter are declared in the header file
+&lsquo;<tt>gsl_integration.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Numerical-Integration-Introduction">1. Introduction</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration">2. QNG non-adaptive Gauss-Kronrod integration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAG-adaptive-integration">3. QAG adaptive integration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAGS-adaptive-integration-with-singularities">4. QAGS adaptive integration with singularities</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAGP-adaptive-integration-with-known-singular-points">5. QAGP adaptive integration with known singular points</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAGI-adaptive-integration-on-infinite-intervals">6. QAGI adaptive integration on infinite intervals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAWC-adaptive-integration-for-Cauchy-principal-values">7. QAWC adaptive integration for Cauchy principal values</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAWS-adaptive-integration-for-singular-functions">8. QAWS adaptive integration for singular functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAWO-adaptive-integration-for-oscillatory-functions">9. QAWO adaptive integration for oscillatory functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QAWF-adaptive-integration-for-Fourier-integrals">10. QAWF adaptive integration for Fourier integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#CQUAD-doubly_002dadaptive-integration">11. CQUAD doubly-adaptive integration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Fixed-order-Gauss_002dLegendre-integration">12. Gauss-Legendre integration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Numerical-integration-error-codes">13. Error codes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Numerical-integration-examples">14. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Numerical-integration-References-and-Further-Reading">15. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Numerical-Integration-Introduction"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Integrands-without-weight-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Introduction"></a>
+<h2 class="section">1. Introduction</h2>
+
+<p>Each algorithm computes an approximation to a definite integral of the
+form,
+where <em>w(x)</em> is a weight function (for general integrands <em>w(x)=1</em>).
+The user provides absolute and relative error bounds 
+<em>(epsabs, epsrel)</em> which specify the following accuracy requirement,
+where 
+<em>RESULT</em> is the numerical approximation obtained by the
+algorithm.  The algorithms attempt to estimate the absolute error
+<em>ABSERR = |RESULT - I|</em> in such a way that the following inequality
+holds,
+In short, the routines return the first approximation 
+which has an absolute error smaller than <em>epsabs</em> or a relative error smaller than <em>epsrel</em>.   
+</p>
+<p>Note that this is an <i>either-or</i> constraint, 
+not simultaneous.  To compute to a specified absolute error, set <em>epsrel</em> to zero.  To compute to a specified relative error,
+set <em>epsabs</em> to zero.  
+The routines will fail to converge if the error bounds are too
+stringent, but always return the best approximation obtained up to
+that stage.
+</p>
+<p>The algorithms in <small>QUADPACK</small> use a naming convention based on the
+following letters,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="display"><code>Q</code> - quadrature routine
+
+<code>N</code> - non-adaptive integrator
+<code>A</code> - adaptive integrator
+
+<code>G</code> - general integrand (user-defined)
+<code>W</code> - weight function with integrand
+
+<code>S</code> - singularities can be more readily integrated
+<code>P</code> - points of special difficulty can be supplied
+<code>I</code> - infinite range of integration
+<code>O</code> - oscillatory weight function, cos or sin
+<code>F</code> - Fourier integral
+<code>C</code> - Cauchy principal value
+</pre></td></tr></table>
+
+<p>The algorithms are built on pairs of quadrature rules, a higher order
+rule and a lower order rule.  The higher order rule is used to compute
+the best approximation to an integral over a small range.  The
+difference between the results of the higher order rule and the lower
+order rule gives an estimate of the error in the approximation.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Integrands-without-weight-functions">1.1 Integrands without weight functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Integrands-with-weight-functions">1.2 Integrands with weight functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Integrands-with-singular-weight-functions">1.3 Integrands with singular weight functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Integrands-without-weight-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Integrands-with-weight-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Integrands-without-weight-functions-1"></a>
+<h3 class="subsection">1.1 Integrands without weight functions</h3>
+<a name="index-Gauss_002dKronrod-quadrature"></a>
+<p>The algorithms for general functions (without a weight function) are
+based on Gauss-Kronrod rules. 
+</p>
+<p>A Gauss-Kronrod rule begins with a classical Gaussian quadrature rule of
+order <em>m</em>.  This is extended with additional points between each of
+the abscissae to give a higher order Kronrod rule of order <em>2m+1</em>.
+The Kronrod rule is efficient because it reuses existing function
+evaluations from the Gaussian rule.  
+</p>
+<p>The higher order Kronrod rule is used as the best approximation to the
+integral, and the difference between the two rules is used as an
+estimate of the error in the approximation.
+</p>
+<hr size="6">
+<a name="Integrands-with-weight-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Integrands-without-weight-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Integrands-with-singular-weight-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Integrands-with-weight-functions-1"></a>
+<h3 class="subsection">1.2 Integrands with weight functions</h3>
+<a name="index-Clenshaw_002dCurtis-quadrature"></a>
+<a name="index-Modified-Clenshaw_002dCurtis-quadrature"></a>
+<p>For integrands with weight functions the algorithms use Clenshaw-Curtis
+quadrature rules.  
+</p>
+<p>A Clenshaw-Curtis rule begins with an <em>n</em>-th order Chebyshev
+polynomial approximation to the integrand.  This polynomial can be
+integrated exactly to give an approximation to the integral of the
+original function.  The Chebyshev expansion can be extended to higher
+orders to improve the approximation and provide an estimate of the
+error.
+</p>
+<hr size="6">
+<a name="Integrands-with-singular-weight-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Integrands-with-weight-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Integrands-with-singular-weight-functions-1"></a>
+<h3 class="subsection">1.3 Integrands with singular weight functions</h3>
+
+<p>The presence of singularities (or other behavior) in the integrand can
+cause slow convergence in the Chebyshev approximation.  The modified
+Clenshaw-Curtis rules used in <small>QUADPACK</small> separate out several common
+weight functions which cause slow convergence.  
+</p>
+<p>These weight functions are integrated analytically against the Chebyshev
+polynomials to precompute <em>modified Chebyshev moments</em>.  Combining
+the moments with the Chebyshev approximation to the function gives the
+desired integral.  The use of analytic integration for the singular part
+of the function allows exact cancellations and substantially improves
+the overall convergence behavior of the integration.
+</p>
+
+<hr size="6">
+<a name="QNG-non_002dadaptive-Gauss_002dKronrod-integration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Integrands-with-singular-weight-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAG-adaptive-integration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAG-adaptive-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QNG-non_002dadaptive-Gauss_002dKronrod-integration-1"></a>
+<h2 class="section">2. QNG non-adaptive Gauss-Kronrod integration</h2>
+<a name="index-QNG-quadrature-algorithm"></a>
+
+<p>The QNG algorithm is a non-adaptive procedure which uses fixed
+Gauss-Kronrod-Patterson abscissae to sample the integrand at a maximum of 87
+points.  It is provided for fast integration of smooth functions.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqng"></a><u>Function:</u> int <b>gsl_integration_qng</b><i> (const gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, double <var>epsabs</var>, double <var>epsrel</var>, double * <var>result</var>, double * <var>abserr</var>, size_t * <var>neval</var>)</i></dt>
+<dd>
+<p>This function applies the Gauss-Kronrod 10-point, 21-point, 43-point and
+87-point integration rules in succession until an estimate of the
+integral of <em>f</em> over <em>(a,b)</em> is achieved within the desired
+absolute and relative error limits, <var>epsabs</var> and <var>epsrel</var>.  The
+function returns the final approximation, <var>result</var>, an estimate of
+the absolute error, <var>abserr</var> and the number of function evaluations
+used, <var>neval</var>.  The Gauss-Kronrod rules are designed in such a way
+that each rule uses all the results of its predecessors, in order to
+minimize the total number of function evaluations.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="QAG-adaptive-integration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGS-adaptive-integration-with-singularities" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QNG-non_002dadaptive-Gauss_002dKronrod-integration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGS-adaptive-integration-with-singularities" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAG-adaptive-integration-1"></a>
+<h2 class="section">3. QAG adaptive integration</h2>
+<a name="index-QAG-quadrature-algorithm"></a>
+
+<p>The QAG algorithm is a simple adaptive integration procedure.  The
+integration region is divided into subintervals, and on each iteration
+the subinterval with the largest estimated error is bisected.  This
+reduces the overall error rapidly, as the subintervals become
+concentrated around local difficulties in the integrand.  These
+subintervals are managed by a <code>gsl_integration_workspace</code> struct,
+which handles the memory for the subinterval ranges, results and error
+estimates.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fworkspace_005falloc"></a><u>Function:</u> gsl_integration_workspace * <b>gsl_integration_workspace_alloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fworkspace"></a>
+<p>This function allocates a workspace sufficient to hold <var>n</var> double
+precision intervals, their integration results and error estimates.
+One workspace may be used multiple times as all necessary reinitialization
+is performed automatically by the integration routines.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fworkspace_005ffree"></a><u>Function:</u> void <b>gsl_integration_workspace_free</b><i> (gsl_integration_workspace * <var>w</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqag"></a><u>Function:</u> int <b>gsl_integration_qag</b><i> (const gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, int <var>key</var>, gsl_integration_workspace * <var>workspace</var>,  double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function applies an integration rule adaptively until an estimate
+of the integral of <em>f</em> over <em>(a,b)</em> is achieved within the
+desired absolute and relative error limits, <var>epsabs</var> and
+<var>epsrel</var>.  The function returns the final approximation,
+<var>result</var>, and an estimate of the absolute error, <var>abserr</var>.  The
+integration rule is determined by the value of <var>key</var>, which should
+be chosen from the following symbolic names,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">GSL_INTEG_GAUSS15  (key = 1)
+GSL_INTEG_GAUSS21  (key = 2)
+GSL_INTEG_GAUSS31  (key = 3)
+GSL_INTEG_GAUSS41  (key = 4)
+GSL_INTEG_GAUSS51  (key = 5)
+GSL_INTEG_GAUSS61  (key = 6)
+</pre></td></tr></table>
+
+<p>corresponding to the 15, 21, 31, 41, 51 and 61 point Gauss-Kronrod
+rules.  The higher-order rules give better accuracy for smooth functions,
+while lower-order rules save time when the function contains local
+difficulties, such as discontinuities.
+</p>
+<p>On each iteration the adaptive integration strategy bisects the interval
+with the largest error estimate.  The subintervals and their results are
+stored in the memory provided by <var>workspace</var>.  The maximum number of
+subintervals is given by <var>limit</var>, which may not exceed the allocated
+size of the workspace.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="QAGS-adaptive-integration-with-singularities"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAG-adaptive-integration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGP-adaptive-integration-with-known-singular-points" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAG-adaptive-integration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGP-adaptive-integration-with-known-singular-points" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAGS-adaptive-integration-with-singularities-1"></a>
+<h2 class="section">4. QAGS adaptive integration with singularities</h2>
+<a name="index-QAGS-quadrature-algorithm"></a>
+
+<p>The presence of an integrable singularity in the integration region
+causes an adaptive routine to concentrate new subintervals around the
+singularity.  As the subintervals decrease in size the successive
+approximations to the integral converge in a limiting fashion.  This
+approach to the limit can be accelerated using an extrapolation
+procedure.  The QAGS algorithm combines adaptive bisection with the Wynn
+epsilon-algorithm to speed up the integration of many types of
+integrable singularities.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqags"></a><u>Function:</u> int <b>gsl_integration_qags</b><i> (const gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function applies the Gauss-Kronrod 21-point integration rule
+adaptively until an estimate of the integral of <em>f</em> over
+<em>(a,b)</em> is achieved within the desired absolute and relative error
+limits, <var>epsabs</var> and <var>epsrel</var>.  The results are extrapolated
+using the epsilon-algorithm, which accelerates the convergence of the
+integral in the presence of discontinuities and integrable
+singularities.  The function returns the final approximation from the
+extrapolation, <var>result</var>, and an estimate of the absolute error,
+<var>abserr</var>.  The subintervals and their results are stored in the
+memory provided by <var>workspace</var>.  The maximum number of subintervals
+is given by <var>limit</var>, which may not exceed the allocated size of the
+workspace.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="QAGP-adaptive-integration-with-known-singular-points"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAGS-adaptive-integration-with-singularities" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGI-adaptive-integration-on-infinite-intervals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAGS-adaptive-integration-with-singularities" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAGI-adaptive-integration-on-infinite-intervals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAGP-adaptive-integration-with-known-singular-points-1"></a>
+<h2 class="section">5. QAGP adaptive integration with known singular points</h2>
+<a name="index-QAGP-quadrature-algorithm"></a>
+<a name="index-singular-points_002c-specifying-positions-in-quadrature"></a>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqagp"></a><u>Function:</u> int <b>gsl_integration_qagp</b><i> (const gsl_function * <var>f</var>, double * <var>pts</var>, size_t <var>npts</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function applies the adaptive integration algorithm QAGS taking
+account of the user-supplied locations of singular points.  The array
+<var>pts</var> of length <var>npts</var> should contain the endpoints of the
+integration ranges defined by the integration region and locations of
+the singularities.  For example, to integrate over the region
+<em>(a,b)</em> with break-points at <em>x_1, x_2, x_3</em> (where 
+<em>a &lt; x_1 &lt; x_2 &lt; x_3 &lt; b</em>) the following <var>pts</var> array should be used
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">pts[0] = a
+pts[1] = x_1
+pts[2] = x_2
+pts[3] = x_3
+pts[4] = b
+</pre></td></tr></table>
+
+<p>with <var>npts</var> = 5.
+</p>
+<p>If you know the locations of the singular points in the integration
+region then this routine will be faster than <code>QAGS</code>.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="QAGI-adaptive-integration-on-infinite-intervals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAGP-adaptive-integration-with-known-singular-points" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWC-adaptive-integration-for-Cauchy-principal-values" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAGP-adaptive-integration-with-known-singular-points" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWC-adaptive-integration-for-Cauchy-principal-values" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAGI-adaptive-integration-on-infinite-intervals-1"></a>
+<h2 class="section">6. QAGI adaptive integration on infinite intervals</h2>
+<a name="index-QAGI-quadrature-algorithm"></a>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqagi"></a><u>Function:</u> int <b>gsl_integration_qagi</b><i> (gsl_function * <var>f</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function computes the integral of the function <var>f</var> over the
+infinite interval <em>(-\infty,+\infty)</em>.  The integral is mapped onto the
+semi-open interval <em>(0,1]</em> using the transformation <em>x = (1-t)/t</em>,
+It is then integrated using the QAGS algorithm.  The normal 21-point
+Gauss-Kronrod rule of QAGS is replaced by a 15-point rule, because the
+transformation can generate an integrable singularity at the origin.  In
+this case a lower-order rule is more efficient.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqagiu"></a><u>Function:</u> int <b>gsl_integration_qagiu</b><i> (gsl_function * <var>f</var>, double <var>a</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function computes the integral of the function <var>f</var> over the
+semi-infinite interval <em>(a,+\infty)</em>.  The integral is mapped onto the
+semi-open interval <em>(0,1]</em> using the transformation <em>x = a + (1-t)/t</em>,
+and then integrated using the QAGS algorithm.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqagil"></a><u>Function:</u> int <b>gsl_integration_qagil</b><i> (gsl_function * <var>f</var>, double <var>b</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function computes the integral of the function <var>f</var> over the
+semi-infinite interval <em>(-\infty,b)</em>.  The integral is mapped onto the
+semi-open interval <em>(0,1]</em> using the transformation <em>x = b - (1-t)/t</em>,
+and then integrated using the QAGS algorithm.
+</p></dd></dl>
+
+<hr size="6">
+<a name="QAWC-adaptive-integration-for-Cauchy-principal-values"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAGI-adaptive-integration-on-infinite-intervals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWS-adaptive-integration-for-singular-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAGI-adaptive-integration-on-infinite-intervals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWS-adaptive-integration-for-singular-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAWC-adaptive-integration-for-Cauchy-principal-values-1"></a>
+<h2 class="section">7. QAWC adaptive integration for Cauchy principal values</h2>
+<a name="index-QAWC-quadrature-algorithm"></a>
+<a name="index-Cauchy-principal-value_002c-by-numerical-quadrature"></a>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawc"></a><u>Function:</u> int <b>gsl_integration_qawc</b><i> (gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, double <var>c</var>, double <var>epsabs</var>, double <var>epsrel</var>, size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function computes the Cauchy principal value of the integral of
+<em>f</em> over <em>(a,b)</em>, with a singularity at <var>c</var>,
+The adaptive bisection algorithm of QAG is used, with modifications to
+ensure that subdivisions do not occur at the singular point <em>x = c</em>.
+When a subinterval contains the point <em>x = c</em> or is close to
+it then a special 25-point modified Clenshaw-Curtis rule is used to control
+the singularity.  Further away from the
+singularity the algorithm uses an ordinary 15-point Gauss-Kronrod
+integration rule.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="QAWS-adaptive-integration-for-singular-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAWC-adaptive-integration-for-Cauchy-principal-values" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWO-adaptive-integration-for-oscillatory-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAWC-adaptive-integration-for-Cauchy-principal-values" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWO-adaptive-integration-for-oscillatory-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAWS-adaptive-integration-for-singular-functions-1"></a>
+<h2 class="section">8. QAWS adaptive integration for singular functions</h2>
+<a name="index-QAWS-quadrature-algorithm"></a>
+<a name="index-singular-functions_002c-numerical-integration-of"></a>
+<p>The QAWS algorithm is designed for integrands with algebraic-logarithmic
+singularities at the end-points of an integration region.  In order to
+work efficiently the algorithm requires a precomputed table of
+Chebyshev moments.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqaws_005ftable_005falloc"></a><u>Function:</u> gsl_integration_qaws_table * <b>gsl_integration_qaws_table_alloc</b><i> (double <var>alpha</var>, double <var>beta</var>, int <var>mu</var>, int <var>nu</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fqaws_005ftable"></a>
+<p>This function allocates space for a <code>gsl_integration_qaws_table</code>
+struct describing a singular weight function
+<em>W(x)</em> with the parameters <em>(\alpha, \beta, \mu, \nu)</em>,
+where <em>\alpha &gt; -1</em>, <em>\beta &gt; -1</em>, and <em>\mu = 0, 1</em>,
+<em>\nu = 0, 1</em>.  The weight function can take four different forms
+depending on the values of <em>\mu</em> and <em>\nu</em>,
+The singular points <em>(a,b)</em> do not have to be specified until the
+integral is computed, where they are the endpoints of the integration
+range.
+</p>
+<p>The function returns a pointer to the newly allocated table
+<code>gsl_integration_qaws_table</code> if no errors were detected, and 0 in
+the case of error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqaws_005ftable_005fset"></a><u>Function:</u> int <b>gsl_integration_qaws_table_set</b><i> (gsl_integration_qaws_table * <var>t</var>, double <var>alpha</var>, double <var>beta</var>, int <var>mu</var>, int <var>nu</var>)</i></dt>
+<dd><p>This function modifies the parameters <em>(\alpha, \beta, \mu, \nu)</em> of
+an existing <code>gsl_integration_qaws_table</code> struct <var>t</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqaws_005ftable_005ffree"></a><u>Function:</u> void <b>gsl_integration_qaws_table_free</b><i> (gsl_integration_qaws_table * <var>t</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the
+<code>gsl_integration_qaws_table</code> struct <var>t</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqaws"></a><u>Function:</u> int <b>gsl_integration_qaws</b><i> (gsl_function * <var>f</var>, const double <var>a</var>, const double <var>b</var>, gsl_integration_qaws_table * <var>t</var>, const double <var>epsabs</var>, const double <var>epsrel</var>, const size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function computes the integral of the function <em>f(x)</em> over the
+interval <em>(a,b)</em> with the singular weight function
+<em>(x-a)^\alpha (b-x)^\beta \log^\mu (x-a) \log^\nu (b-x)</em>.  The parameters 
+of the weight function <em>(\alpha, \beta, \mu, \nu)</em> are taken from the
+table <var>t</var>.  The integral is,
+The adaptive bisection algorithm of QAG is used.  When a subinterval
+contains one of the endpoints then a special 25-point modified
+Clenshaw-Curtis rule is used to control the singularities.  For
+subintervals which do not include the endpoints an ordinary 15-point
+Gauss-Kronrod integration rule is used.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="QAWO-adaptive-integration-for-oscillatory-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAWS-adaptive-integration-for-singular-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWF-adaptive-integration-for-Fourier-integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAWS-adaptive-integration-for-singular-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QAWF-adaptive-integration-for-Fourier-integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAWO-adaptive-integration-for-oscillatory-functions-1"></a>
+<h2 class="section">9. QAWO adaptive integration for oscillatory functions</h2>
+<a name="index-QAWO-quadrature-algorithm"></a>
+<a name="index-oscillatory-functions_002c-numerical-integration-of"></a>
+<p>The QAWO algorithm is designed for integrands with an oscillatory
+factor, <em>\sin(\omega x)</em> or <em>\cos(\omega x)</em>.  In order to
+work efficiently the algorithm requires a table of Chebyshev moments
+which must be pre-computed with calls to the functions below.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawo_005ftable_005falloc"></a><u>Function:</u> gsl_integration_qawo_table * <b>gsl_integration_qawo_table_alloc</b><i> (double <var>omega</var>, double <var>L</var>, enum gsl_integration_qawo_enum <var>sine</var>, size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fqawo_005ftable"></a>
+<p>This function allocates space for a <code>gsl_integration_qawo_table</code>
+struct and its associated workspace describing a sine or cosine weight
+function <em>W(x)</em> with the parameters <em>(\omega, L)</em>,
+The parameter <var>L</var> must be the length of the interval over which the
+function will be integrated <em>L = b - a</em>.  The choice of sine or
+cosine is made with the parameter <var>sine</var> which should be chosen from
+one of the two following symbolic values:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">GSL_INTEG_COSINE
+GSL_INTEG_SINE
+</pre></td></tr></table>
+
+<p>The <code>gsl_integration_qawo_table</code> is a table of the trigonometric
+coefficients required in the integration process.  The parameter <var>n</var>
+determines the number of levels of coefficients that are computed.  Each
+level corresponds to one bisection of the interval <em>L</em>, so that
+<var>n</var> levels are sufficient for subintervals down to the length
+<em>L/2^n</em>.  The integration routine <code>gsl_integration_qawo</code>
+returns the error <code>GSL_ETABLE</code> if the number of levels is
+insufficient for the requested accuracy.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawo_005ftable_005fset"></a><u>Function:</u> int <b>gsl_integration_qawo_table_set</b><i> (gsl_integration_qawo_table * <var>t</var>, double <var>omega</var>, double <var>L</var>, enum gsl_integration_qawo_enum <var>sine</var>)</i></dt>
+<dd><p>This function changes the parameters <var>omega</var>, <var>L</var> and <var>sine</var>
+of the existing workspace <var>t</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawo_005ftable_005fset_005flength"></a><u>Function:</u> int <b>gsl_integration_qawo_table_set_length</b><i> (gsl_integration_qawo_table * <var>t</var>, double <var>L</var>)</i></dt>
+<dd><p>This function allows the length parameter <var>L</var> of the workspace
+<var>t</var> to be changed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawo_005ftable_005ffree"></a><u>Function:</u> void <b>gsl_integration_qawo_table_free</b><i> (gsl_integration_qawo_table * <var>t</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the workspace <var>t</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawo"></a><u>Function:</u> int <b>gsl_integration_qawo</b><i> (gsl_function * <var>f</var>, const double <var>a</var>, const double <var>epsabs</var>, const double <var>epsrel</var>, const size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, gsl_integration_qawo_table * <var>wf</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function uses an adaptive algorithm to compute the integral of
+<em>f</em> over <em>(a,b)</em> with the weight function 
+<em>\sin(\omega x)</em> or <em>\cos(\omega x)</em> defined 
+by the table <var>wf</var>,
+The results are extrapolated using the epsilon-algorithm to accelerate
+the convergence of the integral.  The function returns the final
+approximation from the extrapolation, <var>result</var>, and an estimate of
+the absolute error, <var>abserr</var>.  The subintervals and their results are
+stored in the memory provided by <var>workspace</var>.  The maximum number of
+subintervals is given by <var>limit</var>, which may not exceed the allocated
+size of the workspace.
+</p>
+<p>Those subintervals with &ldquo;large&rdquo; widths <em>d</em> where <em>d\omega &gt; 4</em> are
+computed using a 25-point Clenshaw-Curtis integration rule, which handles the
+oscillatory behavior.  Subintervals with a &ldquo;small&rdquo; widths where
+<em>d\omega &lt; 4</em> are computed using a 15-point Gauss-Kronrod integration.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="QAWF-adaptive-integration-for-Fourier-integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAWO-adaptive-integration-for-oscillatory-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#CQUAD-doubly_002dadaptive-integration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAWO-adaptive-integration-for-oscillatory-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#CQUAD-doubly_002dadaptive-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QAWF-adaptive-integration-for-Fourier-integrals-1"></a>
+<h2 class="section">10. QAWF adaptive integration for Fourier integrals</h2>
+<a name="index-QAWF-quadrature-algorithm"></a>
+<a name="index-Fourier-integrals_002c-numerical"></a>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fqawf"></a><u>Function:</u> int <b>gsl_integration_qawf</b><i> (gsl_function * <var>f</var>, const double <var>a</var>, const double <var>epsabs</var>, const size_t <var>limit</var>, gsl_integration_workspace * <var>workspace</var>, gsl_integration_workspace * <var>cycle_workspace</var>, gsl_integration_qawo_table * <var>wf</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd>
+<p>This function attempts to compute a Fourier integral of the function
+<var>f</var> over the semi-infinite interval <em>[a,+\infty)</em>.
+</p>
+<p>The parameter <em>\omega</em> and choice of <em>\sin</em> or <em>\cos</em> is
+taken from the table <var>wf</var> (the length <var>L</var> can take any value,
+since it is overridden by this function to a value appropriate for the
+Fourier integration).  The integral is computed using the QAWO algorithm
+over each of the subintervals,
+where 
+<em>c = (2 floor(|\omega|) + 1) \pi/|\omega|</em>.  The width <em>c</em> is
+chosen to cover an odd number of periods so that the contributions from
+the intervals alternate in sign and are monotonically decreasing when
+<var>f</var> is positive and monotonically decreasing.  The sum of this
+sequence of contributions is accelerated using the epsilon-algorithm.
+</p>
+<p>This function works to an overall absolute tolerance of
+<var>abserr</var>.  The following strategy is used: on each interval
+<em>C_k</em> the algorithm tries to achieve the tolerance
+where 
+<em>u_k = (1 - p)p^k-1</em> and <em>p = 9/10</em>.  
+The sum of the geometric series of contributions from each interval
+gives an overall tolerance of <var>abserr</var>.
+</p>
+<p>If the integration of a subinterval leads to difficulties then the
+accuracy requirement for subsequent intervals is relaxed,
+where <em>E_k</em> is the estimated error on the interval <em>C_k</em>.
+</p>
+<p>The subintervals and their results are stored in the memory provided by
+<var>workspace</var>.  The maximum number of subintervals is given by
+<var>limit</var>, which may not exceed the allocated size of the workspace.
+The integration over each subinterval uses the memory provided by
+<var>cycle_workspace</var> as workspace for the QAWO algorithm.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="CQUAD-doubly_002dadaptive-integration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QAWF-adaptive-integration-for-Fourier-integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fixed-order-Gauss_002dLegendre-integration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QAWF-adaptive-integration-for-Fourier-integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Fixed-order-Gauss_002dLegendre-integration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="CQUAD-doubly_002dadaptive-integration-1"></a>
+<h2 class="section">11. CQUAD doubly-adaptive integration</h2>
+<a name="index-cquad_002c-doubly_002dadaptive-integration"></a>
+
+<p><small>CQUAD</small> is a new doubly-adaptive general-purpose quadrature
+routine which can handle most types of singularities,
+non-numerical function values such as <code>Inf</code> or <code>NaN</code>,
+as well as some divergent integrals. It generally requires more
+function evaluations than the integration routines in
+<small>QUADPACK</small>, yet fails less often for difficult integrands.
+</p>
+<p>The underlying algorithm uses a doubly-adaptive scheme in which
+Clenshaw-Curtis quadrature rules of increasing degree are used
+to compute the integral in each interval. The <em>L_2</em>-norm of
+the difference between the underlying interpolatory polynomials
+of two successive rules is used as an error estimate. The
+interval is subdivided if the difference between two successive
+rules is too large or a rule of maximum degree has been reached.
+</p>     
+<dl>
+<dt><a name="index-gsl_005fintegration_005fcquad_005fworkspace_005falloc"></a><u>Function:</u> gsl_integration_cquad_workspace * <b>gsl_integration_cquad_workspace_alloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fcquad_005fworkspace"></a>
+<p>This function allocates a workspace sufficient to hold the data for
+<var>n</var> intervals. The number <var>n</var> is not the maximum number of
+intervals that will be evaluated. If the workspace is full, intervals
+with smaller error estimates will be discarded. A minimum of 3
+intervals is required and for most functions, a workspace of size 100
+is sufficient.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fcquad_005fworkspace_005ffree"></a><u>Function:</u> void <b>gsl_integration_cquad_workspace_free</b><i> (gsl_integration_cquad_workspace * <var>w</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fcquad"></a><u>Function:</u> int <b>gsl_integration_cquad</b><i> (const gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, double <var>epsabs</var>, double <var>epsrel</var>, gsl_integration_cquad_workspace * <var>workspace</var>,  double * <var>result</var>, double * <var>abserr</var>, size_t * <var>nevals</var>)</i></dt>
+<dd><p>This function computes the integral of <em>f</em> over <em>(a,b)</em>
+within the desired absolute and relative error limits, <var>epsabs</var>
+and <var>epsrel</var> using the <small>CQUAD</small> algorithm.  The function returns
+the final approximation, <var>result</var>, an estimate of the absolute
+error, <var>abserr</var>, and the number of function evaluations required,
+<var>nevals</var>.
+</p>
+<p>The <small>CQUAD</small> algorithm divides the integration region into
+subintervals, and in each iteration, the subinterval with the largest
+estimated error is processed.  The algorithm uses Clenshaw-Curits
+quadrature rules of degree 4, 8, 16 and 32 over 5, 9, 17 and 33 nodes
+respectively. Each interval is initialized with the lowest-degree
+rule. When an interval is processed, the next-higher degree rule is
+evaluated and an error estimate is computed based on the
+<em>L_2</em>-norm of the difference between the underlying interpolating
+polynomials of both rules. If the highest-degree rule has already been
+used, or the interpolatory polynomials differ significantly, the
+interval is bisected.
+</p>
+<p>The subintervals and their results are stored in the memory 
+provided by <var>workspace</var>. If the error estimate or the number of 
+function evaluations is not needed, the pointers <var>abserr</var> and <var>nevals</var>
+can be set to <code>NULL</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Fixed-order-Gauss_002dLegendre-integration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#CQUAD-doubly_002dadaptive-integration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-error-codes" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#CQUAD-doubly_002dadaptive-integration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-error-codes" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Gauss_002dLegendre-integration"></a>
+<h2 class="section">12. Gauss-Legendre integration</h2>
+
+<p>The fixed-order Gauss-Legendre integration routines are provided for fast
+integration of smooth functions with known polynomial order.  The
+<em>n</em>-point Gauss-Legendre rule is exact for polynomials of order
+<em>2*n-1</em> or less.  For example, these rules are useful when integrating
+basis functions to form mass matrices for the Galerkin method.  Unlike other
+numerical integration routines within the library, these routines do not accept
+absolute or relative error bounds.
+</p>
+<dl>
+<dt><a name="index-gsl_005fintegration_005fglfixed_005ftable_005falloc"></a><u>Function:</u> gsl_integration_glfixed_table * <b>gsl_integration_glfixed_table_alloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fglfixed_005ftable"></a>
+<p>This function determines the Gauss-Legendre abscissae and weights necessary for
+an <em>n</em>-point fixed order integration scheme.  If possible, high precision
+precomputed coefficients are used.  If precomputed weights are not available,
+lower precision coefficients are computed on the fly.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fglfixed"></a><u>Function:</u> double <b>gsl_integration_glfixed</b><i> (const gsl_function * <var>f</var>, double <var>a</var>, double <var>b</var>, const gsl_integration_glfixed_table * <var>t</var>)</i></dt>
+<dd><p>This function applies the Gauss-Legendre integration rule
+contained in table <var>t</var> and returns the result.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fglfixed_005fpoint"></a><u>Function:</u> int <b>gsl_integration_glfixed_point</b><i> (double <var>a</var>, double <var>b</var>, size_t <var>i</var>, double * <var>xi</var>, double * <var>wi</var>, const gsl_integration_glfixed_table * <var>t</var>)</i></dt>
+<dd><p>For <var>i</var> in <em>[0, &hellip;, t-&gt;n - 1]</em>, this function obtains the
+<var>i</var>-th Gauss-Legendre point <var>xi</var> and weight <var>wi</var> on the interval
+[<var>a</var>,<var>b</var>].  The points and weights are ordered by increasing point
+value.  A function <em>f</em> may be integrated on [<var>a</var>,<var>b</var>] by summing
+<em>wi * f(xi)</em> over <var>i</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fintegration_005fglfixed_005ftable_005ffree"></a><u>Function:</u> void <b>gsl_integration_glfixed_table_free</b><i> (gsl_integration_glfixed_table * <var>t</var>)</i></dt>
+<dd><a name="index-gsl_005fintegration_005fglfixed_005ftable-1"></a>
+<p>This function frees the memory associated with the table <var>t</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Numerical-integration-error-codes"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fixed-order-Gauss_002dLegendre-integration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fixed-order-Gauss_002dLegendre-integration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Error-codes"></a>
+<h2 class="section">13. Error codes</h2>
+
+<p>In addition to the standard error codes for invalid arguments the
+functions can return the following values,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_EMAXITER</code></dt>
+<dd><p>the maximum number of subdivisions was exceeded.
+</p></dd>
+<dt> <code>GSL_EROUND</code></dt>
+<dd><p>cannot reach tolerance because of roundoff error,
+or roundoff error was detected in the extrapolation table.
+</p></dd>
+<dt> <code>GSL_ESING</code>  </dt>
+<dd><p>a non-integrable singularity or other bad integrand behavior was found
+in the integration interval.
+</p></dd>
+<dt> <code>GSL_EDIVERGE</code></dt>
+<dd><p>the integral is divergent, or too slowly convergent to be integrated
+numerically.
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Numerical-integration-examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-integration-error-codes" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-error-codes" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">14. Examples</h2>
+
+<p>The integrator <code>QAGS</code> will handle a large class of definite
+integrals.  For example, consider the following integral, which has an
+algebraic-logarithmic singularity at the origin,
+The program below computes this integral to a relative accuracy bound of
+<code>1e-7</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_integration.h&gt;
+
+double f (double x, void * params) {
+  double alpha = *(double *) params;
+  double f = log(alpha*x) / sqrt(x);
+  return f;
+}
+
+int
+main (void)
+{
+  gsl_integration_workspace * w 
+    = gsl_integration_workspace_alloc (1000);
+  
+  double result, error;
+  double expected = -4.0;
+  double alpha = 1.0;
+
+  gsl_function F;
+  F.function = &amp;f;
+  F.params = &amp;alpha;
+
+  gsl_integration_qags (&amp;F, 0, 1, 0, 1e-7, 1000,
+                        w, &amp;result, &amp;error); 
+
+  printf (&quot;result          = % .18f\n&quot;, result);
+  printf (&quot;exact result    = % .18f\n&quot;, expected);
+  printf (&quot;estimated error = % .18f\n&quot;, error);
+  printf (&quot;actual error    = % .18f\n&quot;, result - expected);
+  printf (&quot;intervals =  %d\n&quot;, w-&gt;size);
+
+  gsl_integration_workspace_free (w);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The results below show that the desired accuracy is achieved after 8
+subdivisions. 
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+<pre class="verbatim">result          = -3.999999999999973799
+exact result    = -4.000000000000000000
+estimated error =  0.000000000000246025
+actual error    =  0.000000000000026201
+intervals =  8
+</pre></pre></td></tr></table>
+
+<p>In fact, the extrapolation procedure used by <code>QAGS</code> produces an
+accuracy of almost twice as many digits.  The error estimate returned by
+the extrapolation procedure is larger than the actual error, giving a
+margin of safety of one order of magnitude.
+</p>
+
+<hr size="6">
+<a name="Numerical-integration-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-integration-examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-integration-examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">15. References and Further Reading</h2>
+
+<p>The following book is the definitive reference for <small>QUADPACK</small>, and was
+written by the original authors.  It provides descriptions of the
+algorithms, program listings, test programs and examples.  It also
+includes useful advice on numerical integration and many references to
+the numerical integration literature used in developing <small>QUADPACK</small>.
+</p>
+<ul class="toc">
+<li>
+R. Piessens, E. de Doncker-Kapenga, C.W. Ueberhuber, D.K. Kahaner.
+<cite><small>QUADPACK</small> A subroutine package for automatic integration</cite>
+Springer Verlag, 1983.
+</li></ul>
+
+<p>The <small>CQUAD</small> integration algorithm is described in the following paper:
+</p>
+<ul class="toc">
+<li>
+P. Gonnet, &ldquo;Increasing the Reliability of Adaptive Quadrature Using
+Explicit Interpolants&rdquo;, <cite>ACM Transactions on Mathematical
+Software</cite>, Volume 37 (2010), Issue 3, Article 26.
+</li></ul>
+
+
+
+
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-Integration-Introduction" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

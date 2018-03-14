@@ -1,0 +1,630 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-IEEE-floating-point"></a>
+
+<p>This chapter describes functions for examining the representation of
+floating point numbers and controlling the floating point environment of
+your program.  The functions described in this chapter are declared in
+the header file &lsquo;<tt>gsl_ieee_utils.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Representation-of-floating-point-numbers">1. Representation of floating point numbers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Setting-up-your-IEEE-environment">2. Setting up your IEEE environment</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#IEEE-References-and-Further-Reading">3. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Representation-of-floating-point-numbers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Setting-up-your-IEEE-environment" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Setting-up-your-IEEE-environment" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Representation-of-floating-point-numbers-1"></a>
+<h2 class="section">1. Representation of floating point numbers</h2>
+<a name="index-IEEE-format-for-floating-point-numbers"></a>
+<a name="index-bias_002c-IEEE-format"></a>
+<a name="index-exponent_002c-IEEE-format"></a>
+<a name="index-sign-bit_002c-IEEE-format"></a>
+<a name="index-mantissa_002c-IEEE-format"></a>
+<p>The IEEE Standard for Binary Floating-Point Arithmetic defines binary
+formats for single and double precision numbers.  Each number is composed
+of three parts: a <em>sign bit</em> (<em>s</em>), an <em>exponent</em>
+(<em>E</em>) and a <em>fraction</em> (<em>f</em>).  The numerical value of the
+combination <em>(s,E,f)</em> is given by the following formula,
+<a name="index-normalized-form_002c-IEEE-format"></a>
+<a name="index-denormalized-form_002c-IEEE-format"></a>
+The sign bit is either zero or one.  The exponent ranges from a minimum value
+<em>E_min</em> 
+to a maximum value
+<em>E_max</em> depending on the precision.  The exponent is converted to an 
+unsigned number
+<em>e</em>, known as the <em>biased exponent</em>, for storage by adding a
+<em>bias</em> parameter,
+<em>e = E + bias</em>.
+The sequence <em>fffff...</em> represents the digits of the binary
+fraction <em>f</em>.  The binary digits are stored in <em>normalized
+form</em>, by adjusting the exponent to give a leading digit of <em>1</em>. 
+Since the leading digit is always 1 for normalized numbers it is
+assumed implicitly and does not have to be stored.
+Numbers smaller than 
+<em>2^(E_min)</em>
+are be stored in <em>denormalized form</em> with a leading zero,
+<a name="index-zero_002c-IEEE-format"></a>
+<a name="index-infinity_002c-IEEE-format"></a>
+This allows gradual underflow down to 
+<em>2^(E_min - p)</em> for <em>p</em> bits of precision. 
+A zero is encoded with the special exponent of 
+<em>2^(E_min - 1)</em> and infinities with the exponent of 
+<em>2^(E_max + 1)</em>.
+</p>
+<a name="index-single-precision_002c-IEEE-format"></a>
+<p>The format for single precision numbers uses 32 bits divided in the
+following way,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">seeeeeeeefffffffffffffffffffffff
+    
+s = sign bit, 1 bit
+e = exponent, 8 bits  (E_min=-126, E_max=127, bias=127)
+f = fraction, 23 bits
+</pre></td></tr></table>
+
+<a name="index-double-precision_002c-IEEE-format"></a>
+<p>The format for double precision numbers uses 64 bits divided in the
+following way,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">seeeeeeeeeeeffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+s = sign bit, 1 bit
+e = exponent, 11 bits  (E_min=-1022, E_max=1023, bias=1023)
+f = fraction, 52 bits
+</pre></td></tr></table>
+
+<p>It is often useful to be able to investigate the behavior of a
+calculation at the bit-level and the library provides functions for
+printing the IEEE representations in a human-readable form.
+</p>
+
+<dl>
+<dt><a name="index-gsl_005fieee_005ffprintf_005ffloat"></a><u>Function:</u> void <b>gsl_ieee_fprintf_float</b><i> (FILE * <var>stream</var>, const float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fieee_005ffprintf_005fdouble"></a><u>Function:</u> void <b>gsl_ieee_fprintf_double</b><i> (FILE * <var>stream</var>, const double * <var>x</var>)</i></dt>
+<dd><p>These functions output a formatted version of the IEEE floating-point
+number pointed to by <var>x</var> to the stream <var>stream</var>. A pointer is
+used to pass the number indirectly, to avoid any undesired promotion
+from <code>float</code> to <code>double</code>.  The output takes one of the
+following forms,
+</p>
+<dl compact="compact">
+<dt> <code>NaN</code></dt>
+<dd><p>the Not-a-Number symbol
+</p>
+</dd>
+<dt> <code>Inf, -Inf</code></dt>
+<dd><p>positive or negative infinity
+</p>
+</dd>
+<dt> <code>1.fffff...*2^E, -1.fffff...*2^E</code> </dt>
+<dd><p>a normalized floating point number
+</p>
+</dd>
+<dt> <code>0.fffff...*2^E, -0.fffff...*2^E</code> </dt>
+<dd><p>a denormalized floating point number
+</p>
+</dd>
+<dt> <code>0, -0</code></dt>
+<dd><p>positive or negative zero
+</p>
+</dd>
+</dl>
+
+<p>The output can be used directly in GNU Emacs Calc mode by preceding it
+with <code>2#</code> to indicate binary.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fieee_005fprintf_005ffloat"></a><u>Function:</u> void <b>gsl_ieee_printf_float</b><i> (const float * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fieee_005fprintf_005fdouble"></a><u>Function:</u> void <b>gsl_ieee_printf_double</b><i> (const double * <var>x</var>)</i></dt>
+<dd><p>These functions output a formatted version of the IEEE floating-point
+number pointed to by <var>x</var> to the stream <code>stdout</code>.
+</p></dd></dl>
+
+<p>The following program demonstrates the use of the functions by printing
+the single and double precision representations of the fraction
+<em>1/3</em>.  For comparison the representation of the value promoted from
+single to double precision is also printed.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_ieee_utils.h&gt;
+
+int
+main (void) 
+{
+  float f = 1.0/3.0;
+  double d = 1.0/3.0;
+
+  double fd = f; /* promote from float to double */
+  
+  printf (&quot; f=&quot;); gsl_ieee_printf_float(&amp;f); 
+  printf (&quot;\n&quot;);
+
+  printf (&quot;fd=&quot;); gsl_ieee_printf_double(&amp;fd); 
+  printf (&quot;\n&quot;);
+
+  printf (&quot; d=&quot;); gsl_ieee_printf_double(&amp;d); 
+  printf (&quot;\n&quot;);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The binary representation of <em>1/3</em> is <em>0.01010101... </em>.  The
+output below shows that the IEEE format normalizes this fraction to give
+a leading digit of 1,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"> f= 1.01010101010101010101011*2^-2
+fd= 1.0101010101010101010101100000000000000000000000000000*2^-2
+ d= 1.0101010101010101010101010101010101010101010101010101*2^-2
+</pre></td></tr></table>
+
+<p>The output also shows that a single-precision number is promoted to
+double-precision by adding zeros in the binary representation.
+</p>
+
+  
+
+
+
+
+
+<hr size="6">
+<a name="Setting-up-your-IEEE-environment"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#IEEE-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#IEEE-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Setting-up-your-IEEE-environment-1"></a>
+<h2 class="section">2. Setting up your IEEE environment</h2>
+<a name="index-IEEE-exceptions"></a>
+<a name="index-precision_002c-IEEE-arithmetic"></a>
+<a name="index-rounding-mode"></a>
+<a name="index-arithmetic-exceptions"></a>
+<a name="index-exceptions_002c-IEEE-arithmetic"></a>
+<a name="index-division-by-zero_002c-IEEE-exceptions"></a>
+<a name="index-underflow_002c-IEEE-exceptions"></a>
+<a name="index-overflow_002c-IEEE-exceptions"></a>
+<p>The IEEE standard defines several <em>modes</em> for controlling the
+behavior of floating point operations.  These modes specify the important
+properties of computer arithmetic: the direction used for rounding (e.g.
+whether numbers should be rounded up, down or to the nearest number),
+the rounding precision and how the program should handle arithmetic
+exceptions, such as division by zero.
+</p>
+<p>Many of these features can now be controlled via standard functions such
+as <code>fpsetround</code>, which should be used whenever they are available.
+Unfortunately in the past there has been no universal API for
+controlling their behavior&mdash;each system has had its own low-level way
+of accessing them.  To help you write portable programs GSL allows you
+to specify modes in a platform-independent way using the environment
+variable <code>GSL_IEEE_MODE</code>.  The library then takes care of all the
+necessary machine-specific initializations for you when you call the
+function <code>gsl_ieee_env_setup</code>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fieee_005fenv_005fsetup"></a><u>Function:</u> void <b>gsl_ieee_env_setup</b><i> ()</i></dt>
+<dd><a name="index-GSL_005fIEEE_005fMODE"></a>
+<p>This function reads the environment variable <code>GSL_IEEE_MODE</code> and
+attempts to set up the corresponding specified IEEE modes.  The
+environment variable should be a list of keywords, separated by
+commas, like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="display"><code>GSL_IEEE_MODE</code> = &quot;<var>keyword</var>,<var>keyword</var>,...&quot;
+</pre></td></tr></table>
+
+<p>where <var>keyword</var> is one of the following mode-names,
+</p>
+<ul class="toc">
+<li> 
+<code>single-precision</code>
+</li><li> 
+<code>double-precision</code>
+</li><li> 
+<code>extended-precision</code>
+</li><li> 
+<code>round-to-nearest</code>
+</li><li> 
+<code>round-down</code>
+</li><li> 
+<code>round-up</code>
+</li><li> 
+<code>round-to-zero</code>
+</li><li> 
+<code>mask-all</code>
+</li><li> 
+<code>mask-invalid</code>
+</li><li> 
+<code>mask-denormalized</code>
+</li><li> 
+<code>mask-division-by-zero</code>
+</li><li> 
+<code>mask-overflow</code>
+</li><li> 
+<code>mask-underflow</code>
+</li><li> 
+<code>trap-inexact</code>
+</li><li> 
+<code>trap-common</code>
+</li></ul>
+
+<p>If <code>GSL_IEEE_MODE</code> is empty or undefined then the function returns
+immediately and no attempt is made to change the system&rsquo;s IEEE
+mode.  When the modes from <code>GSL_IEEE_MODE</code> are turned on the
+function prints a short message showing the new settings to remind you
+that the results of the program will be affected.
+</p>
+<p>If the requested modes are not supported by the platform being used then
+the function calls the error handler and returns an error code of
+<code>GSL_EUNSUP</code>.  
+</p>
+<p>When options are specified using this method, the resulting mode is
+based on a default setting of the highest available precision (double
+precision or extended precision, depending on the platform) in
+round-to-nearest mode, with all exceptions enabled apart from the
+<small>INEXACT</small> exception.  The <small>INEXACT</small> exception is generated
+whenever rounding occurs, so it must generally be disabled in typical
+scientific calculations.  All other floating-point exceptions are
+enabled by default, including underflows and the use of denormalized
+numbers, for safety.  They can be disabled with the individual
+<code>mask-</code> settings or together using <code>mask-all</code>.
+</p>
+<p>The following adjusted combination of modes is convenient for many
+purposes,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">GSL_IEEE_MODE=&quot;double-precision,&quot;\
+                &quot;mask-underflow,&quot;\
+                  &quot;mask-denormalized&quot;
+</pre></td></tr></table>
+
+<p>This choice ignores any errors relating to small numbers (either
+denormalized, or underflowing to zero) but traps overflows, division by
+zero and invalid operations.
+</p>
+<p>Note that on the x86 series of processors this function sets both the
+original x87 mode and the newer <small>MXCSR</small> mode, which controls SSE
+floating-point operations.  The SSE floating-point units do not have a
+precision-control bit, and always work in double-precision.  The
+single-precision and extended-precision keywords have no effect in
+this case.
+</p></dd></dl>
+
+<p>To demonstrate the effects of different rounding modes consider the
+following program which computes <em>e</em>, the base of natural
+logarithms, by summing a rapidly-decreasing series,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_ieee_utils.h&gt;
+
+int
+main (void)
+{
+  double x = 1, oldsum = 0, sum = 0; 
+  int i = 0;
+
+  gsl_ieee_env_setup (); /* read GSL_IEEE_MODE */
+
+  do 
+    {
+      i++;
+      
+      oldsum = sum;
+      sum += x;
+      x = x / i;
+      
+      printf (&quot;i=%2d sum=%.18f error=%g\n&quot;,
+              i, sum, sum - M_E);
+
+      if (i &gt; 30)
+         break;
+    }  
+  while (sum != oldsum);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here are the results of running the program in <code>round-to-nearest</code>
+mode.  This is the IEEE default so it isn&rsquo;t really necessary to specify
+it here,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ GSL_IEEE_MODE=&quot;round-to-nearest&quot; ./a.out 
+i= 1 sum=1.000000000000000000 error=-1.71828
+i= 2 sum=2.000000000000000000 error=-0.718282
+....
+i=18 sum=2.718281828459045535 error=4.44089e-16
+i=19 sum=2.718281828459045535 error=4.44089e-16
+</pre></td></tr></table>
+
+<p>After nineteen terms the sum converges to within <em>4 \times 10^-16</em> of the correct value.  
+If we now change the rounding mode to
+<code>round-down</code> the final result is less accurate,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ GSL_IEEE_MODE=&quot;round-down&quot; ./a.out 
+i= 1 sum=1.000000000000000000 error=-1.71828
+....
+i=19 sum=2.718281828459041094 error=-3.9968e-15
+</pre></td></tr></table>
+
+<p>The result is about 
+<em>4 \times 10^-15</em> 
+below the correct value, an order of magnitude worse than the result
+obtained in the <code>round-to-nearest</code> mode.
+</p>
+<p>If we change to rounding mode to <code>round-up</code> then the final result
+is higher than the correct value (when we add each term to the sum the
+final result is always rounded up, which increases the sum by at least
+one tick until the added term underflows to zero).  To avoid this
+problem we would need to use a safer converge criterion, such as
+<code>while (fabs(sum - oldsum) &gt; epsilon)</code>, with a suitably chosen
+value of epsilon.
+</p>
+<p>Finally we can see the effect of computing the sum using
+single-precision rounding, in the default <code>round-to-nearest</code>
+mode.  In this case the program thinks it is still using double precision
+numbers but the CPU rounds the result of each floating point operation
+to single-precision accuracy.  This simulates the effect of writing the
+program using single-precision <code>float</code> variables instead of
+<code>double</code> variables.  The iteration stops after about half the number
+of iterations and the final result is much less accurate,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ GSL_IEEE_MODE=&quot;single-precision&quot; ./a.out 
+....
+i=12 sum=2.718281984329223633 error=1.5587e-07
+</pre></td></tr></table>
+
+<p>with an error of 
+<em>O(10^-7)</em>, which corresponds to single
+precision accuracy (about 1 part in <em>10^7</em>).  Continuing the
+iterations further does not decrease the error because all the
+subsequent results are rounded to the same value.
+</p>
+<hr size="6">
+<a name="IEEE-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Setting-up-your-IEEE-environment" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Setting-up-your-IEEE-environment" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">3. References and Further Reading</h2>
+
+<p>The reference for the IEEE standard is,
+</p>
+<ul class="toc">
+<li>
+ANSI/IEEE Std 754-1985, IEEE Standard for Binary Floating-Point Arithmetic.
+</li></ul>
+
+<p>A more pedagogical introduction to the standard can be found in the
+following paper,
+</p>
+<ul class="toc">
+<li>
+David Goldberg: What Every Computer Scientist Should Know About
+Floating-Point Arithmetic. <cite>ACM Computing Surveys</cite>, Vol. 23, No. 1
+(March 1991), pages 5&ndash;48.
+
+<p>Corrigendum: <cite>ACM Computing Surveys</cite>, Vol. 23, No. 3 (September
+1991), page 413. and see also the sections by B. A. Wichmann and Charles
+B. Dunham in Surveyor&rsquo;s Forum: &ldquo;What Every Computer Scientist Should
+Know About Floating-Point Arithmetic&rdquo;. <cite>ACM Computing Surveys</cite>,
+Vol. 24, No. 3 (September 1992), page 319.
+</p></li></ul>
+
+
+<p>A detailed textbook on IEEE arithmetic and its practical use is
+available from SIAM Press,
+</p>
+<ul class="toc">
+<li>
+Michael L. Overton, <cite>Numerical Computing with IEEE Floating Point Arithmetic</cite>,
+SIAM Press, ISBN 0898715717.
+</li></ul>
+
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Representation-of-floating-point-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

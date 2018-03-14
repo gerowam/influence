@@ -1,0 +1,563 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Using-gdb">1. Using gdb</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Examining-floating-point-registers">2. Examining floating point registers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Handling-floating-point-exceptions">3. Handling floating point exceptions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#GCC-warning-options-for-numerical-programs">4. GCC warning options for numerical programs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Debugging-References">5. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+</table>
+
+<a name="Using-gdb"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Examining-floating-point-registers" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Examining-floating-point-registers" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Using-gdb-1"></a>
+<h2 class="section">1. Using gdb</h2>
+<a name="index-gdb"></a>
+<a name="index-debugging-numerical-programs"></a>
+<a name="index-breakpoints"></a>
+<p>Any errors reported by the library are passed to the function
+<code>gsl_error</code>.  By running your programs under gdb and setting a
+breakpoint in this function you can automatically catch any library
+errors.  You can add a breakpoint for every session by putting
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">break gsl_error
+</pre></td></tr></table>
+
+<p>into your &lsquo;<tt>.gdbinit</tt>&rsquo; file in the directory where your program is
+started.  
+</p>
+<p>If the breakpoint catches an error then you can use a backtrace
+(<code>bt</code>) to see the call-tree, and the arguments which possibly
+caused the error.  By moving up into the calling function you can
+investigate the values of variables at that point.  Here is an example
+from the program <code>fft/test_trap</code>, which contains the following
+line,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">status = gsl_fft_complex_wavetable_alloc (0, &amp;complex_wavetable);
+</pre></td></tr></table>
+
+<p>The function <code>gsl_fft_complex_wavetable_alloc</code> takes the length of
+an FFT as its first argument.  When this line is executed an error will
+be generated because the length of an FFT is not allowed to be zero.
+</p>
+<p>To debug this problem we start <code>gdb</code>, using the file
+&lsquo;<tt>.gdbinit</tt>&rsquo; to define a breakpoint in <code>gsl_error</code>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ gdb test_trap
+
+GDB is free software and you are welcome to distribute copies
+of it under certain conditions; type &quot;show copying&quot; to see
+the conditions.  There is absolutely no warranty for GDB;
+type &quot;show warranty&quot; for details.  GDB 4.16 (i586-debian-linux), 
+Copyright 1996 Free Software Foundation, Inc.
+
+Breakpoint 1 at 0x8050b1e: file error.c, line 14.
+</pre></td></tr></table>
+
+<p>When we run the program this breakpoint catches the error and shows the
+reason for it. 
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) run
+Starting program: test_trap 
+
+Breakpoint 1, gsl_error (reason=0x8052b0d 
+    &quot;length n must be positive integer&quot;, 
+    file=0x8052b04 &quot;c_init.c&quot;, line=108, gsl_errno=1) 
+    at error.c:14
+14        if (gsl_error_handler) 
+</pre></td></tr></table>
+
+<p>The first argument of <code>gsl_error</code> is always a string describing the
+error.  Now we can look at the backtrace to see what caused the problem,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) bt
+#0  gsl_error (reason=0x8052b0d 
+    &quot;length n must be positive integer&quot;, 
+    file=0x8052b04 &quot;c_init.c&quot;, line=108, gsl_errno=1)
+    at error.c:14
+#1  0x8049376 in gsl_fft_complex_wavetable_alloc (n=0,
+    wavetable=0xbffff778) at c_init.c:108
+#2  0x8048a00 in main (argc=1, argv=0xbffff9bc) 
+    at test_trap.c:94
+#3  0x80488be in ___crt_dummy__ ()
+</pre></td></tr></table>
+
+<p>We can see that the error was generated in the function
+<code>gsl_fft_complex_wavetable_alloc</code> when it was called with an
+argument of <var>n=0</var>.  The original call came from line 94 in the
+file &lsquo;<tt>test_trap.c</tt>&rsquo;.
+</p>
+<p>By moving up to the level of the original call we can find the line that
+caused the error,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) up
+#1  0x8049376 in gsl_fft_complex_wavetable_alloc (n=0,
+    wavetable=0xbffff778) at c_init.c:108
+108   GSL_ERROR (&quot;length n must be positive integer&quot;, GSL_EDOM);
+(gdb) up
+#2  0x8048a00 in main (argc=1, argv=0xbffff9bc) 
+    at test_trap.c:94
+94    status = gsl_fft_complex_wavetable_alloc (0,
+        &amp;complex_wavetable);
+</pre></td></tr></table>
+
+<p>Thus we have found the line that caused the problem.  From this point we
+could also print out the values of other variables such as
+<code>complex_wavetable</code>.
+</p>
+<hr size="6">
+<a name="Examining-floating-point-registers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Using-gdb" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Handling-floating-point-exceptions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Handling-floating-point-exceptions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examining-floating-point-registers-1"></a>
+<h2 class="section">2. Examining floating point registers</h2>
+<a name="index-floating-point-registers"></a>
+
+<p>The contents of floating point registers can be examined using the
+command <code>info float</code> (on supported platforms).
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) info float
+     st0: 0xc4018b895aa17a945000  Valid Normal -7.838871e+308
+     st1: 0x3ff9ea3f50e4d7275000  Valid Normal 0.0285946
+     st2: 0x3fe790c64ce27dad4800  Valid Normal 6.7415931e-08
+     st3: 0x3ffaa3ef0df6607d7800  Spec  Normal 0.0400229
+     st4: 0x3c028000000000000000  Valid Normal 4.4501477e-308
+     st5: 0x3ffef5412c22219d9000  Zero  Normal 0.9580257
+     st6: 0x3fff8000000000000000  Valid Normal 1
+     st7: 0xc4028b65a1f6d243c800  Valid Normal -1.566206e+309
+   fctrl: 0x0272 53 bit; NEAR; mask DENOR UNDER LOS;
+   fstat: 0xb9ba flags 0001; top 7; excep DENOR OVERF UNDER LOS
+    ftag: 0x3fff
+     fip: 0x08048b5c
+     fcs: 0x051a0023
+  fopoff: 0x08086820
+  fopsel: 0x002b
+</pre></td></tr></table>
+
+<p>Individual registers can be examined using the variables <var>$reg</var>,
+where <var>reg</var> is the register name.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) p $st1 
+$1 = 0.02859464454261210347719
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Handling-floating-point-exceptions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Examining-floating-point-registers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GCC-warning-options-for-numerical-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examining-floating-point-registers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GCC-warning-options-for-numerical-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Handling-floating-point-exceptions-1"></a>
+<h2 class="section">3. Handling floating point exceptions</h2>
+<a name="index-exceptions_002c-floating-point"></a>
+<a name="index-floating-point-exceptions"></a>
+
+<p>It is possible to stop the program whenever a <code>SIGFPE</code> floating
+point exception occurs.  This can be useful for finding the cause of an
+unexpected infinity or <code>NaN</code>.  The current handler settings can be
+shown with the command <code>info signal SIGFPE</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) info signal SIGFPE
+Signal  Stop  Print  Pass to program Description
+SIGFPE  Yes   Yes    Yes             Arithmetic exception
+</pre></td></tr></table>
+
+<p>Unless the program uses a signal handler the default setting should be
+changed so that SIGFPE is not passed to the program, as this would cause
+it to exit.  The command <code>handle SIGFPE stop nopass</code> prevents this.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">(gdb) handle SIGFPE stop nopass
+Signal  Stop  Print  Pass to program Description
+SIGFPE  Yes   Yes    No              Arithmetic exception
+</pre></td></tr></table>
+
+<p>Depending on the platform it may be necessary to instruct the kernel to
+generate signals for floating point exceptions.  For programs using GSL
+this can be achieved using the <code>GSL_IEEE_MODE</code> environment variable
+in conjunction with the function <code>gsl_ieee_env_setup</code> as described
+in @pxref{IEEE floating-point arithmetic}.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">(gdb) set env GSL_IEEE_MODE=double-precision
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="GCC-warning-options-for-numerical-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Handling-floating-point-exceptions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Debugging-References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Handling-floating-point-exceptions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Debugging-References" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="GCC-warning-options-for-numerical-programs-1"></a>
+<h2 class="section">4. GCC warning options for numerical programs</h2>
+<a name="index-warning-options"></a>
+<a name="index-gcc-warning-options"></a>
+
+<p>Writing reliable numerical programs in C requires great care.  The
+following GCC warning options are recommended when compiling numerical
+programs:
+</p>
+
+
+
+
+
+
+
+
+
+
+<table><tr><td>&nbsp;</td><td><pre class="example">gcc -ansi -pedantic -Werror -Wall -W 
+  -Wmissing-prototypes -Wstrict-prototypes 
+  -Wconversion -Wshadow -Wpointer-arith 
+  -Wcast-qual -Wcast-align 
+  -Wwrite-strings -Wnested-externs 
+  -fshort-enums -fno-common -Dinline= -g -O2
+</pre></td></tr></table>
+
+<p>For details of each option consult the manual <cite>Using and Porting
+GCC</cite>.  The following table gives a brief explanation of what types of
+errors these options catch.
+</p>
+<dl compact="compact">
+<dt> <code>-ansi -pedantic</code> </dt>
+<dd><p>Use ANSI C, and reject any non-ANSI extensions.  These flags help in
+writing portable programs that will compile on other systems.
+</p></dd>
+<dt> <code>-Werror</code> </dt>
+<dd><p>Consider warnings to be errors, so that compilation stops.  This prevents
+warnings from scrolling off the top of the screen and being lost.  You
+won&rsquo;t be able to compile the program until it is completely
+warning-free.
+</p></dd>
+<dt> <code>-Wall</code> </dt>
+<dd><p>This turns on a set of warnings for common programming problems.  You
+need <code>-Wall</code>, but it is not enough on its own.
+</p></dd>
+<dt> <code>-O2</code></dt>
+<dd><p>Turn on optimization.  The warnings for uninitialized variables in
+<code>-Wall</code> rely on the optimizer to analyze the code.  If there is no
+optimization then these warnings aren&rsquo;t generated.
+</p></dd>
+<dt> <code>-W</code> </dt>
+<dd><p>This turns on some extra warnings not included in <code>-Wall</code>, such as
+missing return values and comparisons between signed and unsigned
+integers.
+</p></dd>
+<dt> <code>-Wmissing-prototypes -Wstrict-prototypes</code> </dt>
+<dd><p>Warn if there are any missing or inconsistent prototypes.  Without
+prototypes it is harder to detect problems with incorrect arguments. 
+</p></dd>
+<dt> <code>-Wconversion</code> </dt>
+<dd><p>The main use of this option is to warn about conversions from signed to
+unsigned integers.  For example, <code>unsigned int x = -1</code>.  If you need
+to perform such a conversion you can use an explicit cast.
+</p></dd>
+<dt> <code>-Wshadow</code></dt>
+<dd><p>This warns whenever a local variable shadows another local variable.  If
+two variables have the same name then it is a potential source of
+confusion.
+</p></dd>
+<dt> <code>-Wpointer-arith -Wcast-qual -Wcast-align</code> </dt>
+<dd><p>These options warn if you try to do pointer arithmetic for types which
+don&rsquo;t have a size, such as <code>void</code>, if you remove a <code>const</code>
+cast from a pointer, or if you cast a pointer to a type which has a
+different size, causing an invalid alignment.
+</p></dd>
+<dt> <code>-Wwrite-strings</code></dt>
+<dd><p>This option gives string constants a <code>const</code> qualifier so that it
+will be a compile-time error to attempt to overwrite them.
+</p></dd>
+<dt> <code>-fshort-enums</code> </dt>
+<dd><p>This option makes the type of <code>enum</code> as short as possible.  Normally
+this makes an <code>enum</code> different from an <code>int</code>.  Consequently any
+attempts to assign a pointer-to-int to a pointer-to-enum will generate a
+cast-alignment warning.
+</p></dd>
+<dt> <code>-fno-common</code></dt>
+<dd><p>This option prevents global variables being simultaneously defined in
+different object files (you get an error at link time).  Such a variable
+should be defined in one file and referred to in other files with an
+<code>extern</code> declaration.
+</p></dd>
+<dt> <code>-Wnested-externs</code> </dt>
+<dd><p>This warns if an <code>extern</code> declaration is encountered within a
+function.
+</p></dd>
+<dt> <code>-Dinline=</code> </dt>
+<dd><p>The <code>inline</code> keyword is not part of ANSI C. Thus if you want to use
+<code>-ansi</code> with a program which uses inline functions you can use this
+preprocessor definition to remove the <code>inline</code> keywords.
+</p></dd>
+<dt> <code>-g</code> </dt>
+<dd><p>It always makes sense to put debugging symbols in the executable so that
+you can debug it using <code>gdb</code>.  The only effect of debugging symbols
+is to increase the size of the file, and you can use the <code>strip</code>
+command to remove them later if necessary.
+</p></dd>
+</dl>
+
+
+
+
+<hr size="6">
+<a name="Debugging-References"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GCC-warning-options-for-numerical-programs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GCC-warning-options-for-numerical-programs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">5. References and Further Reading</h2>
+
+<p>The following books are essential reading for anyone writing and
+debugging numerical programs with <small>GCC</small> and <small>GDB</small>.
+</p>
+<ul class="toc">
+<li>
+R.M. Stallman, <cite>Using and Porting GNU CC</cite>, Free Software
+Foundation, ISBN 1882114388
+
+</li><li>
+R.M. Stallman, R.H. Pesch, <cite>Debugging with GDB: The GNU
+Source-Level Debugger</cite>, Free Software Foundation, ISBN 1882114779
+</li></ul>
+
+<p>For a tutorial introduction to the GNU C Compiler and related programs,
+see 
+</p>
+<ul class="toc">
+<li>
+B.J. Gough, <a href="http://www.network-theory.co.uk/gcc/intro/"><cite>An Introduction to GCC</cite></a>, Network Theory
+Ltd, ISBN 0954161793
+</li></ul>
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Using-gdb" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

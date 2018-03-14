@@ -1,0 +1,782 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-sparse-matrices"></a>
+<a name="index-matrices_002c-sparse"></a>
+
+<p>This chapter describes functions for the construction and
+manipulation of sparse matrices, matrices which are populated
+primarily with zeros and contain only a few non-zero elements.
+Sparse matrices often appear in the solution of partial
+differential equations. It is beneficial to use specialized
+data structures and algorithms for storing and working with
+sparse matrices, since dense matrix algorithms and structures
+can be very slow and use huge amounts of memory when applied
+to sparse matrices.
+</p>
+<p>The header file &lsquo;<tt>gsl_spmatrix.h</tt>&rsquo; contains the prototypes for the
+sparse matrix functions and related declarations.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-Sparse-Matrices">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-matrix-allocation">2. Sparse matrix allocation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Accessing-sparse-matrix-elements">3. Accessing sparse matrix elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-sparse-matrix-elements">4. Initializing sparse matrix elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Copying-sparse-matrices">5. Copying sparse matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-matrix-operations">6. Sparse matrix operations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-matrix-properties">7. Sparse matrix properties</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Finding-maximum-and-minimum-elements-of-sparse-matrices">8. Finding maximum and minimum elements of sparse matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-matrix-compressed-format">9. Sparse matrix compressed format</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conversion-between-sparse-and-dense-matrices">10. Conversion between sparse and dense matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Matrix-Examples">11. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Matrix-References-and-Further-Reading">12. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="Overview-of-Sparse-Matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-allocation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-allocation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-sparse-matrices_002c-overview"></a>
+
+<p>These routines provide support for constructing and manipulating
+sparse matrices in GSL, using an API similar to <code>gsl_matrix</code>.
+The basic structure is called <code>gsl_spmatrix</code>. There are
+two supported storage formats for sparse matrices: the triplet and
+compressed column storage (CCS) formats. The triplet format stores
+triplets <em>(i,j,x)</em> for each non-zero element of the matrix. This
+notation means that the <em>(i,j)</em> element of the matrix <em>A</em>
+is <em>A_ij = x</em>. Compressed column storage stores each column of
+non-zero values in the sparse matrix in a continuous memory block, keeping
+pointers to the beginning of each column in that memory block, and storing
+the row indices of each non-zero element. The triplet format is ideal
+for adding elements to the sparse matrix structure while it is being
+constructed, while the compressed column storage is better suited for
+matrix-matrix multiplication or linear solvers.
+</p>
+<a name="index-gsl_005fspmatrix"></a>
+<p>The <code>gsl_spmatrix</code> structure is defined as
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  size_t size1;
+  size_t size2;
+  size_t *i;
+  double *data;
+  size_t *p;
+  size_t nzmax;
+  size_t nz;
+  gsl_spmatrix_tree *tree_data;
+  void *work;
+  size_t sptype;
+} gsl_spmatrix;
+</pre></td></tr></table>
+
+<p>This defines a <var>size1</var>-by-<var>size2</var> sparse matrix. The number of non-zero
+elements currently in the matrix is given by <var>nz</var>. For the triplet
+representation, <var>i</var>, <var>p</var>, and <var>data</var> are arrays of size <var>nz</var>
+which contain the row indices, column indices, and element value, respectively.
+So if <em>data[k] = A(i,j)</em>, then <em>i = i[k]</em> and <em>j = p[k]</em>.
+For compressed column storage, <var>i</var> and <var>data</var> are arrays of size
+<var>nz</var> containing the row indices and element values, identical to the triplet
+case. <var>p</var> is an array of size <em>size2 + 1</em> where <em>p[j]</em> points
+to the index in <var>data</var> of the start of column <var>j</var>. Thus, if
+<em>data[k] = A(i,j)</em>, then <em>i = i[k]</em> and <em>p[j] &lt;= k &lt; p[j+1]</em>.
+</p>
+<p>The parameter <var>tree_data</var> is a binary tree structure used in the triplet
+representation, specifically a balanced AVL tree. This speeds up element
+searches and duplicate detection during the matrix assembly process.
+The parameter <var>work</var> is additional workspace needed for various operations like
+converting from triplet to compressed column storage. <var>sptype</var> indicates
+the type of storage format being used (triplet or compressed column).
+</p>
+<p>The compressed storage format defined above makes it very simple
+to interface with sophisticated external linear solver libraries
+which accept compressed column storage input. The user can simply
+pass the arrays <var>i</var>, <var>p</var>, and <var>data</var> as the compressed
+column inputs to external libraries.
+</p>
+<hr size="6">
+<a name="Sparse-matrix-allocation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-sparse-matrix-elements" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-sparse-matrix-elements" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sparse-matrix-allocation-1"></a>
+<h2 class="section">2. Sparse matrix allocation</h2>
+<a name="index-sparse-matrices_002c-allocation"></a>
+
+<p>The functions for allocating memory for a sparse matrix follow the style of
+<code>malloc</code> and <code>free</code>. They also perform their own error checking. If
+there is insufficient memory available to allocate a matrix then the functions
+call the GSL error handler with an error code of <code>GSL_ENOMEM</code> in addition
+to returning a null pointer.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005falloc"></a><u>Function:</u> gsl_spmatrix * <b>gsl_spmatrix_alloc</b><i> (const size_t <var>n1</var>, const size_t <var>n2</var>)</i></dt>
+<dd><p>This function allocates a sparse matrix of size <var>n1</var>-by-<var>n2</var> and
+initializes it to all zeros. If the size of the matrix is not known at allocation
+time, both <var>n1</var> and <var>n2</var> may be set to 1, and they will automatically
+grow as elements are added to the matrix. This function sets the
+matrix to the triplet representation, which is the easiest for adding
+and accessing matrix elements. This function tries to make a reasonable guess
+for the number of non-zero elements (<var>nzmax</var>) which will be added to the matrix by
+assuming a sparse density of <em>10\%</em>. The function
+<code>gsl_spmatrix_alloc_nzmax</code> can be used if this number is known more
+accurately. The workspace is of size <em>O(nzmax)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005falloc_005fnzmax"></a><u>Function:</u> gsl_spmatrix * <b>gsl_spmatrix_alloc_nzmax</b><i> (const size_t <var>n1</var>, const size_t <var>n2</var>, const size_t <var>nzmax</var>, const size_t <var>sptype</var>)</i></dt>
+<dd><p>This function allocates a sparse matrix of size <var>n1</var>-by-<var>n2</var> and
+initializes it to all zeros. If the size of the matrix is not known at allocation
+time, both <var>n1</var> and <var>n2</var> may be set to 1, and they will automatically
+grow as elements are added to the matrix. The parameter <var>nzmax</var> specifies
+the maximum number of non-zero elements which will be added to the matrix.
+It does not need to be precisely known in advance, since storage space will 
+automatically grow using <code>gsl_spmatrix_realloc</code> if <var>nzmax</var> is not
+large enough. Accurate knowledge of this parameter reduces the number of
+reallocation calls required. The parameter <var>sptype</var> specifies the
+storage format of the sparse matrix. Possible values are
+</p><dl compact="compact">
+<dt> <code>GSL_SPMATRIX_TRIPLET</code></dt>
+<dd><p>This flag specifies triplet storage.
+</p>
+</dd>
+<dt> <code>GSL_SPMATRIX_CCS</code></dt>
+<dd><p>This flag specifies compressed column storage.
+</p></dd>
+</dl>
+<p>The allocated <code>gsl_spmatrix</code> structure is of size <em>O(nzmax)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005frealloc"></a><u>Function:</u> int <b>gsl_spmatrix_realloc</b><i> (const size_t <var>nzmax</var>, gsl_spmatrix * <var>m</var>)</i></dt>
+<dd><p>This function reallocates the storage space for <var>m</var> to accomodate
+<var>nzmax</var> non-zero elements. It is typically called internally by
+<code>gsl_spmatrix_set</code> if the user wants to add more elements to the
+sparse matrix than the previously specified <var>nzmax</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005ffree"></a><u>Function:</u> void <b>gsl_spmatrix_free</b><i> (gsl_spmatrix * <var>m</var>)</i></dt>
+<dd><p>This function frees the memory associated with the sparse matrix <var>m</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Accessing-sparse-matrix-elements"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-matrix-allocation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-sparse-matrix-elements" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-allocation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-sparse-matrix-elements" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Accessing-sparse-matrix-elements-1"></a>
+<h2 class="section">3. Accessing sparse matrix elements</h2>
+<a name="index-sparse-matrices_002c-accessing-elements"></a>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fget"></a><u>Function:</u> double <b>gsl_spmatrix_get</b><i> (const gsl_spmatrix * <var>m</var>, const size_t <var>i</var>, const size_t <var>j</var>)</i></dt>
+<dd><p>This function returns element (<var>i</var>,<var>j</var>) of the matrix <var>m</var>.
+The matrix may be in triplet or compressed format.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fset"></a><u>Function:</u> int <b>gsl_spmatrix_set</b><i> (gsl_spmatrix * <var>m</var>, const size_t <var>i</var>, const size_t <var>j</var>, const double <var>x</var>)</i></dt>
+<dd><p>This function sets element (<var>i</var>,<var>j</var>) of the matrix <var>m</var> to
+the value <var>x</var>. The matrix must be in triplet representation.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Initializing-sparse-matrix-elements"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Accessing-sparse-matrix-elements" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Copying-sparse-matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Accessing-sparse-matrix-elements" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Copying-sparse-matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-sparse-matrix-elements-1"></a>
+<h2 class="section">4. Initializing sparse matrix elements</h2>
+<a name="index-sparse-matrices_002c-initializing-elements"></a>
+
+<p>Since the sparse matrix format only stores the non-zero elements, it is automatically
+initialized to zero upon allocation. The function <code>gsl_spmatrix_set_zero</code> may
+be used to re-initialize a matrix to zero after elements have been added to it.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fset_005fzero"></a><u>Function:</u> int <b>gsl_spmatrix_set_zero</b><i> (gsl_spmatrix * <var>m</var>)</i></dt>
+<dd><p>This function sets (or resets) all the elements of the matrix <var>m</var> to zero.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Copying-sparse-matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-sparse-matrix-elements" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-operations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-sparse-matrix-elements" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-operations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Copying-sparse-matrices-1"></a>
+<h2 class="section">5. Copying sparse matrices</h2>
+<a name="index-sparse-matrices_002c-copying"></a>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fmemcpy"></a><u>Function:</u> int <b>gsl_spmatrix_memcpy</b><i> (gsl_spmatrix * <var>dest</var>, const gsl_spmatrix * <var>src</var>)</i></dt>
+<dd><p>This function copies the elements of the sparse matrix <var>src</var> into
+<var>dest</var>. The two matrices must have the same dimensions and be in the
+same storage format.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005ftranspose_005fmemcpy"></a><u>Function:</u> int <b>gsl_spmatrix_transpose_memcpy</b><i> (gsl_spmatrix * <var>dest</var>, const gsl_spmatrix * <var>src</var>)</i></dt>
+<dd><p>This function copies the transpose of the sparse matrix <var>src</var> into
+<var>dest</var>. The dimensions of <var>dest</var> must match the transpose of the
+matrix <var>src</var>. Also, both matrices must use the same sparse storage
+format.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sparse-matrix-operations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Copying-sparse-matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-properties" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Copying-sparse-matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-properties" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sparse-matrix-operations-1"></a>
+<h2 class="section">6. Sparse matrix operations</h2>
+<a name="index-sparse-matrices_002c-operations"></a>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fadd"></a><u>Function:</u> int <b>gsl_spmatrix_add</b><i> (gsl_spmatrix * <var>c</var>, const gsl_spmatrix * <var>a</var>, const gsl_spmatrix * <var>b</var>)</i></dt>
+<dd><p>This function computes the sum <em>c = a + b</em>. The three matrices must
+have the same dimensions and be stored in compressed column format.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fscale"></a><u>Function:</u> int <b>gsl_spmatrix_scale</b><i> (gsl_spmatrix * <var>m</var>, const double <var>x</var>)</i></dt>
+<dd><p>This function scales all elements of the matrix <var>m</var> by the constant
+factor <var>x</var>. The result <em>m(i,j) \leftarrow x m(i,j)</em> is stored in <var>m</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sparse-matrix-properties"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-matrix-operations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Finding-maximum-and-minimum-elements-of-sparse-matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-operations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Finding-maximum-and-minimum-elements-of-sparse-matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sparse-matrix-properties-1"></a>
+<h2 class="section">7. Sparse matrix properties</h2>
+<a name="index-sparse-matrices_002c-properties"></a>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fnnz"></a><u>Function:</u> size_t <b>gsl_spmatrix_nnz</b><i> (const gsl_spmatrix * <var>m</var>)</i></dt>
+<dd><p>This function returns the number of non-zero elements in <var>m</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fequal"></a><u>Function:</u> int <b>gsl_spmatrix_equal</b><i> (const gsl_spmatrix * <var>a</var>, const gsl_spmatrix * <var>b</var>)</i></dt>
+<dd><p>This function returns 1 if the matrices <var>a</var> and <var>b</var> are equal (by comparison of
+element values) and 0 otherwise. The matrices <var>a</var> and <var>b</var> must be either
+both triplet format or both compressed format for comparison.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Finding-maximum-and-minimum-elements-of-sparse-matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-matrix-properties" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-compressed-format" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-properties" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-compressed-format" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Finding-maximum-and-minimum-elements-of-sparse-matrices-1"></a>
+<h2 class="section">8. Finding maximum and minimum elements of sparse matrices</h2>
+<a name="index-sparse-matrices_002c-min_002fmax-elements"></a>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fminmax"></a><u>Function:</u> int <b>gsl_spmatrix_minmax</b><i> (const gsl_spmatrix * <var>m</var>, double * <var>min_out</var>, double * <var>max_out</var>)</i></dt>
+<dd><p>This function returns the minimum and maximum elements of the matrix
+<var>m</var>, storing them in <var>min_out</var> and <var>max_out</var>, and searching
+only the non-zero values.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sparse-matrix-compressed-format"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Finding-maximum-and-minimum-elements-of-sparse-matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Conversion-between-sparse-and-dense-matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Finding-maximum-and-minimum-elements-of-sparse-matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Conversion-between-sparse-and-dense-matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sparse-matrix-compressed-format-1"></a>
+<h2 class="section">9. Sparse matrix compressed format</h2>
+<a name="index-sparse-matrices_002c-compression"></a>
+
+<p>GSL supports the compressed column format, in which the non-zero elements in each
+column are stored contiguously in memory.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fcompcol"></a><u>Function:</u> gsl_spmatrix * <b>gsl_spmatrix_compcol</b><i> (const gsl_spmatrix * <var>T</var>)</i></dt>
+<dd><p>This function creates a sparse matrix in compressed column format
+from the input sparse matrix <var>T</var> which must be in triplet format.
+A pointer to a newly allocated matrix is returned. The calling function
+should free the newly allocated matrix when it is no longer needed.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Conversion-between-sparse-and-dense-matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-matrix-compressed-format" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Matrix-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-matrix-compressed-format" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Matrix-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Conversion-between-sparse-and-dense-matrices-1"></a>
+<h2 class="section">10. Conversion between sparse and dense matrices</h2>
+<a name="index-sparse-matrices_002c-conversion"></a>
+
+<p>The <code>gsl_spmatrix</code> structure can be converted into the dense <code>gsl_matrix</code>
+format and vice versa with the following routines.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fd2sp"></a><u>Function:</u> int <b>gsl_spmatrix_d2sp</b><i> (gsl_spmatrix * <var>S</var>, const gsl_matrix * <var>A</var>)</i></dt>
+<dd><p>This function converts the dense matrix <var>A</var> into sparse triplet format
+and stores the result in <var>S</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspmatrix_005fsp2d"></a><u>Function:</u> int <b>gsl_spmatrix_sp2d</b><i> (gsl_matrix * <var>A</var>, const gsl_spmatrix * <var>S</var>)</i></dt>
+<dd><p>This function converts the sparse matrix <var>S</var> into a dense matrix and
+stores the result in <var>A</var>. <var>S</var> must be in triplet format.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sparse-Matrix-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Conversion-between-sparse-and-dense-matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Matrix-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Conversion-between-sparse-and-dense-matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Matrix-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">11. Examples</h2>
+<a name="index-sparse-matrices_002c-examples"></a>
+
+<p>The following example program builds a 5-by-4 sparse matrix
+and prints it in triplet and compressed column format. The
+matrix which is constructed is
+The output of the program is
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printing all matrix elements:
+A(0,0) = 0
+A(0,1) = 0
+A(0,2) = 3.1
+A(0,3) = 4.6
+A(1,0) = 1
+.
+.
+.
+A(4,0) = 4.1
+A(4,1) = 0
+A(4,2) = 0
+A(4,3) = 0
+matrix in triplet format (i,j,Aij):
+(0, 2, 3.1)
+(0, 3, 4.6)
+(1, 0, 1.0)
+(1, 2, 7.2)
+(3, 0, 2.1)
+(3, 1, 2.9)
+(3, 3, 8.5)
+(4, 0, 4.1)
+matrix in compressed column format:
+i = [ 1, 3, 4, 3, 0, 1, 0, 3, ]
+p = [ 0, 3, 4, 6, 8, ]
+d = [ 1, 2.1, 4.1, 2.9, 3.1, 7.2, 4.6, 8.5, ]
+</pre></td></tr></table>
+<p>We see in the compressed column output, the data array stores
+each column contiguously, the array <em>i</em> stores
+the row index of the corresponding data element, and the
+array <em>p</em> stores the index of the start of each column in the
+data array.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &lt;gsl/gsl_spmatrix.h&gt;
+
+int
+main()
+{
+  gsl_spmatrix *A = gsl_spmatrix_alloc(5, 4); /* triplet format */
+  gsl_spmatrix *C;
+  size_t i, j;
+
+  /* build the sparse matrix */
+  gsl_spmatrix_set(A, 0, 2, 3.1);
+  gsl_spmatrix_set(A, 0, 3, 4.6);
+  gsl_spmatrix_set(A, 1, 0, 1.0);
+  gsl_spmatrix_set(A, 1, 2, 7.2);
+  gsl_spmatrix_set(A, 3, 0, 2.1);
+  gsl_spmatrix_set(A, 3, 1, 2.9);
+  gsl_spmatrix_set(A, 3, 3, 8.5);
+  gsl_spmatrix_set(A, 4, 0, 4.1);
+
+  printf(&quot;printing all matrix elements:\n&quot;);
+  for (i = 0; i &lt; 5; ++i)
+    for (j = 0; j &lt; 4; ++j)
+      printf(&quot;A(%zu,%zu) = %g\n&quot;, i, j,
+             gsl_spmatrix_get(A, i, j));
+
+  /* print out elements in triplet format */
+  printf(&quot;matrix in triplet format (i,j,Aij):\n&quot;);
+  for (i = 0; i &lt; A-&gt;nz; ++i)
+    printf(&quot;(%zu, %zu, %.1f)\n&quot;, A-&gt;i[i], A-&gt;p[i], A-&gt;data[i]);
+
+  /* convert to compressed column format */
+  C = gsl_spmatrix_compcol(A);
+
+  printf(&quot;matrix in compressed column format:\n&quot;);
+  printf(&quot;i = [ &quot;);
+  for (i = 0; i &lt; C-&gt;nz; ++i)
+    printf(&quot;%zu, &quot;, C-&gt;i[i]);
+  printf(&quot;]\n&quot;);
+
+  printf(&quot;p = [ &quot;);
+  for (i = 0; i &lt; C-&gt;size2 + 1; ++i)
+    printf(&quot;%zu, &quot;, C-&gt;p[i]);
+  printf(&quot;]\n&quot;);
+
+  printf(&quot;d = [ &quot;);
+  for (i = 0; i &lt; C-&gt;nz; ++i)
+    printf(&quot;%g, &quot;, C-&gt;data[i]);
+  printf(&quot;]\n&quot;);
+
+  gsl_spmatrix_free(A);
+  gsl_spmatrix_free(C);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Sparse-Matrix-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-Matrix-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Matrix-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">12. References and Further Reading</h2>
+<a name="index-sparse-matrices_002c-references"></a>
+
+<p>The algorithms used by these functions are described in the
+following sources:
+</p>
+<ul class="toc">
+<li>
+T. A. Davis, Direct Methods for Sparse Linear Systems, SIAM, 2006.
+
+</li><li>
+CSparse software library, <a href="https://www.cise.ufl.edu/research/sparse/CSparse">https://www.cise.ufl.edu/research/sparse/CSparse</a>
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Sparse-Matrices" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

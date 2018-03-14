@@ -1,0 +1,1019 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Monte-Carlo-integration"></a>
+<a name="index-stratified-sampling-in-Monte-Carlo-integration"></a>
+<a name="index-multidimensional-integration"></a>
+<p>This chapter describes routines for multidimensional Monte Carlo
+integration.  These include the traditional Monte Carlo method and
+adaptive algorithms such as <small>VEGAS</small> and <small>MISER</small> which use
+importance sampling and stratified sampling techniques. Each algorithm
+computes an estimate of a multidimensional definite integral of the
+form,
+over a hypercubic region <em>((x_l,x_u)</em>, <em>(y_l,y_u), ...)</em> using
+a fixed number of function calls.  The routines also provide a
+statistical estimate of the error on the result.  This error estimate
+should be taken as a guide rather than as a strict error bound&mdash;random 
+sampling of the region may not uncover all the important features
+of the function, resulting in an underestimate of the error.
+</p>
+<p>The functions are defined in separate header files for each routine,
+&lsquo;<tt>gsl_monte_plain.h</tt>&rsquo;, &lsquo;<tt>gsl_monte_miser.h</tt>&rsquo; and
+&lsquo;<tt>gsl_monte_vegas.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Monte-Carlo-Interface">1. Interface</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#PLAIN-Monte-Carlo">2. PLAIN Monte Carlo</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#MISER">3. MISER</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#VEGAS">4. VEGAS</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Monte-Carlo-Examples">5. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Monte-Carlo-Integration-References-and-Further-Reading">6. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Monte-Carlo-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#PLAIN-Monte-Carlo" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#PLAIN-Monte-Carlo" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Interface"></a>
+<h2 class="section">1. Interface</h2>
+<p>All of the Monte Carlo integration routines use the same general form of
+interface.  There is an allocator to allocate memory for control
+variables and workspace, a routine to initialize those control
+variables, the integrator itself, and a function to free the space when
+done.
+</p>
+<p>Each integration function requires a random number generator to be
+supplied, and returns an estimate of the integral and its standard
+deviation.  The accuracy of the result is determined by the number of
+function calls specified by the user.  If a known level of accuracy is
+required this can be achieved by calling the integrator several times
+and averaging the individual results until the desired accuracy is
+obtained.  
+</p>
+<p>Random sample points used within the Monte Carlo routines are always
+chosen strictly within the integration region, so that endpoint
+singularities are automatically avoided.
+</p>
+<p>The function to be integrated has its own datatype, defined in the
+header file &lsquo;<tt>gsl_monte.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005ffunction"></a><u>Data Type:</u> <b>gsl_monte_function</b></dt>
+<dd>
+<p>This data type defines a general function with parameters for Monte
+Carlo integration.
+</p>
+<dl compact="compact">
+<dt> <code>double (* f) (double * <var>x</var>, size_t <var>dim</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the value
+<em>f(x,params)</em> for the argument <var>x</var> and parameters <var>params</var>,
+where <var>x</var> is an array of size <var>dim</var> giving the coordinates of
+the point where the function is to be evaluated.
+</p>
+</dd>
+<dt> <code>size_t dim</code></dt>
+<dd><p>the number of dimensions for <var>x</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>Here is an example for a quadratic function in two dimensions,
+with <em>a = 3</em>, <em>b = 2</em>, <em>c = 1</em>.  The following code
+defines a <code>gsl_monte_function</code> <code>F</code> which you could pass to an
+integrator:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">struct my_f_params { double a; double b; double c; };
+
+double
+my_f (double x[], size_t dim, void * p) {
+   struct my_f_params * fp = (struct my_f_params *)p;
+
+   if (dim != 2)
+      {
+        fprintf (stderr, &quot;error: dim != 2&quot;);
+        abort ();
+      }
+
+   return  fp-&gt;a * x[0] * x[0] 
+             + fp-&gt;b * x[0] * x[1] 
+               + fp-&gt;c * x[1] * x[1];
+}
+
+gsl_monte_function F;
+struct my_f_params params = { 3.0, 2.0, 1.0 };
+
+F.f = &amp;my_f;
+F.dim = 2;
+F.params = &amp;params;
+</pre></td></tr></table>
+
+<p>The function <em>f(x)</em> can be evaluated using the following macro,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#define GSL_MONTE_FN_EVAL(F,x) 
+    (*((F)-&gt;f))(x,(F)-&gt;dim,(F)-&gt;params)
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="PLAIN-Monte-Carlo"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#MISER" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#MISER" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="PLAIN-Monte-Carlo-1"></a>
+<h2 class="section">2. PLAIN Monte Carlo</h2>
+<a name="index-plain-Monte-Carlo"></a>
+<p>The plain Monte Carlo algorithm samples points randomly from the
+integration region to estimate the integral and its error.  Using this
+algorithm the estimate of the integral <em>E(f; N)</em> for <em>N</em>
+randomly distributed points <em>x_i</em> is given by,
+where <em>V</em> is the volume of the integration region.  The error on
+this estimate <em>\sigma(E;N)</em> is calculated from the estimated
+variance of the mean,
+For large <em>N</em> this variance decreases asymptotically as
+<em>\Var(f)/N</em>, where <em>\Var(f)</em> is the true variance of the
+function over the integration region.  The error estimate itself should
+decrease as <em>\sigma(f)/\sqrtN</em>.  The familiar law of errors
+decreasing as <em>1/\sqrtN</em> applies&mdash;to reduce the error by a
+factor of 10 requires a 100-fold increase in the number of sample
+points.
+</p>
+<p>The functions described in this section are declared in the header file
+&lsquo;<tt>gsl_monte_plain.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005fplain_005falloc"></a><u>Function:</u> gsl_monte_plain_state * <b>gsl_monte_plain_alloc</b><i> (size_t <var>dim</var>)</i></dt>
+<dd><a name="index-gsl_005fmonte_005fplain_005fstate"></a>
+<p>This function allocates and initializes a workspace for Monte Carlo
+integration in <var>dim</var> dimensions.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fplain_005finit"></a><u>Function:</u> int <b>gsl_monte_plain_init</b><i> (gsl_monte_plain_state* <var>s</var>)</i></dt>
+<dd><p>This function initializes a previously allocated integration state.
+This allows an existing workspace to be reused for different
+integrations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fplain_005fintegrate"></a><u>Function:</u> int <b>gsl_monte_plain_integrate</b><i> (gsl_monte_function * <var>f</var>, const double <var>xl</var>[], const double <var>xu</var>[], size_t <var>dim</var>, size_t <var>calls</var>, gsl_rng * <var>r</var>, gsl_monte_plain_state * <var>s</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This routines uses the plain Monte Carlo algorithm to integrate the
+function <var>f</var> over the <var>dim</var>-dimensional hypercubic region
+defined by the lower and upper limits in the arrays <var>xl</var> and
+<var>xu</var>, each of size <var>dim</var>.  The integration uses a fixed number
+of function calls <var>calls</var>, and obtains random sampling points using
+the random number generator <var>r</var>. A previously allocated workspace
+<var>s</var> must be supplied.  The result of the integration is returned in
+<var>result</var>, with an estimated absolute error <var>abserr</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fplain_005ffree"></a><u>Function:</u> void <b>gsl_monte_plain_free</b><i> (gsl_monte_plain_state * <var>s</var>)</i></dt>
+<dd><p>This function frees the memory associated with the integrator state
+<var>s</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="MISER"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#PLAIN-Monte-Carlo" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#VEGAS" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#PLAIN-Monte-Carlo" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#VEGAS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="MISER-1"></a>
+<h2 class="section">3. MISER</h2>
+<a name="index-MISER-monte-carlo-integration"></a>
+<a name="index-recursive-stratified-sampling_002c-MISER"></a>
+
+<p>The <small>MISER</small> algorithm of Press and Farrar is based on recursive
+stratified sampling.  This technique aims to reduce the overall
+integration error by concentrating integration points in the regions of
+highest variance.
+</p>
+<p>The idea of stratified sampling begins with the observation that for two
+disjoint regions <em>a</em> and <em>b</em> with Monte Carlo estimates of the
+integral <em>E_a(f)</em> and <em>E_b(f)</em> and variances
+<em>\sigma_a^2(f)</em> and <em>\sigma_b^2(f)</em>, the variance
+<em>\Var(f)</em> of the combined estimate 
+<em>E(f) = (1/2) (E_a(f) + E_b(f))</em> 
+is given by,
+It can be shown that this variance is minimized by distributing the
+points such that,
+Hence the smallest error estimate is obtained by allocating sample
+points in proportion to the standard deviation of the function in each
+sub-region.
+</p>
+<p>The <small>MISER</small> algorithm proceeds by bisecting the integration region
+along one coordinate axis to give two sub-regions at each step.  The
+direction is chosen by examining all <em>d</em> possible bisections and
+selecting the one which will minimize the combined variance of the two
+sub-regions.  The variance in the sub-regions is estimated by sampling
+with a fraction of the total number of points available to the current
+step.  The same procedure is then repeated recursively for each of the
+two half-spaces from the best bisection. The remaining sample points are
+allocated to the sub-regions using the formula for <em>N_a</em> and
+<em>N_b</em>.  This recursive allocation of integration points continues
+down to a user-specified depth where each sub-region is integrated using
+a plain Monte Carlo estimate.  These individual values and their error
+estimates are then combined upwards to give an overall result and an
+estimate of its error.
+</p>
+<p>The functions described in this section are declared in the header file
+&lsquo;<tt>gsl_monte_miser.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005falloc"></a><u>Function:</u> gsl_monte_miser_state * <b>gsl_monte_miser_alloc</b><i> (size_t <var>dim</var>)</i></dt>
+<dd><a name="index-gsl_005fmonte_005fmiser_005fstate"></a>
+<p>This function allocates and initializes a workspace for Monte Carlo
+integration in <var>dim</var> dimensions.  The workspace is used to maintain
+the state of the integration.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005finit"></a><u>Function:</u> int <b>gsl_monte_miser_init</b><i> (gsl_monte_miser_state* <var>s</var>)</i></dt>
+<dd><p>This function initializes a previously allocated integration state.
+This allows an existing workspace to be reused for different
+integrations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005fintegrate"></a><u>Function:</u> int <b>gsl_monte_miser_integrate</b><i> (gsl_monte_function * <var>f</var>, const double <var>xl</var>[], const double <var>xu</var>[], size_t <var>dim</var>, size_t <var>calls</var>, gsl_rng * <var>r</var>, gsl_monte_miser_state * <var>s</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This routines uses the <small>MISER</small> Monte Carlo algorithm to integrate the
+function <var>f</var> over the <var>dim</var>-dimensional hypercubic region
+defined by the lower and upper limits in the arrays <var>xl</var> and
+<var>xu</var>, each of size <var>dim</var>.  The integration uses a fixed number
+of function calls <var>calls</var>, and obtains random sampling points using
+the random number generator <var>r</var>. A previously allocated workspace
+<var>s</var> must be supplied.  The result of the integration is returned in
+<var>result</var>, with an estimated absolute error <var>abserr</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005ffree"></a><u>Function:</u> void <b>gsl_monte_miser_free</b><i> (gsl_monte_miser_state * <var>s</var>)</i></dt>
+<dd><p>This function frees the memory associated with the integrator state
+<var>s</var>.
+</p></dd></dl>
+
+<p>The <small>MISER</small> algorithm has several configurable parameters which can
+be changed using the following two functions.<a name="DOCF1" href="#FOOT1">(1)</a>
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005fparams_005fget"></a><u>Function:</u> void <b>gsl_monte_miser_params_get</b><i> (const gsl_monte_miser_state * <var>s</var>, gsl_monte_miser_params * <var>params</var>)</i></dt>
+<dd><p>This function copies the parameters of the integrator state into the
+user-supplied <var>params</var> structure.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fmiser_005fparams_005fset"></a><u>Function:</u> void <b>gsl_monte_miser_params_set</b><i> (gsl_monte_miser_state * <var>s</var>, const gsl_monte_miser_params * <var>params</var>)</i></dt>
+<dd><p>This function sets the integrator parameters based on values provided
+in the <var>params</var> structure.
+</p></dd></dl>
+
+<p>Typically the values of the parameters are first read using
+<code>gsl_monte_miser_params_get</code>, the necessary changes are made to
+the fields of the <var>params</var> structure, and the values are copied
+back into the integrator state using
+<code>gsl_monte_miser_params_set</code>.  The functions use the
+<code>gsl_monte_miser_params</code> structure which contains the following
+fields:
+</p>
+<dl>
+<dt><a name="index-estimate_005ffrac"></a><u>Variable:</u> double <b>estimate_frac</b></dt>
+<dd><p>This parameter specifies the fraction of the currently available number of
+function calls which are allocated to estimating the variance at each
+recursive step. The default value is 0.1.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-min_005fcalls"></a><u>Variable:</u> size_t <b>min_calls</b></dt>
+<dd><p>This parameter specifies the minimum number of function calls required
+for each estimate of the variance. If the number of function calls
+allocated to the estimate using <var>estimate_frac</var> falls below
+<var>min_calls</var> then <var>min_calls</var> are used instead.  This ensures
+that each estimate maintains a reasonable level of accuracy.  The
+default value of <var>min_calls</var> is <code>16 * dim</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-min_005fcalls_005fper_005fbisection"></a><u>Variable:</u> size_t <b>min_calls_per_bisection</b></dt>
+<dd><p>This parameter specifies the minimum number of function calls required
+to proceed with a bisection step.  When a recursive step has fewer calls
+available than <var>min_calls_per_bisection</var> it performs a plain Monte
+Carlo estimate of the current sub-region and terminates its branch of
+the recursion.  The default value of this parameter is <code>32 *
+min_calls</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-alpha"></a><u>Variable:</u> double <b>alpha</b></dt>
+<dd><p>This parameter controls how the estimated variances for the two
+sub-regions of a bisection are combined when allocating points.  With
+recursive sampling the overall variance should scale better than
+<em>1/N</em>, since the values from the sub-regions will be obtained using
+a procedure which explicitly minimizes their variance.  To accommodate
+this behavior the <small>MISER</small> algorithm allows the total variance to
+depend on a scaling parameter <em>\alpha</em>,
+The authors of the original paper describing <small>MISER</small> recommend the
+value <em>\alpha = 2</em> as a good choice, obtained from numerical
+experiments, and this is used as the default value in this
+implementation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dither"></a><u>Variable:</u> double <b>dither</b></dt>
+<dd><p>This parameter introduces a random fractional variation of size
+<var>dither</var> into each bisection, which can be used to break the
+symmetry of integrands which are concentrated near the exact center of
+the hypercubic integration region.  The default value of dither is zero,
+so no variation is introduced. If needed, a typical value of
+<var>dither</var> is 0.1.
+</p></dd></dl>
+
+<hr size="6">
+<a name="VEGAS"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#MISER" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#MISER" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="VEGAS-1"></a>
+<h2 class="section">4. VEGAS</h2>
+<a name="index-VEGAS-Monte-Carlo-integration"></a>
+<a name="index-importance-sampling_002c-VEGAS"></a>
+
+<p>The <small>VEGAS</small> algorithm of Lepage is based on importance sampling.  It
+samples points from the probability distribution described by the
+function <em>|f|</em>, so that the points are concentrated in the regions
+that make the largest contribution to the integral.
+</p>
+<p>In general, if the Monte Carlo integral of <em>f</em> is sampled with
+points distributed according to a probability distribution described by
+the function <em>g</em>, we obtain an estimate <em>E_g(f; N)</em>,
+with a corresponding variance,
+If the probability distribution is chosen as <em>g = |f|/I(|f|)</em> then
+it can be shown that the variance <em>V_g(f; N)</em> vanishes, and the
+error in the estimate will be zero.  In practice it is not possible to
+sample from the exact distribution <em>g</em> for an arbitrary function, so
+importance sampling algorithms aim to produce efficient approximations
+to the desired distribution.
+</p>
+<p>The <small>VEGAS</small> algorithm approximates the exact distribution by making a
+number of passes over the integration region while histogramming the
+function <em>f</em>. Each histogram is used to define a sampling
+distribution for the next pass.  Asymptotically this procedure converges
+to the desired distribution. In order
+to avoid the number of histogram bins growing like <em>K^d</em> the
+probability distribution is approximated by a separable function:
+<em>g(x_1, x_2, ...) = g_1(x_1) g_2(x_2) ...</em>  
+so that the number of bins required is only <em>Kd</em>.     
+This is equivalent to locating the peaks of the function from the
+projections of the integrand onto the coordinate axes.  The efficiency
+of <small>VEGAS</small> depends on the validity of this assumption.  It is most
+efficient when the peaks of the integrand are well-localized.  If an
+integrand can be rewritten in a form which is approximately separable
+this will increase the efficiency of integration with <small>VEGAS</small>.
+</p>
+<p><small>VEGAS</small> incorporates a number of additional features, and combines both
+stratified sampling and importance sampling.  The integration region is
+divided into a number of &ldquo;boxes&rdquo;, with each box getting a fixed
+number of points (the goal is 2).  Each box can then have a fractional
+number of bins, but if the ratio of bins-per-box is less than two, Vegas switches to a
+kind variance reduction (rather than importance sampling).
+</p>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005falloc"></a><u>Function:</u> gsl_monte_vegas_state * <b>gsl_monte_vegas_alloc</b><i> (size_t <var>dim</var>)</i></dt>
+<dd><a name="index-gsl_005fmonte_005fvegas_005fstate"></a>
+<p>This function allocates and initializes a workspace for Monte Carlo
+integration in <var>dim</var> dimensions.  The workspace is used to maintain
+the state of the integration.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005finit"></a><u>Function:</u> int <b>gsl_monte_vegas_init</b><i> (gsl_monte_vegas_state* <var>s</var>)</i></dt>
+<dd><p>This function initializes a previously allocated integration state.
+This allows an existing workspace to be reused for different
+integrations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005fintegrate"></a><u>Function:</u> int <b>gsl_monte_vegas_integrate</b><i> (gsl_monte_function * <var>f</var>, double <var>xl</var>[], double <var>xu</var>[], size_t <var>dim</var>, size_t <var>calls</var>, gsl_rng * <var>r</var>, gsl_monte_vegas_state * <var>s</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This routines uses the <small>VEGAS</small> Monte Carlo algorithm to integrate the
+function <var>f</var> over the <var>dim</var>-dimensional hypercubic region
+defined by the lower and upper limits in the arrays <var>xl</var> and
+<var>xu</var>, each of size <var>dim</var>.  The integration uses a fixed number
+of function calls <var>calls</var>, and obtains random sampling points using
+the random number generator <var>r</var>. A previously allocated workspace
+<var>s</var> must be supplied.  The result of the integration is returned in
+<var>result</var>, with an estimated absolute error <var>abserr</var>.  The result
+and its error estimate are based on a weighted average of independent
+samples. The chi-squared per degree of freedom for the weighted average
+is returned via the state struct component, <var>s-&gt;chisq</var>, and must be
+consistent with 1 for the weighted average to be reliable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005ffree"></a><u>Function:</u> void <b>gsl_monte_vegas_free</b><i> (gsl_monte_vegas_state * <var>s</var>)</i></dt>
+<dd><p>This function frees the memory associated with the integrator state
+<var>s</var>.
+</p></dd></dl>
+
+<p>The <small>VEGAS</small> algorithm computes a number of independent estimates of the
+integral internally, according to the <code>iterations</code> parameter
+described below, and returns their weighted average.  Random sampling of
+the integrand can occasionally produce an estimate where the error is
+zero, particularly if the function is constant in some regions. An
+estimate with zero error causes the weighted average to break down and
+must be handled separately. In the original Fortran implementations of
+<small>VEGAS</small> the error estimate is made non-zero by substituting a small
+value (typically <code>1e-30</code>).  The implementation in GSL differs from
+this and avoids the use of an arbitrary constant&mdash;it either assigns
+the value a weight which is the average weight of the preceding
+estimates or discards it according to the following procedure,
+</p>
+<dl compact="compact">
+<dt> current estimate has zero error, weighted average has finite error</dt>
+<dd>
+<p>The current estimate is assigned a weight which is the average weight of
+the preceding estimates.
+</p>
+</dd>
+<dt> current estimate has finite error, previous estimates had zero error</dt>
+<dd>
+<p>The previous estimates are discarded and the weighted averaging
+procedure begins with the current estimate.
+</p>
+</dd>
+<dt> current estimate has zero error, previous estimates had zero error</dt>
+<dd>
+<p>The estimates are averaged using the arithmetic mean, but no error is computed.
+</p></dd>
+</dl>
+
+<p>The convergence of the algorithm can be tested using the overall
+chi-squared value of the results, which is available from the
+following function:
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005fchisq"></a><u>Function:</u> double <b>gsl_monte_vegas_chisq</b><i> (const gsl_monte_vegas_state * <var>s</var>)</i></dt>
+<dd><p>This function returns the chi-squared per degree of freedom for the
+weighted estimate of the integral.  The returned value should be close
+to 1.  A value which differs significantly from 1 indicates that the
+values from different iterations are inconsistent.  In this case the
+weighted error will be under-estimated, and further iterations of the
+algorithm are needed to obtain reliable results.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005frunval"></a><u>Function:</u> void <b>gsl_monte_vegas_runval</b><i> (const gsl_monte_vegas_state * <var>s</var>, double * <var>result</var>, double * <var>sigma</var>)</i></dt>
+<dd><p>This function returns the raw (unaveraged) values of the integral
+<var>result</var> and its error <var>sigma</var> from the most recent iteration
+of the algorithm.
+</p></dd></dl>
+
+<p>The <small>VEGAS</small> algorithm is highly configurable. Several parameters
+can be changed using the following two functions.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005fparams_005fget"></a><u>Function:</u> void <b>gsl_monte_vegas_params_get</b><i> (const gsl_monte_vegas_state * <var>s</var>, gsl_monte_vegas_params * <var>params</var>)</i></dt>
+<dd><p>This function copies the parameters of the integrator state into the
+user-supplied <var>params</var> structure.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmonte_005fvegas_005fparams_005fset"></a><u>Function:</u> void <b>gsl_monte_vegas_params_set</b><i> (gsl_monte_vegas_state * <var>s</var>, const gsl_monte_vegas_params * <var>params</var>)</i></dt>
+<dd><p>This function sets the integrator parameters based on values provided
+in the <var>params</var> structure.
+</p></dd></dl>
+
+<p>Typically the values of the parameters are first read using
+<code>gsl_monte_vegas_params_get</code>, the necessary changes are made to
+the fields of the <var>params</var> structure, and the values are copied
+back into the integrator state using
+<code>gsl_monte_vegas_params_set</code>.  The functions use the
+<code>gsl_monte_vegas_params</code> structure which contains the following
+fields:
+</p>
+<dl>
+<dt><a name="index-alpha-1"></a><u>Variable:</u> double <b>alpha</b></dt>
+<dd><p>The parameter <code>alpha</code> controls the stiffness of the rebinning
+algorithm.  It is typically set between one and two. A value of zero
+prevents rebinning of the grid.  The default value is 1.5.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-iterations"></a><u>Variable:</u> size_t <b>iterations</b></dt>
+<dd><p>The number of iterations to perform for each call to the routine. The
+default value is 5 iterations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stage"></a><u>Variable:</u> int <b>stage</b></dt>
+<dd><p>Setting this determines the <em>stage</em> of the calculation.  Normally,
+<code>stage = 0</code> which begins with a new uniform grid and empty weighted
+average.  Calling <small>VEGAS</small> with <code>stage = 1</code> retains the grid from the
+previous run but discards the weighted average, so that one can &ldquo;tune&rdquo;
+the grid using a relatively small number of points and then do a large
+run with <code>stage = 1</code> on the optimized grid.  Setting <code>stage =
+2</code> keeps the grid and the weighted average from the previous run, but
+may increase (or decrease) the number of histogram bins in the grid
+depending on the number of calls available.  Choosing <code>stage = 3</code>
+enters at the main loop, so that nothing is changed, and is equivalent
+to performing additional iterations in a previous call.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-mode"></a><u>Variable:</u> int <b>mode</b></dt>
+<dd><p>The possible choices are <code>GSL_VEGAS_MODE_IMPORTANCE</code>,
+<code>GSL_VEGAS_MODE_STRATIFIED</code>, <code>GSL_VEGAS_MODE_IMPORTANCE_ONLY</code>.
+This determines whether <small>VEGAS</small> will use importance sampling or
+stratified sampling, or whether it can pick on its own.  In low
+dimensions <small>VEGAS</small> uses strict stratified sampling (more precisely,
+stratified sampling is chosen if there are fewer than 2 bins per box).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-verbose"></a><u>Variable:</u> int <b>verbose</b></dt>
+<dt><a name="index-ostream"></a><u>Variable:</u> FILE * <b>ostream</b></dt>
+<dd><p>These parameters set the level of information printed by <small>VEGAS</small>. All
+information is written to the stream <var>ostream</var>.  The default setting
+of <var>verbose</var> is <code>-1</code>, which turns off all output.  A
+<var>verbose</var> value of <code>0</code> prints summary information about the
+weighted average and final result, while a value of <code>1</code> also
+displays the grid coordinates.  A value of <code>2</code> prints information
+from the rebinning procedure for each iteration.
+</p></dd></dl>
+
+<p>The above fields and the <var>chisq</var> value can also be accessed
+directly in the <code>gsl_monte_vegas_state</code> but such use is
+deprecated.
+</p>
+<hr size="6">
+<a name="Monte-Carlo-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#VEGAS" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Integration-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#VEGAS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Integration-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">5. Examples</h2>
+
+<p>The example program below uses the Monte Carlo routines to estimate the
+value of the following 3-dimensional integral from the theory of random
+walks,
+The analytic value of this integral can be shown to be <em>I =
+\Gamma(1/4)^4/(4 \pi^3) = 1.393203929685676859...</em>.  The integral gives
+the mean time spent at the origin by a random walk on a body-centered
+cubic lattice in three dimensions.
+</p>
+<p>For simplicity we will compute the integral over the region
+<em>(0,0,0)</em> to <em>(\pi,\pi,\pi)</em> and multiply by 8 to obtain the
+full result.  The integral is slowly varying in the middle of the region
+but has integrable singularities at the corners <em>(0,0,0)</em>,
+<em>(0,\pi,\pi)</em>, <em>(\pi,0,\pi)</em> and <em>(\pi,\pi,0)</em>.  The
+Monte Carlo routines only select points which are strictly within the
+integration region and so no special measures are needed to avoid these
+singularities.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"><pre class="verbatim">#include &lt;stdlib.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_monte.h&gt;
+#include &lt;gsl/gsl_monte_plain.h&gt;
+#include &lt;gsl/gsl_monte_miser.h&gt;
+#include &lt;gsl/gsl_monte_vegas.h&gt;
+
+/* Computation of the integral,
+
+      I = int (dx dy dz)/(2pi)^3  1/(1-cos(x)cos(y)cos(z))
+
+   over (-pi,-pi,-pi) to (+pi, +pi, +pi).  The exact answer
+   is Gamma(1/4)^4/(4 pi^3).  This example is taken from
+   C.Itzykson, J.M.Drouffe, &quot;Statistical Field Theory -
+   Volume 1&quot;, Section 1.1, p21, which cites the original
+   paper M.L.Glasser, I.J.Zucker, Proc.Natl.Acad.Sci.USA 74
+   1800 (1977) */
+
+/* For simplicity we compute the integral over the region 
+   (0,0,0) -&gt; (pi,pi,pi) and multiply by 8 */
+
+double exact = 1.3932039296856768591842462603255;
+
+double
+g (double *k, size_t dim, void *params)
+{
+  double A = 1.0 / (M_PI * M_PI * M_PI);
+  return A / (1.0 - cos (k[0]) * cos (k[1]) * cos (k[2]));
+}
+
+void
+display_results (char *title, double result, double error)
+{
+  printf (&quot;%s ==================\n&quot;, title);
+  printf (&quot;result = % .6f\n&quot;, result);
+  printf (&quot;sigma  = % .6f\n&quot;, error);
+  printf (&quot;exact  = % .6f\n&quot;, exact);
+  printf (&quot;error  = % .6f = %.2g sigma\n&quot;, result - exact,
+          fabs (result - exact) / error);
+}
+
+int
+main (void)
+{
+  double res, err;
+
+  double xl[3] = { 0, 0, 0 };
+  double xu[3] = { M_PI, M_PI, M_PI };
+
+  const gsl_rng_type *T;
+  gsl_rng *r;
+
+  gsl_monte_function G = { &amp;g, 3, 0 };
+
+  size_t calls = 500000;
+
+  gsl_rng_env_setup ();
+
+  T = gsl_rng_default;
+  r = gsl_rng_alloc (T);
+
+  {
+    gsl_monte_plain_state *s = gsl_monte_plain_alloc (3);
+    gsl_monte_plain_integrate (&amp;G, xl, xu, 3, calls, r, s, 
+                               &amp;res, &amp;err);
+    gsl_monte_plain_free (s);
+
+    display_results (&quot;plain&quot;, res, err);
+  }
+
+  {
+    gsl_monte_miser_state *s = gsl_monte_miser_alloc (3);
+    gsl_monte_miser_integrate (&amp;G, xl, xu, 3, calls, r, s,
+                               &amp;res, &amp;err);
+    gsl_monte_miser_free (s);
+
+    display_results (&quot;miser&quot;, res, err);
+  }
+
+  {
+    gsl_monte_vegas_state *s = gsl_monte_vegas_alloc (3);
+
+    gsl_monte_vegas_integrate (&amp;G, xl, xu, 3, 10000, r, s,
+                               &amp;res, &amp;err);
+    display_results (&quot;vegas warm-up&quot;, res, err);
+
+    printf (&quot;converging...\n&quot;);
+
+    do
+      {
+        gsl_monte_vegas_integrate (&amp;G, xl, xu, 3, calls/5, r, s,
+                                   &amp;res, &amp;err);
+        printf (&quot;result = % .6f sigma = % .6f &quot;
+                &quot;chisq/dof = %.1f\n&quot;, res, err, gsl_monte_vegas_chisq (s));
+      }
+    while (fabs (gsl_monte_vegas_chisq (s) - 1.0) &gt; 0.5);
+
+    display_results (&quot;vegas final&quot;, res, err);
+
+    gsl_monte_vegas_free (s);
+  }
+
+  gsl_rng_free (r);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>With 500,000 function calls the plain Monte Carlo algorithm achieves a
+fractional error of 1%.  The estimated error <code>sigma</code> is roughly
+consistent with the actual error&ndash;the computed result differs from
+the true result by about 1.4 standard deviations,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">plain ==================
+result =  1.412209
+sigma  =  0.013436
+exact  =  1.393204
+error  =  0.019005 = 1.4 sigma
+</pre></td></tr></table>
+
+<p>The <small>MISER</small> algorithm reduces the error by a factor of four, and also
+correctly estimates the error,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">miser ==================
+result =  1.391322
+sigma  =  0.003461
+exact  =  1.393204
+error  = -0.001882 = 0.54 sigma
+</pre></td></tr></table>
+
+<p>In the case of the <small>VEGAS</small> algorithm the program uses an initial
+warm-up run of 10,000 function calls to prepare, or &ldquo;warm up&rdquo;, the grid.
+This is followed by a main run with five iterations of 100,000 function
+calls. The chi-squared per degree of freedom for the five iterations are
+checked for consistency with 1, and the run is repeated if the results
+have not converged. In this case the estimates are consistent on the
+first pass.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">vegas warm-up ==================
+result =  1.392673
+sigma  =  0.003410
+exact  =  1.393204
+error  = -0.000531 = 0.16 sigma
+converging...
+result =  1.393281 sigma =  0.000362 chisq/dof = 1.5
+vegas final ==================
+result =  1.393281
+sigma  =  0.000362
+exact  =  1.393204
+error  =  0.000077 = 0.21 sigma
+</pre></td></tr></table>
+
+<p>If the value of <code>chisq</code> had differed significantly from 1 it would
+indicate inconsistent results, with a correspondingly underestimated
+error.  The final estimate from <small>VEGAS</small> (using a similar number of
+function calls) is significantly more accurate than the other two
+algorithms.
+</p>
+<hr size="6">
+<a name="Monte-Carlo-Integration-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Monte-Carlo-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">6. References and Further Reading</h2>
+
+<p>The <small>MISER</small> algorithm is described in the following article by Press
+and Farrar,
+</p>
+<ul class="toc">
+<li>
+W.H. Press, G.R. Farrar, <cite>Recursive Stratified Sampling for
+Multidimensional Monte Carlo Integration</cite>,
+Computers in Physics, v4 (1990), pp190&ndash;195.
+</li></ul>
+
+<p>The <small>VEGAS</small> algorithm is described in the following papers,
+</p>
+<ul class="toc">
+<li>
+G.P. Lepage,
+<cite>A New Algorithm for Adaptive Multidimensional Integration</cite>,
+Journal of Computational Physics 27, 192&ndash;203, (1978)
+
+</li><li>
+G.P. Lepage,
+<cite>VEGAS: An Adaptive Multi-dimensional Integration Program</cite>,
+Cornell preprint CLNS 80-447, March 1980
+</li></ul>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>The previous
+method of accessing these fields directly through the
+<code>gsl_monte_miser_state</code> struct is now deprecated.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Monte-Carlo-Interface" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

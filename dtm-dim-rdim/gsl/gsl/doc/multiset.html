@@ -1,0 +1,610 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-multisets"></a>
+
+<p>This chapter describes functions for creating and manipulating multisets. A
+multiset <em>c</em> is represented by an array of <em>k</em> integers in the range
+0 to <em>n-1</em>, where each value <em>c_i</em> may occur more than once.  The
+multiset <em>c</em> corresponds to indices of <em>k</em> elements chosen from an
+<em>n</em> element vector with replacement.  In mathematical terms, <em>n</em> is
+the cardinality of the multiset while <em>k</em> is the maximum multiplicity of
+any value.  Multisets are useful, for example, when iterating over the indices
+of a <em>k</em>-th order symmetric tensor in <em>n</em>-space.
+</p>
+<p>The functions described in this chapter are defined in the header file
+&lsquo;<tt>gsl_multiset.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#The-Multiset-struct">1. The Multiset struct</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multiset-allocation">2. Multiset allocation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Accessing-multiset-elements">3. Accessing multiset elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multiset-properties">4. Multiset properties</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multiset-functions">5. Multiset functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reading-and-writing-multisets">6. Reading and writing multisets</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multiset-Examples">7. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="The-Multiset-struct"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Multiset-allocation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Multiset-allocation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="The-Multiset-struct-1"></a>
+<h2 class="section">1. The Multiset struct</h2>
+<a name="index-gsl_005fmultiset"></a>
+<p>A multiset is defined by a structure containing three components, the
+values of <em>n</em> and <em>k</em>, and a pointer to the multiset array.
+The elements of the multiset array are all of type <code>size_t</code>, and
+are stored in increasing order.  The <code>gsl_multiset</code> structure
+looks like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  size_t n;
+  size_t k;
+  size_t *data;
+} gsl_multiset;
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="Multiset-allocation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-multiset-elements" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-multiset-elements" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Multiset-allocation-1"></a>
+<h2 class="section">2. Multiset allocation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005falloc"></a><u>Function:</u> gsl_multiset * <b>gsl_multiset_alloc</b><i> (size_t <var>n</var>, size_t <var>k</var>)</i></dt>
+<dd><p>This function allocates memory for a new multiset with parameters <var>n</var>,
+<var>k</var>.  The multiset is not initialized and its elements are undefined.  Use
+the function <code>gsl_multiset_calloc</code> if you want to create a multiset which
+is initialized to the lexicographically first multiset element. A null pointer
+is returned if insufficient memory is available to create the multiset.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fcalloc"></a><u>Function:</u> gsl_multiset * <b>gsl_multiset_calloc</b><i> (size_t <var>n</var>, size_t <var>k</var>)</i></dt>
+<dd><p>This function allocates memory for a new multiset with parameters <var>n</var>,
+<var>k</var> and initializes it to the lexicographically first multiset element. A
+null pointer is returned if insufficient memory is available to create the
+multiset.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005finit_005ffirst"></a><u>Function:</u> void <b>gsl_multiset_init_first</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function initializes the multiset <var>c</var> to the lexicographically first
+multiset element, i.e. <em>0</em> repeated <em>k</em> times.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005finit_005flast"></a><u>Function:</u> void <b>gsl_multiset_init_last</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function initializes the multiset <var>c</var> to the lexicographically last
+multiset element, i.e. <em>n-1</em> repeated <em>k</em> times.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005ffree"></a><u>Function:</u> void <b>gsl_multiset_free</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function frees all the memory used by the multiset <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fmemcpy"></a><u>Function:</u> int <b>gsl_multiset_memcpy</b><i> (gsl_multiset * <var>dest</var>, const gsl_multiset * <var>src</var>)</i></dt>
+<dd><p>This function copies the elements of the multiset <var>src</var> into the
+multiset <var>dest</var>.  The two multisets must have the same size.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Accessing-multiset-elements"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multiset-allocation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-properties" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multiset-allocation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-properties" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Accessing-multiset-elements-1"></a>
+<h2 class="section">3. Accessing multiset elements</h2>
+
+<p>The following function can be used to access the elements of a multiset.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fget"></a><u>Function:</u> size_t <b>gsl_multiset_get</b><i> (const gsl_multiset * <var>c</var>, const size_t <var>i</var>)</i></dt>
+<dd><p>This function returns the value of the <var>i</var>-th element of the
+multiset <var>c</var>.  If <var>i</var> lies outside the allowed range of 0 to
+<em><var>k</var>-1</em> then the error handler is invoked and 0 is returned.  @inlinefn{}
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multiset-properties"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Accessing-multiset-elements" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Accessing-multiset-elements" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Multiset-properties-1"></a>
+<h2 class="section">4. Multiset properties</h2>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fn"></a><u>Function:</u> size_t <b>gsl_multiset_n</b><i> (const gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function returns the range (<em>n</em>) of the multiset <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fk"></a><u>Function:</u> size_t <b>gsl_multiset_k</b><i> (const gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function returns the number of elements (<em>k</em>) in the multiset <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fdata"></a><u>Function:</u> size_t * <b>gsl_multiset_data</b><i> (const gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function returns a pointer to the array of elements in the
+multiset <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fvalid"></a><u>Function:</u> int <b>gsl_multiset_valid</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><a name="index-checking-multiset-for-validity"></a>
+<a name="index-testing-multiset-for-validity"></a>
+<p>This function checks that the multiset <var>c</var> is valid.  The <var>k</var>
+elements should lie in the range 0 to <em><var>n</var>-1</em>, with each
+value occurring in nondecreasing order.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multiset-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multiset-properties" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-multisets" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multiset-properties" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-multisets" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Multiset-functions-1"></a>
+<h2 class="section">5. Multiset functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fnext"></a><u>Function:</u> int <b>gsl_multiset_next</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><a name="index-iterating-through-multisets"></a>
+<p>This function advances the multiset <var>c</var> to the next multiset element in
+lexicographic order and returns <code>GSL_SUCCESS</code>.  If no further multisets
+elements are available it returns <code>GSL_FAILURE</code> and leaves <var>c</var>
+unmodified.  Starting with the first multiset and repeatedly applying this
+function will iterate through all possible multisets of a given order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005fprev"></a><u>Function:</u> int <b>gsl_multiset_prev</b><i> (gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function steps backwards from the multiset <var>c</var> to the previous
+multiset element in lexicographic order, returning <code>GSL_SUCCESS</code>.  If no
+previous multiset is available it returns <code>GSL_FAILURE</code> and leaves <var>c</var>
+unmodified.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Reading-and-writing-multisets"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multiset-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multiset-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multiset-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reading-and-writing-multisets-1"></a>
+<h2 class="section">6. Reading and writing multisets</h2>
+
+<p>The library provides functions for reading and writing multisets to a
+file as binary data or formatted text.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiset_005ffwrite"></a><u>Function:</u> int <b>gsl_multiset_fwrite</b><i> (FILE * <var>stream</var>, const gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function writes the elements of the multiset <var>c</var> to the
+stream <var>stream</var> in binary format.  The function returns
+<code>GSL_EFAILED</code> if there was a problem writing to the file.  Since the
+data is written in the native binary format it may not be portable
+between different architectures.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005ffread"></a><u>Function:</u> int <b>gsl_multiset_fread</b><i> (FILE * <var>stream</var>, gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function reads elements from the open stream <var>stream</var> into the
+multiset <var>c</var> in binary format.  The multiset <var>c</var> must be
+preallocated with correct values of <em>n</em> and <em>k</em> since the
+function uses the size of <var>c</var> to determine how many bytes to read.
+The function returns <code>GSL_EFAILED</code> if there was a problem reading
+from the file.  The data is assumed to have been written in the native
+binary format on the same architecture.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005ffprintf"></a><u>Function:</u> int <b>gsl_multiset_fprintf</b><i> (FILE * <var>stream</var>, const gsl_multiset * <var>c</var>, const char * <var>format</var>)</i></dt>
+<dd><p>This function writes the elements of the multiset <var>c</var>
+line-by-line to the stream <var>stream</var> using the format specifier
+<var>format</var>, which should be suitable for a type of <var>size_t</var>.
+In ISO C99 the type modifier <code>z</code> represents <code>size_t</code>, so
+<code>&quot;%zu\n&quot;</code> is a suitable format.<a name="DOCF1" href="#FOOT1">(1)</a>  The function returns
+<code>GSL_EFAILED</code> if there was a problem writing to the file.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiset_005ffscanf"></a><u>Function:</u> int <b>gsl_multiset_fscanf</b><i> (FILE * <var>stream</var>, gsl_multiset * <var>c</var>)</i></dt>
+<dd><p>This function reads formatted data from the stream <var>stream</var> into the
+multiset <var>c</var>.  The multiset <var>c</var> must be preallocated with
+correct values of <em>n</em> and <em>k</em> since the function uses the size of <var>c</var> to
+determine how many numbers to read.  The function returns
+<code>GSL_EFAILED</code> if there was a problem reading from the file.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Multiset-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reading-and-writing-multisets" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-multisets" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">7. Examples</h2>
+<p>The example program below prints all multisets elements containing the values
+<em>0,1,2,3</em> ordered by size.  Multiset elements of the same size are
+ordered lexicographically.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_multiset.h&gt;
+
+int
+main (void)
+{
+  gsl_multiset * c;
+  size_t i;
+
+  printf (&quot;All multisets of {0,1,2,3} by size:\n&quot;) ;
+  for (i = 0; i &lt;= 4; i++)
+    {
+      c = gsl_multiset_calloc (4, i);
+      do
+        {
+          printf (&quot;{&quot;);
+          gsl_multiset_fprintf (stdout, c, &quot; %u&quot;);
+          printf (&quot; }\n&quot;);
+        }
+      while (gsl_multiset_next (c) == GSL_SUCCESS);
+      gsl_multiset_free (c);
+    }
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out
+<pre class="verbatim">all multisets of {0,1,2,3} by size:
+{ }
+{ 0 }
+{ 1 }
+{ 2 }
+{ 3 }
+{ 0 0 }
+{ 0 1 }
+{ 0 2 }
+{ 0 3 }
+{ 1 1 }
+{ 1 2 }
+{ 1 3 }
+{ 2 2 }
+{ 2 3 }
+{ 3 3 }
+{ 0 0 0 }
+{ 0 0 1 }
+{ 0 0 2 }
+{ 0 0 3 }
+{ 0 1 1 }
+{ 0 1 2 }
+{ 0 1 3 }
+{ 0 2 2 }
+{ 0 2 3 }
+{ 0 3 3 }
+{ 1 1 1 }
+{ 1 1 2 }
+{ 1 1 3 }
+{ 1 2 2 }
+{ 1 2 3 }
+{ 1 3 3 }
+{ 2 2 2 }
+{ 2 2 3 }
+{ 2 3 3 }
+{ 3 3 3 }
+{ 0 0 0 0 }
+{ 0 0 0 1 }
+{ 0 0 0 2 }
+{ 0 0 0 3 }
+{ 0 0 1 1 }
+{ 0 0 1 2 }
+{ 0 0 1 3 }
+{ 0 0 2 2 }
+{ 0 0 2 3 }
+{ 0 0 3 3 }
+{ 0 1 1 1 }
+{ 0 1 1 2 }
+{ 0 1 1 3 }
+{ 0 1 2 2 }
+{ 0 1 2 3 }
+{ 0 1 3 3 }
+{ 0 2 2 2 }
+{ 0 2 2 3 }
+{ 0 2 3 3 }
+{ 0 3 3 3 }
+{ 1 1 1 1 }
+{ 1 1 1 2 }
+{ 1 1 1 3 }
+{ 1 1 2 2 }
+{ 1 1 2 3 }
+{ 1 1 3 3 }
+{ 1 2 2 2 }
+{ 1 2 2 3 }
+{ 1 2 3 3 }
+{ 1 3 3 3 }
+{ 2 2 2 2 }
+{ 2 2 2 3 }
+{ 2 2 3 3 }
+{ 2 3 3 3 }
+{ 3 3 3 3 }
+</pre></pre></td></tr></table>
+
+<p>All 70 multisets are generated and sorted lexicographically.
+</p><hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>In versions of the
+GNU C library prior to the ISO C99 standard,
+the type modifier <code>Z</code> was used instead.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Multiset-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

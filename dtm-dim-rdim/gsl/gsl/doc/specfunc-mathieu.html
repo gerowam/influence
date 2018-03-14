@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Mathieu-functions"></a>
+
+<p>The routines described in this section compute the angular and radial
+Mathieu functions, and their characteristic values.  Mathieu
+functions are the solutions of the following two differential
+equations:
+The angular Mathieu functions <em>ce_r(x,q)</em>, <em>se_r(x,q)</em> are
+the even and odd periodic solutions of the first equation, which is known as Mathieu&rsquo;s equation. These exist
+only for the discrete sequence of  characteristic values <em>a=a_r(q)</em>
+(even-periodic) and <em>a=b_r(q)</em> (odd-periodic).
+</p>
+<p>The radial Mathieu functions <em>Mc^(j)_r(z,q)</em>, <em>Ms^(j)_r(z,q)</em> are the solutions of the second equation,
+which is referred to as Mathieu&rsquo;s modified equation.  The
+radial Mathieu functions of the first, second, third and fourth kind
+are denoted by the parameter <em>j</em>, which takes the value 1, 2, 3
+or 4.
+</p>
+
+
+
+
+
+
+
+
+
+
+<p>For more information on the Mathieu functions, see Abramowitz and
+Stegun, Chapter 20.  These functions are defined in the header file
+&lsquo;<tt>gsl_sf_mathieu.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Mathieu-Function-Workspace">1. Mathieu Function Workspace</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Mathieu-Function-Characteristic-Values">2. Mathieu Function Characteristic Values</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Angular-Mathieu-Functions">3. Angular Mathieu Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Radial-Mathieu-Functions">4. Radial Mathieu Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+</table>
+
+<a name="Mathieu-Function-Workspace"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Characteristic-Values" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Characteristic-Values" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Mathieu-Function-Workspace-1"></a>
+<h3 class="subsection">1. Mathieu Function Workspace</h3>
+
+<p>The Mathieu functions can be computed for a single order or
+for multiple orders, using array-based routines.  The array-based
+routines require a preallocated workspace.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005falloc"></a><u>Function:</u> gsl_sf_mathieu_workspace * <b>gsl_sf_mathieu_alloc</b><i> (size_t <var>n</var>, double <var>qmax</var>)</i></dt>
+<dd><a name="index-gsl_005fsf_005fmathieu_005fworkspace"></a>
+<p>This function returns a workspace for the array versions of the
+Mathieu routines.  The arguments <var>n</var> and <var>qmax</var> specify the
+maximum order and <em>q</em>-value of Mathieu functions which can be
+computed with this workspace.  
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005ffree"></a><u>Function:</u> void <b>gsl_sf_mathieu_free</b><i> (gsl_sf_mathieu_workspace * <var>work</var>)</i></dt>
+<dd><p>This function frees the workspace <var>work</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Mathieu-Function-Characteristic-Values"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Angular-Mathieu-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Angular-Mathieu-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Mathieu-Function-Characteristic-Values-1"></a>
+<h3 class="subsection">2. Mathieu Function Characteristic Values</h3>
+<a name="index-Mathieu-Function-Characteristic-Values"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fa"></a><u>Function:</u> int <b>gsl_sf_mathieu_a</b><i> (int <var>n</var>, double <var>q</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fb"></a><u>Function:</u> int <b>gsl_sf_mathieu_b</b><i> (int <var>n</var>, double <var>q</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the characteristic values <em>a_n(q)</em>,
+<em>b_n(q)</em> of the Mathieu functions <em>ce_n(q,x)</em> and
+<em>se_n(q,x)</em>, respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fa_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_a_array</b><i> (int <var>order_min</var>, int <var>order_max</var>, double <var>q</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fb_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_b_array</b><i> (int <var>order_min</var>, int <var>order_max</var>, double <var>q</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>These routines compute a series of Mathieu characteristic values
+<em>a_n(q)</em>, <em>b_n(q)</em> for <em>n</em> from <var>order_min</var> to
+<var>order_max</var> inclusive, storing the results in the array <var>result_array</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Angular-Mathieu-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mathieu-Function-Characteristic-Values" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Radial-Mathieu-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Characteristic-Values" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Radial-Mathieu-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Angular-Mathieu-Functions-1"></a>
+<h3 class="subsection">3. Angular Mathieu Functions</h3>
+<a name="index-Angular-Mathieu-Functions"></a>
+<a name="index-ce_0028q_002cx_0029_002c-Mathieu-function"></a>
+<a name="index-se_0028q_002cx_0029_002c-Mathieu-function"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fce"></a><u>Function:</u> int <b>gsl_sf_mathieu_ce</b><i> (int <var>n</var>, double <var>q</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fse"></a><u>Function:</u> int <b>gsl_sf_mathieu_se</b><i> (int <var>n</var>, double <var>q</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the angular Mathieu functions <em>ce_n(q,x)</em>
+and <em>se_n(q,x)</em>, respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fce_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_ce_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>q</var>, double <var>x</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fse_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_se_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>q</var>, double <var>x</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>These routines compute a series of the angular Mathieu functions
+<em>ce_n(q,x)</em> and <em>se_n(q,x)</em> of order <em>n</em> from
+<var>nmin</var> to <var>nmax</var> inclusive, storing the results in the array
+<var>result_array</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Radial-Mathieu-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Angular-Mathieu-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Angular-Mathieu-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Radial-Mathieu-Functions-1"></a>
+<h3 class="subsection">4. Radial Mathieu Functions</h3>
+<a name="index-Radial-Mathieu-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fMc"></a><u>Function:</u> int <b>gsl_sf_mathieu_Mc</b><i> (int <var>j</var>, int <var>n</var>, double <var>q</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fMs"></a><u>Function:</u> int <b>gsl_sf_mathieu_Ms</b><i> (int <var>j</var>, int <var>n</var>, double <var>q</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the radial <var>j</var>-th kind Mathieu functions
+<em>Mc_n^(j)(q,x)</em> and 
+<em>Ms_n^(j)(q,x)</em> of order <var>n</var>.
+</p>
+<p>The allowed values of <var>j</var> are 1 and 2.
+The functions for <em>j = 3,4</em> can be computed as 
+<em>M_n^(3) = M_n^(1) + iM_n^(2)</em> and 
+<em>M_n^(4) = M_n^(1) - iM_n^(2)</em>,
+where 
+<em>M_n^(j) = Mc_n^(j)</em> or 
+<em>Ms_n^(j)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fMc_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_Mc_array</b><i> (int <var>j</var>, int <var>nmin</var>, int <var>nmax</var>, double <var>q</var>, double <var>x</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005fmathieu_005fMs_005farray"></a><u>Function:</u> int <b>gsl_sf_mathieu_Ms_array</b><i> (int <var>j</var>, int <var>nmin</var>, int <var>nmax</var>, double <var>q</var>, double <var>x</var>, gsl_sf_mathieu_workspace * <var>work</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>These routines compute a series of the radial Mathieu functions of
+kind <var>j</var>, with order from <var>nmin</var> to <var>nmax</var> inclusive, storing the
+results in the array <var>result_array</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mathieu-Function-Workspace" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

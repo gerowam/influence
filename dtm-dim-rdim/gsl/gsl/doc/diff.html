@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-differentiation-of-functions_002c-numeric"></a>
+<a name="index-functions_002c-numerical-differentiation"></a>
+<a name="index-derivatives_002c-calculating-numerically"></a>
+<a name="index-numerical-derivatives"></a>
+<a name="index-slope_002c-see-numerical-derivative"></a>
+
+<p>The functions described in this chapter compute numerical derivatives by
+finite differencing.  An adaptive algorithm is used to find the best
+choice of finite difference and to estimate the error in the derivative.
+These functions are declared in the header file &lsquo;<tt>gsl_deriv.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Numerical-Differentiation-functions">1. Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Numerical-Differentiation-Examples">2. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Numerical-Differentiation-References">3. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Numerical-Differentiation-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Functions"></a>
+<h2 class="section">1. Functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fderiv_005fcentral"></a><u>Function:</u> int <b>gsl_deriv_central</b><i> (const gsl_function * <var>f</var>, double <var>x</var>, double <var>h</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function computes the numerical derivative of the function <var>f</var>
+at the point <var>x</var> using an adaptive central difference algorithm with
+a step-size of <var>h</var>.   The derivative is returned in <var>result</var> and an
+estimate of its absolute error is returned in <var>abserr</var>.
+</p>
+<p>The initial value of <var>h</var> is used to estimate an optimal step-size,
+based on the scaling of the truncation error and round-off error in the
+derivative calculation.  The derivative is computed using a 5-point rule
+for equally spaced abscissae at <em>x-h</em>, <em>x-h/2</em>, <em>x</em>,
+<em>x+h/2</em>, <em>x+h</em>, with an error estimate taken from the difference
+between the 5-point rule and the corresponding 3-point rule <em>x-h</em>,
+<em>x</em>, <em>x+h</em>.  Note that the value of the function at <em>x</em>
+does not contribute to the derivative calculation, so only 4-points are
+actually used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fderiv_005fforward"></a><u>Function:</u> int <b>gsl_deriv_forward</b><i> (const gsl_function * <var>f</var>, double <var>x</var>, double <var>h</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function computes the numerical derivative of the function <var>f</var>
+at the point <var>x</var> using an adaptive forward difference algorithm with
+a step-size of <var>h</var>. The function is evaluated only at points greater
+than <var>x</var>, and never at <var>x</var> itself.  The derivative is returned in
+<var>result</var> and an estimate of its absolute error is returned in
+<var>abserr</var>.  This function should be used if <em>f(x)</em> has a
+discontinuity at <var>x</var>, or is undefined for values less than <var>x</var>.
+</p>
+<p>The initial value of <var>h</var> is used to estimate an optimal step-size,
+based on the scaling of the truncation error and round-off error in the
+derivative calculation.  The derivative at <em>x</em> is computed using an
+&ldquo;open&rdquo; 4-point rule for equally spaced abscissae at <em>x+h/4</em>,
+<em>x+h/2</em>, <em>x+3h/4</em>, <em>x+h</em>, with an error estimate taken
+from the difference between the 4-point rule and the corresponding
+2-point rule <em>x+h/2</em>, <em>x+h</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fderiv_005fbackward"></a><u>Function:</u> int <b>gsl_deriv_backward</b><i> (const gsl_function * <var>f</var>, double <var>x</var>, double <var>h</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function computes the numerical derivative of the function <var>f</var>
+at the point <var>x</var> using an adaptive backward difference algorithm
+with a step-size of <var>h</var>. The function is evaluated only at points
+less than <var>x</var>, and never at <var>x</var> itself.  The derivative is
+returned in <var>result</var> and an estimate of its absolute error is
+returned in <var>abserr</var>.  This function should be used if <em>f(x)</em>
+has a discontinuity at <var>x</var>, or is undefined for values greater than
+<var>x</var>.
+</p>
+<p>This function is equivalent to calling <code>gsl_deriv_forward</code> with a
+negative step-size.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Numerical-Differentiation-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-References" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">2. Examples</h2>
+
+<p>The following code estimates the derivative of the function 
+<em>f(x) = x^3/2</em> 
+at <em>x=2</em> and at <em>x=0</em>.  The function <em>f(x)</em> is
+undefined for <em>x&lt;0</em> so the derivative at <em>x=0</em> is computed
+using <code>gsl_deriv_forward</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_deriv.h&gt;
+
+double f (double x, void * params)
+{
+  return pow (x, 1.5);
+}
+
+int
+main (void)
+{
+  gsl_function F;
+  double result, abserr;
+
+  F.function = &amp;f;
+  F.params = 0;
+
+  printf (&quot;f(x) = x^(3/2)\n&quot;);
+
+  gsl_deriv_central (&amp;F, 2.0, 1e-8, &amp;result, &amp;abserr);
+  printf (&quot;x = 2.0\n&quot;);
+  printf (&quot;f'(x) = %.10f +/- %.10f\n&quot;, result, abserr);
+  printf (&quot;exact = %.10f\n\n&quot;, 1.5 * sqrt(2.0));
+
+  gsl_deriv_forward (&amp;F, 0.0, 1e-8, &amp;result, &amp;abserr);
+  printf (&quot;x = 0.0\n&quot;);
+  printf (&quot;f'(x) = %.10f +/- %.10f\n&quot;, result, abserr);
+  printf (&quot;exact = %.10f\n&quot;, 0.0);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output of the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out
+<pre class="verbatim">f(x) = x^(3/2)
+x = 2.0
+f'(x) = 2.1213203120 +/- 0.0000004064
+exact = 2.1213203436
+
+x = 0.0
+f'(x) = 0.0000000160 +/- 0.0000000339
+exact = 0.0000000000
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Numerical-Differentiation-References"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-Differentiation-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">3. References and Further Reading</h2>
+
+<p>The algorithms used by these functions are described in the following sources:
+</p>
+<ul class="toc">
+<li>
+Abramowitz and Stegun, <cite>Handbook of Mathematical Functions</cite>,
+Section 25.3.4, and Table 25.5 (Coefficients for Differentiation).
+
+</li><li>
+S.D. Conte and Carl de Boor, <cite>Elementary Numerical Analysis: An
+Algorithmic Approach</cite>, McGraw-Hill, 1972.
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Numerical-Differentiation-functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-DWT_002c-see-wavelet-transforms"></a>
+<a name="index-wavelet-transforms"></a>
+<a name="index-transforms_002c-wavelet"></a>
+
+<p>This chapter describes functions for performing Discrete Wavelet
+Transforms (DWTs).  The library includes wavelets for real data in both
+one and two dimensions.  The wavelet functions are declared in the header
+files &lsquo;<tt>gsl_wavelet.h</tt>&rsquo; and &lsquo;<tt>gsl_wavelet2d.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#DWT-Definitions">1. Definitions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#DWT-Initialization">2. Initialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#DWT-Transform-Functions">3. Transform Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#DWT-Examples">4. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                
+</td></tr>
+<tr><td align="left" valign="top"><a href="#DWT-References">5. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+</table>
+
+<a name="DWT-Definitions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#DWT-Initialization" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#DWT-Initialization" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Definitions"></a>
+<h2 class="section">1. Definitions</h2>
+<a name="index-DWT_002c-mathematical-definition"></a>
+
+<p>The continuous wavelet transform and its inverse are defined by
+the relations,
+and,
+where the basis functions <em>\psi_s,\tau</em> are obtained by scaling
+and translation from a single function, referred to as the <em>mother
+wavelet</em>.
+</p>
+<p>The discrete version of the wavelet transform acts on equally-spaced
+samples, with fixed scaling and translation steps (<em>s</em>,
+<em>\tau</em>).  The frequency and time axes are sampled <em>dyadically</em>
+on scales of <em>2^j</em> through a level parameter <em>j</em>.
+The resulting family of functions <em>\psi_j,n</em>
+constitutes an orthonormal
+basis for square-integrable signals.  
+</p>
+<p>The discrete wavelet transform is an <em>O(N)</em> algorithm, and is also
+referred to as the <em>fast wavelet transform</em>.
+</p>
+<hr size="6">
+<a name="DWT-Initialization"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-Definitions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initialization"></a>
+<h2 class="section">2. Initialization</h2>
+<a name="index-DWT-initialization"></a>
+<a name="index-gsl_005fwavelet_005ftype"></a>
+
+<p>The <code>gsl_wavelet</code> structure contains the filter coefficients
+defining the wavelet and any associated offset parameters.
+</p>
+<dl>
+<dt><a name="index-gsl_005fwavelet_005falloc"></a><u>Function:</u> gsl_wavelet * <b>gsl_wavelet_alloc</b><i> (const gsl_wavelet_type * <var>T</var>, size_t <var>k</var>)</i></dt>
+<dd><a name="index-gsl_005fwavelet"></a>
+<p>This function allocates and initializes a wavelet object of type
+<var>T</var>.  The parameter <var>k</var> selects the specific member of the
+wavelet family.  A null pointer is returned if insufficient memory is
+available or if a unsupported member is selected.
+</p></dd></dl>
+
+<p>The following wavelet types are implemented:
+</p>
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fdaubechies"></a><u>Wavelet:</u> <b>gsl_wavelet_daubechies</b></dt>
+<dt><a name="index-gsl_005fwavelet_005fdaubechies_005fcentered"></a><u>Wavelet:</u> <b>gsl_wavelet_daubechies_centered</b></dt>
+<dd><a name="index-Daubechies-wavelets"></a>
+<a name="index-maximal-phase_002c-Daubechies-wavelets"></a>
+<p>This is the Daubechies wavelet family of maximum phase with <em>k/2</em>
+vanishing moments.  The implemented wavelets are 
+<em>k=4, 6, &hellip;, 20</em>, with <var>k</var> even.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fhaar"></a><u>Wavelet:</u> <b>gsl_wavelet_haar</b></dt>
+<dt><a name="index-gsl_005fwavelet_005fhaar_005fcentered"></a><u>Wavelet:</u> <b>gsl_wavelet_haar_centered</b></dt>
+<dd><a name="index-Haar-wavelets"></a>
+<p>This is the Haar wavelet.  The only valid choice of <em>k</em> for the
+Haar wavelet is <em>k=2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fbspline"></a><u>Wavelet:</u> <b>gsl_wavelet_bspline</b></dt>
+<dt><a name="index-gsl_005fwavelet_005fbspline_005fcentered"></a><u>Wavelet:</u> <b>gsl_wavelet_bspline_centered</b></dt>
+<dd><a name="index-biorthogonal-wavelets"></a>
+<a name="index-B_002dspline-wavelets"></a>
+<p>This is the biorthogonal B-spline wavelet family of order <em>(i,j)</em>.  
+The implemented values of <em>k = 100*i + j</em> are 103, 105, 202, 204,
+206, 208, 301, 303, 305 307, 309.
+</p></dd></dl>
+
+<p>The centered forms of the wavelets align the coefficients of the various
+sub-bands on edges.  Thus the resulting visualization of the
+coefficients of the wavelet transform in the phase plane is easier to
+understand.
+</p>
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fname"></a><u>Function:</u> const char * <b>gsl_wavelet_name</b><i> (const gsl_wavelet * <var>w</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the wavelet family for
+<var>w</var>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fwavelet_005ffree"></a><u>Function:</u> void <b>gsl_wavelet_free</b><i> (gsl_wavelet * <var>w</var>)</i></dt>
+<dd><p>This function frees the wavelet object <var>w</var>.
+</p></dd></dl>
+
+<p>The <code>gsl_wavelet_workspace</code> structure contains scratch space of the
+same size as the input data and is used to hold intermediate results
+during the transform.
+</p>
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fworkspace_005falloc"></a><u>Function:</u> gsl_wavelet_workspace * <b>gsl_wavelet_workspace_alloc</b><i> (size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fwavelet_005fworkspace"></a>
+<p>This function allocates a workspace for the discrete wavelet transform.
+To perform a one-dimensional transform on <var>n</var> elements, a workspace
+of size <var>n</var> must be provided.  For two-dimensional transforms of
+<var>n</var>-by-<var>n</var> matrices it is sufficient to allocate a workspace of
+size <var>n</var>, since the transform operates on individual rows and
+columns. A null pointer is returned if insufficient memory is available.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet_005fworkspace_005ffree"></a><u>Function:</u> void <b>gsl_wavelet_workspace_free</b><i> (gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd><p>This function frees the allocated workspace <var>work</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="DWT-Transform-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-Initialization" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-in-one-dimension" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Initialization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Transform-Functions"></a>
+<h2 class="section">3. Transform Functions</h2>
+
+<p>This sections describes the actual functions performing the discrete
+wavelet transform.  Note that the transforms use periodic boundary
+conditions.  If the signal is not periodic in the sample length then
+spurious coefficients will appear at the beginning and end of each level
+of the transform.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#DWT-in-one-dimension">3.1 Wavelet transforms in one dimension</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#DWT-in-two-dimension">3.2 Wavelet transforms in two dimension</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="DWT-in-one-dimension"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-in-two-dimension" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Wavelet-transforms-in-one-dimension"></a>
+<h3 class="subsection">3.1 Wavelet transforms in one dimension</h3>
+<a name="index-DWT_002c-one-dimensional"></a>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet_005ftransform"></a><u>Function:</u> int <b>gsl_wavelet_transform</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>stride</var>, size_t <var>n</var>, gsl_wavelet_direction <var>dir</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet_005ftransform_005fforward"></a><u>Function:</u> int <b>gsl_wavelet_transform_forward</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>stride</var>, size_t <var>n</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet_005ftransform_005finverse"></a><u>Function:</u> int <b>gsl_wavelet_transform_inverse</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>stride</var>, size_t <var>n</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd>
+<p>These functions compute in-place forward and inverse discrete wavelet
+transforms of length <var>n</var> with stride <var>stride</var> on the array
+<var>data</var>. The length of the transform <var>n</var> is restricted to powers
+of two.  For the <code>transform</code> version of the function the argument
+<var>dir</var> can be either <code>forward</code> (<em>+1</em>) or <code>backward</code>
+(<em>-1</em>).  A workspace <var>work</var> of length <var>n</var> must be provided.
+</p>
+<p>For the forward transform, the elements of the original array are 
+replaced by the discrete wavelet
+transform <em>f_i -&gt; w_j,k</em> 
+in a packed triangular storage layout, 
+where <var>j</var> is the index of the level 
+<em>j = 0 ... J-1</em>
+and
+<var>k</var> is the index of the coefficient within each level,
+<em>k = 0 ... (2^j)-1</em>.  
+The total number of levels is <em>J = \log_2(n)</em>.  The output data
+has the following form,
+where the first element is the smoothing coefficient <em>s_-1,0</em>, followed by the detail coefficients <em>d_j,k</em> for each level
+<em>j</em>.  The backward transform inverts these coefficients to obtain 
+the original data.
+</p>
+<p>These functions return a status of <code>GSL_SUCCESS</code> upon successful
+completion.  <code>GSL_EINVAL</code> is returned if <var>n</var> is not an integer
+power of 2 or if insufficient workspace is provided.
+</p></dd></dl>
+
+<hr size="6">
+<a name="DWT-in-two-dimension"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-in-one-dimension" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Wavelet-transforms-in-two-dimension"></a>
+<h3 class="subsection">3.2 Wavelet transforms in two dimension</h3>
+<a name="index-DWT_002c-two-dimensional"></a>
+
+<p>The library provides functions to perform two-dimensional discrete
+wavelet transforms on square matrices.  The matrix dimensions must be an
+integer power of two.  There are two possible orderings of the rows and
+columns in the two-dimensional wavelet transform, referred to as the
+&ldquo;standard&rdquo; and &ldquo;non-standard&rdquo; forms.
+</p>
+<p>The &ldquo;standard&rdquo; transform performs a complete discrete wavelet
+transform on the rows of the matrix, followed by a separate complete
+discrete wavelet transform on the columns of the resulting
+row-transformed matrix.  This procedure uses the same ordering as a
+two-dimensional Fourier transform.
+</p>
+<p>The &ldquo;non-standard&rdquo; transform is performed in interleaved passes on the
+rows and columns of the matrix for each level of the transform.  The
+first level of the transform is applied to the matrix rows, and then to
+the matrix columns.  This procedure is then repeated across the rows and
+columns of the data for the subsequent levels of the transform, until
+the full discrete wavelet transform is complete.  The non-standard form
+of the discrete wavelet transform is typically used in image analysis.
+</p>
+<p>The functions described in this section are declared in the header file
+&lsquo;<tt>gsl_wavelet2d.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform"></a><u>Function:</u> int <b>gsl_wavelet2d_transform</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_direction <var>dir</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform_005fforward"></a><u>Function:</u> int <b>gsl_wavelet2d_transform_forward</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform_005finverse"></a><u>Function:</u> int <b>gsl_wavelet2d_transform_inverse</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd>
+<p>These functions compute two-dimensional in-place forward and inverse
+discrete wavelet transforms in standard form on the
+array <var>data</var> stored in row-major form with dimensions <var>size1</var>
+and <var>size2</var> and physical row length <var>tda</var>.  The dimensions must
+be equal (square matrix) and are restricted to powers of two.  For the
+<code>transform</code> version of the function the argument <var>dir</var> can be
+either <code>forward</code> (<em>+1</em>) or <code>backward</code> (<em>-1</em>).  A
+workspace <var>work</var> of the appropriate size must be provided.  On exit,
+the appropriate elements of the array <var>data</var> are replaced by their
+two-dimensional wavelet transform.
+</p>
+<p>The functions return a status of <code>GSL_SUCCESS</code> upon successful
+completion.  <code>GSL_EINVAL</code> is returned if <var>size1</var> and
+<var>size2</var> are not equal and integer powers of 2, or if insufficient
+workspace is provided.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform_005fmatrix"></a><u>Function:</u> int <b>gsl_wavelet2d_transform_matrix</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_direction <var>dir</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform_005fmatrix_005fforward"></a><u>Function:</u> int <b>gsl_wavelet2d_transform_matrix_forward</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005ftransform_005fmatrix_005finverse"></a><u>Function:</u> int <b>gsl_wavelet2d_transform_matrix_inverse</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd><p>These functions compute the two-dimensional in-place wavelet transform
+on a matrix <var>a</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_direction <var>dir</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform_005fforward"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform_forward</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform_005finverse"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform_inverse</b><i> (const gsl_wavelet * <var>w</var>, double * <var>data</var>, size_t <var>tda</var>, size_t <var>size1</var>, size_t <var>size2</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd><p>These functions compute the two-dimensional wavelet transform in
+non-standard form.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform_005fmatrix"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform_matrix</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_direction <var>dir</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform_005fmatrix_005fforward"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform_matrix_forward</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fwavelet2d_005fnstransform_005fmatrix_005finverse"></a><u>Function:</u> int <b>gsl_wavelet2d_nstransform_matrix_inverse</b><i> (const gsl_wavelet * <var>w</var>, gsl_matrix * <var>m</var>, gsl_wavelet_workspace * <var>work</var>)</i></dt>
+<dd><p>These functions compute the non-standard form of the two-dimensional
+in-place wavelet transform on a matrix <var>a</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="DWT-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-in-two-dimension" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-References" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Transform-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-References" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">4. Examples</h2>
+
+<p>The following program demonstrates the use of the one-dimensional
+wavelet transform functions.  It computes an approximation to an input
+signal (of length 256) using the 20 largest components of the wavelet
+transform, while setting the others to zero.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_sort.h&gt;
+#include &lt;gsl/gsl_wavelet.h&gt;
+
+int
+main (int argc, char **argv)
+{
+  int i, n = 256, nc = 20;
+  double *data = malloc (n * sizeof (double));
+  double *abscoeff = malloc (n * sizeof (double));
+  size_t *p = malloc (n * sizeof (size_t));
+
+  FILE * f;
+  gsl_wavelet *w;
+  gsl_wavelet_workspace *work;
+
+  w = gsl_wavelet_alloc (gsl_wavelet_daubechies, 4);
+  work = gsl_wavelet_workspace_alloc (n);
+
+  f = fopen (argv[1], &quot;r&quot;);
+  for (i = 0; i &lt; n; i++)
+    {
+      fscanf (f, &quot;%lg&quot;, &amp;data[i]);
+    }
+  fclose (f);
+
+  gsl_wavelet_transform_forward (w, data, 1, n, work);
+
+  for (i = 0; i &lt; n; i++)
+    {
+      abscoeff[i] = fabs (data[i]);
+    }
+  
+  gsl_sort_index (p, abscoeff, 1, n);
+  
+  for (i = 0; (i + nc) &lt; n; i++)
+    data[p[i]] = 0;
+  
+  gsl_wavelet_transform_inverse (w, data, 1, n, work);
+  
+  for (i = 0; i &lt; n; i++)
+    {
+      printf (&quot;%g\n&quot;, data[i]);
+    }
+  
+  gsl_wavelet_free (w);
+  gsl_wavelet_workspace_free (work);
+
+  free (data);
+  free (abscoeff);
+  free (p);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The output can be used with the <small>GNU</small> plotutils <code>graph</code> program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out ecg.dat &gt; dwt.dat
+$ graph -T ps -x 0 256 32 -h 0.3 -a dwt.dat &gt; dwt.ps
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="DWT-References"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">5. References and Further Reading</h2>
+
+<p>The mathematical background to wavelet transforms is covered in the
+original lectures by Daubechies,
+</p>
+<ul class="toc">
+<li>
+Ingrid Daubechies.
+Ten Lectures on Wavelets.
+<cite>CBMS-NSF Regional Conference Series in Applied Mathematics</cite> (1992), 
+SIAM, ISBN 0898712742.
+</li></ul>
+
+<p>An easy to read introduction to the subject with an emphasis on the
+application of the wavelet transform in various branches of science is,
+</p>
+<ul class="toc">
+<li>
+Paul S. Addison. <cite>The Illustrated Wavelet Transform Handbook</cite>.
+Institute of Physics Publishing (2002), ISBN 0750306920.
+</li></ul>
+
+<p>For extensive coverage of signal analysis by wavelets, wavelet packets
+and local cosine bases see,
+</p>
+<ul class="toc">
+<li>
+S. G. Mallat.  <cite>A wavelet tour of signal processing</cite> (Second
+edition). Academic Press (1999), ISBN 012466606X.
+</li></ul>
+
+<p>The concept of multiresolution analysis underlying the wavelet transform
+is described in,
+</p>
+<ul class="toc">
+<li>
+S. G. Mallat.
+Multiresolution Approximations and Wavelet Orthonormal Bases of L<em>^2</em>(R).
+<cite>Transactions of the American Mathematical Society</cite>, 315(1), 1989, 69&ndash;87.
+</li></ul>
+
+<ul class="toc">
+<li>
+S. G. Mallat.
+A Theory for Multiresolution Signal Decomposition&mdash;The Wavelet Representation.
+<cite>IEEE Transactions on Pattern Analysis and Machine Intelligence</cite>, 11, 1989,
+674&ndash;693. 
+</li></ul>
+
+<p>The coefficients for the individual wavelet families implemented by the
+library can be found in the following papers,
+</p>
+<ul class="toc">
+<li>
+I. Daubechies.
+Orthonormal Bases of Compactly Supported Wavelets.
+<cite>Communications on Pure and Applied Mathematics</cite>, 41 (1988) 909&ndash;996.
+</li></ul>
+
+<ul class="toc">
+<li>
+A. Cohen, I. Daubechies, and J.-C. Feauveau.
+Biorthogonal Bases of Compactly Supported Wavelets.
+<cite>Communications on Pure and Applied Mathematics</cite>, 45 (1992)
+485&ndash;560.
+</li></ul>
+
+<p>The PhysioNet archive of physiological datasets can be found online at
+<a href="http://www.physionet.org/">http://www.physionet.org/</a> and is described in the following
+paper,
+</p>
+<ul class="toc">
+<li>
+Goldberger et al.  
+PhysioBank, PhysioToolkit, and PhysioNet: Components
+of a New Research Resource for Complex Physiologic
+Signals. 
+<cite>Circulation</cite> 101(23):e215-e220 2000.
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#DWT-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

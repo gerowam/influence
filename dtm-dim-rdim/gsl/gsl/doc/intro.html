@@ -1,0 +1,535 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-license-of-GSL"></a>
+<a name="index-GNU-General-Public-License"></a>
+<p>The GNU Scientific Library (GSL) is a collection of routines for
+numerical computing.  The routines have been written from scratch in C,
+and present a modern Applications Programming Interface
+(API) for C programmers, allowing wrappers to be written for very
+high level languages.  The source code is distributed under the GNU
+General Public License.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Routines-available-in-GSL">1. Routines available in GSL</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#GSL-is-Free-Software">2. GSL is Free Software</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Obtaining-GSL">3. Obtaining GSL</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#No-Warranty">4. No Warranty</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reporting-Bugs">5. Reporting Bugs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Further-Information">6. Further Information</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conventions-used-in-this-manual">7. Conventions used in this manual</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Routines-available-in-GSL"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#GSL-is-Free-Software" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#GSL-is-Free-Software" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Routines-available-in-GSL-1"></a>
+<h2 class="section">1. Routines available in GSL</h2>
+
+<p>The library covers a wide range of topics in numerical computing.
+Routines are available for the following areas,
+</p>
+<table>
+<tr><td width="5%"></td><td width="45%">Complex Numbers</td><td width="45%">Roots of Polynomials</td></tr>
+<tr><td width="5%"></td><td width="45%">Special Functions</td><td width="45%">Vectors and Matrices</td></tr>
+<tr><td width="5%"></td><td width="45%">Permutations</td><td width="45%">Combinations</td></tr>
+<tr><td width="5%"></td><td width="45%">Sorting</td><td width="45%">BLAS Support</td></tr>
+<tr><td width="5%"></td><td width="45%">Linear Algebra</td><td width="45%">CBLAS Library</td></tr>
+<tr><td width="5%"></td><td width="45%">Fast Fourier Transforms</td><td width="45%">Eigensystems</td></tr>
+<tr><td width="5%"></td><td width="45%">Random Numbers</td><td width="45%">Quadrature</td></tr>
+<tr><td width="5%"></td><td width="45%">Random Distributions</td><td width="45%">Quasi-Random Sequences</td></tr>
+<tr><td width="5%"></td><td width="45%">Histograms</td><td width="45%">Statistics</td></tr>
+<tr><td width="5%"></td><td width="45%">Monte Carlo Integration</td><td width="45%">N-Tuples</td></tr>
+<tr><td width="5%"></td><td width="45%">Differential Equations</td><td width="45%">Simulated Annealing</td></tr>
+<tr><td width="5%"></td><td width="45%">Numerical Differentiation</td><td width="45%">Interpolation</td></tr>
+<tr><td width="5%"></td><td width="45%">Series Acceleration</td><td width="45%">Chebyshev Approximations</td></tr>
+<tr><td width="5%"></td><td width="45%">Root-Finding</td><td width="45%">Discrete Hankel Transforms</td></tr>
+<tr><td width="5%"></td><td width="45%">Least-Squares Fitting</td><td width="45%">Minimization</td></tr>
+<tr><td width="5%"></td><td width="45%">IEEE Floating-Point</td><td width="45%">Physical Constants</td></tr>
+<tr><td width="5%"></td><td width="45%">Basis Splines</td><td width="45%">Wavelets</td></tr>
+</table>
+
+<p>The use of these routines is described in this manual.  Each chapter
+provides detailed definitions of the functions, followed by example
+programs and references to the articles on which the algorithms are
+based.
+</p>
+<p>Where possible the routines have been based on reliable public-domain
+packages such as FFTPACK and QUADPACK, which the developers of GSL
+have reimplemented in C with modern coding conventions.
+</p>
+<hr size="6">
+<a name="GSL-is-Free-Software"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Obtaining-GSL" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Obtaining-GSL" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="GSL-is-Free-Software-1"></a>
+<h2 class="section">2. GSL is Free Software</h2>
+<a name="index-free-software_002c-explanation-of"></a>
+<p>The subroutines in the GNU Scientific Library are &ldquo;free software&rdquo;;
+this means that everyone is free to use them, and to redistribute them
+in other free programs.  The library is not in the public domain; it is
+copyrighted and there are conditions on its distribution.  These
+conditions are designed to permit everything that a good cooperating
+citizen would want to do.  What is not allowed is to try to prevent
+others from further sharing any version of the software that they might
+get from you.
+</p>
+<p>Specifically, we want to make sure that you have the right to share
+copies of programs that you are given which use the GNU Scientific
+Library, that you receive their source code or else can get it if you
+want it, that you can change these programs or use pieces of them in new
+free programs, and that you know you can do these things.
+</p>
+<p>To make sure that everyone has such rights, we have to forbid you to
+deprive anyone else of these rights.  For example, if you distribute
+copies of any code which uses the GNU Scientific Library, you must give
+the recipients all the rights that you have received.  You must make
+sure that they, too, receive or can get the source code, both to the
+library and the code which uses it.  And you must tell them their
+rights.  This means that the library should not be redistributed in
+proprietary programs.
+</p>
+<p>Also, for our own protection, we must make certain that everyone finds
+out that there is no warranty for the GNU Scientific Library.  If these
+programs are modified by someone else and passed on, we want their
+recipients to know that what they have is not what we distributed, so
+that any problems introduced by others will not reflect on our
+reputation.
+</p>
+<p>The precise conditions for the distribution of software related to the
+GNU Scientific Library are found in the GNU General Public License
+(@pxref{GNU General Public License}).  Further information about this
+license is available from the GNU Project webpage <cite>Frequently Asked
+Questions about the GNU GPL</cite>,
+</p>
+<ul class="toc">
+<li> 
+<a href="http://www.gnu.org/copyleft/gpl-faq.html">http://www.gnu.org/copyleft/gpl-faq.html</a>
+</li></ul>
+
+<p>The Free Software Foundation also operates a license consulting
+service for commercial users (contact details available from
+<a href="http://www.fsf.org/">http://www.fsf.org/</a>).
+</p>
+<hr size="6">
+<a name="Obtaining-GSL"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GSL-is-Free-Software" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#No-Warranty" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GSL-is-Free-Software" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#No-Warranty" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Obtaining-GSL-1"></a>
+<h2 class="section">3. Obtaining GSL</h2>
+<a name="index-obtaining-GSL"></a>
+<a name="index-downloading-GSL"></a>
+<a name="index-mailing-list-for-GSL-announcements"></a>
+<a name="index-info_002dgsl-mailing-list"></a>
+<p>The source code for the library can be obtained in different ways, by
+copying it from a friend, purchasing it on <small>CDROM</small> or downloading it
+from the internet. A list of public ftp servers which carry the source
+code can be found on the GNU website,
+</p>
+<ul class="toc">
+<li> 
+<a href="http://www.gnu.org/software/gsl/">http://www.gnu.org/software/gsl/</a>
+</li></ul>
+
+<p>The preferred platform for the library is a GNU system, which allows it
+to take advantage of additional features in the GNU C compiler and GNU C
+library.  However, the library is fully portable and should compile on
+most systems with a C compiler. 
+</p>
+<p>Announcements of new releases, updates and other relevant events are
+made on the <code>info-gsl@gnu.org</code> mailing list.  To subscribe to this
+low-volume list, send an email of the following form:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">To: info-gsl-request@gnu.org 
+Subject: subscribe
+</pre></td></tr></table>
+
+<p>You will receive a response asking you to reply in order to confirm
+your subscription.
+</p>
+<hr size="6">
+<a name="No-Warranty"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Obtaining-GSL" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reporting-Bugs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Obtaining-GSL" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reporting-Bugs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="No-Warranty-1"></a>
+<h2 class="section">4. No Warranty</h2>
+<a name="index-warranty-_0028none_0029"></a>
+<p>The software described in this manual has no warranty, it is provided
+&ldquo;as is&rdquo;.  It is your responsibility to validate the behavior of the
+routines and their accuracy using the source code provided, or to
+purchase support and warranties from commercial redistributors.  Consult
+the GNU General Public license for further details (@pxref{GNU General
+Public License}).
+</p>
+<hr size="6">
+<a name="Reporting-Bugs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#No-Warranty" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Further-Information" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#No-Warranty" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Further-Information" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reporting-Bugs-1"></a>
+<h2 class="section">5. Reporting Bugs</h2>
+<a name="index-reporting-bugs-in-GSL"></a>
+<a name="index-bugs_002c-how-to-report"></a>
+<a name="index-bug_002dgsl-mailing-list"></a>
+<a name="index-mailing-list_002c-bug_002dgsl"></a>
+<p>A list of known bugs can be found in the &lsquo;<tt>BUGS</tt>&rsquo; file included in
+the GSL distribution or online in the GSL bug tracker.<a name="DOCF1" href="#FOOT1">(1)</a>  Details of compilation problems can be found in
+the &lsquo;<tt>INSTALL</tt>&rsquo; file.
+</p>
+<p>If you find a bug which is not listed in these files, please report it to
+<a href="mailto:bug-gsl@gnu.org">bug-gsl@gnu.org</a>.
+</p>
+<p>All bug reports should include:
+</p>
+<ul>
+<li>
+The version number of GSL
+</li><li>
+The hardware and operating system
+</li><li>
+The compiler used, including version number and compilation options
+</li><li>
+A description of the bug behavior
+</li><li>
+A short program which exercises the bug
+</li></ul>
+
+<p>It is useful if you can check whether the same problem occurs when the
+library is compiled without optimization.  Thank you.
+</p>
+<p>Any errors or omissions in this manual can also be reported to the
+same address.
+</p>
+<hr size="6">
+<a name="Further-Information"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reporting-Bugs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Conventions-used-in-this-manual" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reporting-Bugs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Conventions-used-in-this-manual" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Further-Information-1"></a>
+<h2 class="section">6. Further Information</h2>
+<a name="index-mailing-list-archives"></a>
+<a name="index-website_002c-developer-information"></a>
+<a name="index-contacting-the-GSL-developers"></a>
+<p>Additional information, including online copies of this manual, links to
+related projects, and mailing list archives are available from the
+website mentioned above.  
+</p>
+<p>Any questions about the use and installation of the library can be asked
+on the mailing list <code>help-gsl@gnu.org</code>.  To subscribe to this
+list, send an email of the following form:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">To: help-gsl-request@gnu.org
+Subject: subscribe
+</pre></td></tr></table>
+
+<p>This mailing list can be used to ask questions not covered by this
+manual, and to contact the developers of the library.
+</p>
+<p>If you would like to refer to the GNU Scientific Library in a journal
+article, the recommended way is to cite this reference manual,
+e.g. <cite>M. Galassi et al, GNU Scientific Library Reference Manual (3rd
+Ed.), ISBN 0954612078</cite>.
+</p>
+<p>If you want to give a url, use &ldquo;<a href="http://www.gnu.org/software/gsl/">http://www.gnu.org/software/gsl/</a>&rdquo;.
+</p>
+<hr size="6">
+<a name="Conventions-used-in-this-manual"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Further-Information" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Further-Information" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Conventions-used-in-this-manual-1"></a>
+<h2 class="section">7. Conventions used in this manual</h2>
+<a name="index-conventions_002c-used-in-manual"></a>
+<a name="index-examples_002c-conventions-used-in"></a>
+<a name="index-shell-prompt"></a>
+<a name="index-_0024_002c-shell-prompt"></a>
+<p>This manual contains many examples which can be typed at the keyboard.
+A command entered at the terminal is shown like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ <i>command</i>
+</pre></td></tr></table>
+
+<a name="index-dollar-sign-_0024_002c-shell-prompt"></a>
+<p>The first character on the line is the terminal prompt, and should not
+be typed.  The dollar sign &lsquo;<samp>$</samp>&rsquo; is used as the standard prompt in
+this manual, although some systems may use a different character.
+</p>
+<p>The examples assume the use of the GNU operating system.  There may be
+minor differences in the output on other systems.  The commands for
+setting environment variables use the Bourne shell syntax of the
+standard GNU shell (<code>bash</code>).
+</p>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p><a href="http://savannah.gnu.org/bugs/?group=gsl">http://savannah.gnu.org/bugs/?group=gsl</a>
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Routines-available-in-GSL" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

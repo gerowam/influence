@@ -1,0 +1,892 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Low_002dlevel-CBLAS"></a>
+<a name="index-CBLAS_002c-Low_002dlevel-interface"></a>
+<a name="index-BLAS_002c-Low_002dlevel-C-interface"></a>
+<a name="index-Basic-Linear-Algebra-Subroutines-_0028BLAS_0029"></a>
+<p>The prototypes for the low-level <small>CBLAS</small> functions are declared in
+the file &lsquo;<tt>gsl_cblas.h</tt>&rsquo;.  For the definition of the functions
+consult the documentation available from Netlib (@pxref{BLAS References
+and Further Reading}).
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Level-1-CBLAS-Functions">1. Level 1</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Level-2-CBLAS-Functions">2. Level 2</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Level-3-CBLAS-Functions">3. Level 3</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#GSL-CBLAS-Examples">4. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+</table>
+
+<a name="Level-1-CBLAS-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Level-2-CBLAS-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Level-2-CBLAS-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-1"></a>
+<h2 class="section">1. Level 1</h2>
+
+<dl>
+<dt><a name="index-cblas_005fsdsdot"></a><u>Function:</u> float <b>cblas_sdsdot</b><i> (const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsdot"></a><u>Function:</u> double <b>cblas_dsdot</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsdot"></a><u>Function:</u> float <b>cblas_sdot</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fddot"></a><u>Function:</u> double <b>cblas_ddot</b><i> (const int <var>N</var>, const double * <var>x</var>, const int <var>incx</var>, const double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcdotu_005fsub"></a><u>Function:</u> void <b>cblas_cdotu_sub</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>dotu</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcdotc_005fsub"></a><u>Function:</u> void <b>cblas_cdotc_sub</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>dotc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzdotu_005fsub"></a><u>Function:</u> void <b>cblas_zdotu_sub</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>dotu</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzdotc_005fsub"></a><u>Function:</u> void <b>cblas_zdotc_sub</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>dotc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsnrm2"></a><u>Function:</u> float <b>cblas_snrm2</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsasum"></a><u>Function:</u> float <b>cblas_sasum</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdnrm2"></a><u>Function:</u> double <b>cblas_dnrm2</b><i> (const int <var>N</var>, const double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdasum"></a><u>Function:</u> double <b>cblas_dasum</b><i> (const int <var>N</var>, const double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fscnrm2"></a><u>Function:</u> float <b>cblas_scnrm2</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fscasum"></a><u>Function:</u> float <b>cblas_scasum</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdznrm2"></a><u>Function:</u> double <b>cblas_dznrm2</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdzasum"></a><u>Function:</u> double <b>cblas_dzasum</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fisamax"></a><u>Function:</u> CBLAS_INDEX <b>cblas_isamax</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fidamax"></a><u>Function:</u> CBLAS_INDEX <b>cblas_idamax</b><i> (const int <var>N</var>, const double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005ficamax"></a><u>Function:</u> CBLAS_INDEX <b>cblas_icamax</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fizamax"></a><u>Function:</u> CBLAS_INDEX <b>cblas_izamax</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsswap"></a><u>Function:</u> void <b>cblas_sswap</b><i> (const int <var>N</var>, float * <var>x</var>, const int <var>incx</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fscopy"></a><u>Function:</u> void <b>cblas_scopy</b><i> (const int <var>N</var>, const float * <var>x</var>, const int <var>incx</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsaxpy"></a><u>Function:</u> void <b>cblas_saxpy</b><i> (const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdswap"></a><u>Function:</u> void <b>cblas_dswap</b><i> (const int <var>N</var>, double * <var>x</var>, const int <var>incx</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdcopy"></a><u>Function:</u> void <b>cblas_dcopy</b><i> (const int <var>N</var>, const double * <var>x</var>, const int <var>incx</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdaxpy"></a><u>Function:</u> void <b>cblas_daxpy</b><i> (const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcswap"></a><u>Function:</u> void <b>cblas_cswap</b><i> (const int <var>N</var>, void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fccopy"></a><u>Function:</u> void <b>cblas_ccopy</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcaxpy"></a><u>Function:</u> void <b>cblas_caxpy</b><i> (const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzswap"></a><u>Function:</u> void <b>cblas_zswap</b><i> (const int <var>N</var>, void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzcopy"></a><u>Function:</u> void <b>cblas_zcopy</b><i> (const int <var>N</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzaxpy"></a><u>Function:</u> void <b>cblas_zaxpy</b><i> (const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsrotg"></a><u>Function:</u> void <b>cblas_srotg</b><i> (float * <var>a</var>, float * <var>b</var>, float * <var>c</var>, float * <var>s</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsrotmg"></a><u>Function:</u> void <b>cblas_srotmg</b><i> (float * <var>d1</var>, float * <var>d2</var>, float * <var>b1</var>, const float <var>b2</var>, float * <var>P</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsrot"></a><u>Function:</u> void <b>cblas_srot</b><i> (const int <var>N</var>, float * <var>x</var>, const int <var>incx</var>, float * <var>y</var>, const int <var>incy</var>, const float <var>c</var>, const float <var>s</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsrotm"></a><u>Function:</u> void <b>cblas_srotm</b><i> (const int <var>N</var>, float * <var>x</var>, const int <var>incx</var>, float * <var>y</var>, const int <var>incy</var>, const float * <var>P</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdrotg"></a><u>Function:</u> void <b>cblas_drotg</b><i> (double * <var>a</var>, double * <var>b</var>, double * <var>c</var>, double * <var>s</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdrotmg"></a><u>Function:</u> void <b>cblas_drotmg</b><i> (double * <var>d1</var>, double * <var>d2</var>, double * <var>b1</var>, const double <var>b2</var>, double * <var>P</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdrot"></a><u>Function:</u> void <b>cblas_drot</b><i> (const int <var>N</var>, double * <var>x</var>, const int <var>incx</var>, double * <var>y</var>, const int <var>incy</var>, const double <var>c</var>, const double <var>s</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdrotm"></a><u>Function:</u> void <b>cblas_drotm</b><i> (const int <var>N</var>, double * <var>x</var>, const int <var>incx</var>, double * <var>y</var>, const int <var>incy</var>, const double * <var>P</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsscal"></a><u>Function:</u> void <b>cblas_sscal</b><i> (const int <var>N</var>, const float <var>alpha</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdscal"></a><u>Function:</u> void <b>cblas_dscal</b><i> (const int <var>N</var>, const double <var>alpha</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcscal"></a><u>Function:</u> void <b>cblas_cscal</b><i> (const int <var>N</var>, const void * <var>alpha</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzscal"></a><u>Function:</u> void <b>cblas_zscal</b><i> (const int <var>N</var>, const void * <var>alpha</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcsscal"></a><u>Function:</u> void <b>cblas_csscal</b><i> (const int <var>N</var>, const float <var>alpha</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzdscal"></a><u>Function:</u> void <b>cblas_zdscal</b><i> (const int <var>N</var>, const double <var>alpha</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<hr size="6">
+<a name="Level-2-CBLAS-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-3-CBLAS-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-3-CBLAS-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-2"></a>
+<h2 class="section">2. Level 2</h2>
+
+<dl>
+<dt><a name="index-cblas_005fsgemv"></a><u>Function:</u> void <b>cblas_sgemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>x</var>, const int <var>incx</var>, const float <var>beta</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsgbmv"></a><u>Function:</u> void <b>cblas_sgbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const int <var>KL</var>, const int <var>KU</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>x</var>, const int <var>incx</var>, const float <var>beta</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstrmv"></a><u>Function:</u> void <b>cblas_strmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstbmv"></a><u>Function:</u> void <b>cblas_stbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstpmv"></a><u>Function:</u> void <b>cblas_stpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const float * <var>Ap</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstrsv"></a><u>Function:</u> void <b>cblas_strsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstbsv"></a><u>Function:</u> void <b>cblas_stbsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstpsv"></a><u>Function:</u> void <b>cblas_stpsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const float * <var>Ap</var>, float * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdgemv"></a><u>Function:</u> void <b>cblas_dgemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>x</var>, const int <var>incx</var>, const double <var>beta</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdgbmv"></a><u>Function:</u> void <b>cblas_dgbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const int <var>KL</var>, const int <var>KU</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>x</var>, const int <var>incx</var>, const double <var>beta</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtrmv"></a><u>Function:</u> void <b>cblas_dtrmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtbmv"></a><u>Function:</u> void <b>cblas_dtbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtpmv"></a><u>Function:</u> void <b>cblas_dtpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const double * <var>Ap</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtrsv"></a><u>Function:</u> void <b>cblas_dtrsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtbsv"></a><u>Function:</u> void <b>cblas_dtbsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtpsv"></a><u>Function:</u> void <b>cblas_dtpsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const double * <var>Ap</var>, double * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcgemv"></a><u>Function:</u> void <b>cblas_cgemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcgbmv"></a><u>Function:</u> void <b>cblas_cgbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const int <var>KL</var>, const int <var>KU</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctrmv"></a><u>Function:</u> void <b>cblas_ctrmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctbmv"></a><u>Function:</u> void <b>cblas_ctbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctpmv"></a><u>Function:</u> void <b>cblas_ctpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>Ap</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctrsv"></a><u>Function:</u> void <b>cblas_ctrsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctbsv"></a><u>Function:</u> void <b>cblas_ctbsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctpsv"></a><u>Function:</u> void <b>cblas_ctpsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>Ap</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzgemv"></a><u>Function:</u> void <b>cblas_zgemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzgbmv"></a><u>Function:</u> void <b>cblas_zgbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const int <var>M</var>, const int <var>N</var>, const int <var>KL</var>, const int <var>KU</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztrmv"></a><u>Function:</u> void <b>cblas_ztrmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztbmv"></a><u>Function:</u> void <b>cblas_ztbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztpmv"></a><u>Function:</u> void <b>cblas_ztpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>Ap</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztrsv"></a><u>Function:</u> void <b>cblas_ztrsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztbsv"></a><u>Function:</u> void <b>cblas_ztbsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztpsv"></a><u>Function:</u> void <b>cblas_ztpsv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>N</var>, const void * <var>Ap</var>, void * <var>x</var>, const int <var>incx</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssymv"></a><u>Function:</u> void <b>cblas_ssymv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>x</var>, const int <var>incx</var>, const float <var>beta</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssbmv"></a><u>Function:</u> void <b>cblas_ssbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const int <var>K</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>x</var>, const int <var>incx</var>, const float <var>beta</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsspmv"></a><u>Function:</u> void <b>cblas_sspmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>Ap</var>, const float * <var>x</var>, const int <var>incx</var>, const float <var>beta</var>, float * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsger"></a><u>Function:</u> void <b>cblas_sger</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>, float * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssyr"></a><u>Function:</u> void <b>cblas_ssyr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, float * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsspr"></a><u>Function:</u> void <b>cblas_sspr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, float * <var>Ap</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssyr2"></a><u>Function:</u> void <b>cblas_ssyr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>, float * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fsspr2"></a><u>Function:</u> void <b>cblas_sspr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>x</var>, const int <var>incx</var>, const float * <var>y</var>, const int <var>incy</var>, float * <var>A</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsymv"></a><u>Function:</u> void <b>cblas_dsymv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>x</var>, const int <var>incx</var>, const double <var>beta</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsbmv"></a><u>Function:</u> void <b>cblas_dsbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const int <var>K</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>x</var>, const int <var>incx</var>, const double <var>beta</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdspmv"></a><u>Function:</u> void <b>cblas_dspmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>Ap</var>, const double * <var>x</var>, const int <var>incx</var>, const double <var>beta</var>, double * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdger"></a><u>Function:</u> void <b>cblas_dger</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, const double * <var>y</var>, const int <var>incy</var>, double * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsyr"></a><u>Function:</u> void <b>cblas_dsyr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, double * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdspr"></a><u>Function:</u> void <b>cblas_dspr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, double * <var>Ap</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsyr2"></a><u>Function:</u> void <b>cblas_dsyr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, const double * <var>y</var>, const int <var>incy</var>, double * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdspr2"></a><u>Function:</u> void <b>cblas_dspr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>x</var>, const int <var>incx</var>, const double * <var>y</var>, const int <var>incy</var>, double * <var>A</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchemv"></a><u>Function:</u> void <b>cblas_chemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchbmv"></a><u>Function:</u> void <b>cblas_chbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchpmv"></a><u>Function:</u> void <b>cblas_chpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>Ap</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcgeru"></a><u>Function:</u> void <b>cblas_cgeru</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcgerc"></a><u>Function:</u> void <b>cblas_cgerc</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcher"></a><u>Function:</u> void <b>cblas_cher</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchpr"></a><u>Function:</u> void <b>cblas_chpr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const float <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>A</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcher2"></a><u>Function:</u> void <b>cblas_cher2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchpr2"></a><u>Function:</u> void <b>cblas_chpr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>Ap</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhemv"></a><u>Function:</u> void <b>cblas_zhemv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhbmv"></a><u>Function:</u> void <b>cblas_zhbmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhpmv"></a><u>Function:</u> void <b>cblas_zhpmv</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>Ap</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>beta</var>, void * <var>y</var>, const int <var>incy</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzgeru"></a><u>Function:</u> void <b>cblas_zgeru</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzgerc"></a><u>Function:</u> void <b>cblas_zgerc</b><i> (const enum CBLAS_ORDER <var>order</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzher"></a><u>Function:</u> void <b>cblas_zher</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhpr"></a><u>Function:</u> void <b>cblas_zhpr</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const double <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, void * <var>A</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzher2"></a><u>Function:</u> void <b>cblas_zher2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>A</var>, const int <var>lda</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhpr2"></a><u>Function:</u> void <b>cblas_zhpr2</b><i> (const enum CBLAS_ORDER <var>order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>x</var>, const int <var>incx</var>, const void * <var>y</var>, const int <var>incy</var>, void * <var>Ap</var>)</i></dt>
+</dl>
+
+<hr size="6">
+<a name="Level-3-CBLAS-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-2-CBLAS-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-CBLAS-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-2-CBLAS-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GSL-CBLAS-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Level-3"></a>
+<h2 class="section">3. Level 3</h2>
+
+
+<dl>
+<dt><a name="index-cblas_005fsgemm"></a><u>Function:</u> void <b>cblas_sgemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_TRANSPOSE <var>TransB</var>, const int <var>M</var>, const int <var>N</var>, const int <var>K</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>B</var>, const int <var>ldb</var>, const float <var>beta</var>, float * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssymm"></a><u>Function:</u> void <b>cblas_ssymm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>B</var>, const int <var>ldb</var>, const float <var>beta</var>, float * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssyrk"></a><u>Function:</u> void <b>cblas_ssyrk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float <var>beta</var>, float * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fssyr2k"></a><u>Function:</u> void <b>cblas_ssyr2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, const float * <var>B</var>, const int <var>ldb</var>, const float <var>beta</var>, float * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstrmm"></a><u>Function:</u> void <b>cblas_strmm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fstrsm"></a><u>Function:</u> void <b>cblas_strsm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const float <var>alpha</var>, const float * <var>A</var>, const int <var>lda</var>, float * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdgemm"></a><u>Function:</u> void <b>cblas_dgemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_TRANSPOSE <var>TransB</var>, const int <var>M</var>, const int <var>N</var>, const int <var>K</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>B</var>, const int <var>ldb</var>, const double <var>beta</var>, double * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsymm"></a><u>Function:</u> void <b>cblas_dsymm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>B</var>, const int <var>ldb</var>, const double <var>beta</var>, double * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsyrk"></a><u>Function:</u> void <b>cblas_dsyrk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double <var>beta</var>, double * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdsyr2k"></a><u>Function:</u> void <b>cblas_dsyr2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, const double * <var>B</var>, const int <var>ldb</var>, const double <var>beta</var>, double * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtrmm"></a><u>Function:</u> void <b>cblas_dtrmm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fdtrsm"></a><u>Function:</u> void <b>cblas_dtrsm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const double <var>alpha</var>, const double * <var>A</var>, const int <var>lda</var>, double * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcgemm"></a><u>Function:</u> void <b>cblas_cgemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_TRANSPOSE <var>TransB</var>, const int <var>M</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcsymm"></a><u>Function:</u> void <b>cblas_csymm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcsyrk"></a><u>Function:</u> void <b>cblas_csyrk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcsyr2k"></a><u>Function:</u> void <b>cblas_csyr2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctrmm"></a><u>Function:</u> void <b>cblas_ctrmm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fctrsm"></a><u>Function:</u> void <b>cblas_ctrsm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzgemm"></a><u>Function:</u> void <b>cblas_zgemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_TRANSPOSE <var>TransB</var>, const int <var>M</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzsymm"></a><u>Function:</u> void <b>cblas_zsymm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzsyrk"></a><u>Function:</u> void <b>cblas_zsyrk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzsyr2k"></a><u>Function:</u> void <b>cblas_zsyr2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztrmm"></a><u>Function:</u> void <b>cblas_ztrmm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fztrsm"></a><u>Function:</u> void <b>cblas_ztrsm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>TransA</var>, const enum CBLAS_DIAG <var>Diag</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, void * <var>B</var>, const int <var>ldb</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fchemm"></a><u>Function:</u> void <b>cblas_chemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcherk"></a><u>Function:</u> void <b>cblas_cherk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const float <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const float <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fcher2k"></a><u>Function:</u> void <b>cblas_cher2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const float <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzhemm"></a><u>Function:</u> void <b>cblas_zhemm</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_SIDE <var>Side</var>, const enum CBLAS_UPLO <var>Uplo</var>, const int <var>M</var>, const int <var>N</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const void * <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzherk"></a><u>Function:</u> void <b>cblas_zherk</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const double <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const double <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fzher2k"></a><u>Function:</u> void <b>cblas_zher2k</b><i> (const enum CBLAS_ORDER <var>Order</var>, const enum CBLAS_UPLO <var>Uplo</var>, const enum CBLAS_TRANSPOSE <var>Trans</var>, const int <var>N</var>, const int <var>K</var>, const void * <var>alpha</var>, const void * <var>A</var>, const int <var>lda</var>, const void * <var>B</var>, const int <var>ldb</var>, const double <var>beta</var>, void * <var>C</var>, const int <var>ldc</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-cblas_005fxerbla"></a><u>Function:</u> void <b>cblas_xerbla</b><i> (int <var>p</var>, const char * <var>rout</var>, const char * <var>form</var>, ...)</i></dt>
+</dl>
+
+<hr size="6">
+<a name="GSL-CBLAS-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-3-CBLAS-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-3-CBLAS-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">4. Examples</h2>
+
+<p>The following program computes the product of two matrices using the
+Level-3 <small>BLAS</small> function <small>SGEMM</small>,
+The matrices are stored in row major order but could be stored in column
+major order if the first argument of the call to <code>cblas_sgemm</code> was
+changed to <code>CblasColMajor</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_cblas.h&gt;
+
+int
+main (void)
+{
+  int lda = 3;
+
+  float A[] = { 0.11, 0.12, 0.13,
+                0.21, 0.22, 0.23 };
+
+  int ldb = 2;
+  
+  float B[] = { 1011, 1012,
+                1021, 1022,
+                1031, 1032 };
+
+  int ldc = 2;
+
+  float C[] = { 0.00, 0.00,
+                0.00, 0.00 };
+
+  /* Compute C = A B */
+
+  cblas_sgemm (CblasRowMajor, 
+               CblasNoTrans, CblasNoTrans, 2, 2, 3,
+               1.0, A, lda, B, ldb, 0.0, C, ldc);
+
+  printf (&quot;[ %g, %g\n&quot;, C[0], C[1]);
+  printf (&quot;  %g, %g ]\n&quot;, C[2], C[3]);
+
+  return 0;  
+}
+</pre></pre></td></tr></table>
+
+<p>To compile the program use the following command line,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc -Wall demo.c -lgslcblas
+</pre></td></tr></table>
+
+<p>There is no need to link with the main library <code>-lgsl</code> in this
+case as the <small>CBLAS</small> library is an independent unit. Here is the output
+from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out
+<pre class="verbatim">[ 367.76, 368.12
+  674.06, 674.72 ]
+</pre></pre></td></tr></table>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Level-1-CBLAS-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

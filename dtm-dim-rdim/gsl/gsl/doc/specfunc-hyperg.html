@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-hypergeometric-functions"></a>
+<a name="index-confluent-hypergeometric-functions"></a>
+
+<p>Hypergeometric functions are described in Abramowitz &amp; Stegun, Chapters
+13 and 15.  These functions are declared in the header file
+&lsquo;<tt>gsl_sf_hyperg.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f0F1"></a><u>Function:</u> double <b>gsl_sf_hyperg_0F1</b><i> (double <var>c</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f0F1_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_0F1_e</b><i> (double <var>c</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the hypergeometric function <em>0F1(c,x)</em>.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f1F1_005fint"></a><u>Function:</u> double <b>gsl_sf_hyperg_1F1_int</b><i> (int <var>m</var>, int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f1F1_005fint_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_1F1_int_e</b><i> (int <var>m</var>, int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the confluent hypergeometric function
+<em>1F1(m,n,x) = M(m,n,x)</em> for integer parameters <var>m</var>, <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f1F1"></a><u>Function:</u> double <b>gsl_sf_hyperg_1F1</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f1F1_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_1F1_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the confluent hypergeometric function
+<em>1F1(a,b,x) = M(a,b,x)</em> for general parameters <var>a</var>, <var>b</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU_005fint"></a><u>Function:</u> double <b>gsl_sf_hyperg_U_int</b><i> (int <var>m</var>, int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU_005fint_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_U_int_e</b><i> (int <var>m</var>, int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the confluent hypergeometric function
+<em>U(m,n,x)</em> for integer parameters <var>m</var>, <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU_005fint_005fe10_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_U_int_e10_e</b><i> (int <var>m</var>, int <var>n</var>, double <var>x</var>, gsl_sf_result_e10 * <var>result</var>)</i></dt>
+<dd><p>This routine computes the confluent hypergeometric function
+<em>U(m,n,x)</em> for integer parameters <var>m</var>, <var>n</var> using the
+<code>gsl_sf_result_e10</code> type to return a result with extended range.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU"></a><u>Function:</u> double <b>gsl_sf_hyperg_U</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_U_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the confluent hypergeometric function <em>U(a,b,x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005fU_005fe10_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_U_e10_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>, gsl_sf_result_e10 * <var>result</var>)</i></dt>
+<dd><p>This routine computes the confluent hypergeometric function
+<em>U(a,b,x)</em> using the <code>gsl_sf_result_e10</code> type to return a
+result with extended range. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1"></a><u>Function:</u> double <b>gsl_sf_hyperg_2F1</b><i> (double <var>a</var>, double <var>b</var>, double <var>c</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_2F1_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>c</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Gauss hypergeometric function 
+<em>2F1(a,b,c,x) = F(a,b,c,x)</em> for <em>|x| &lt; 1</em>.  
+</p>
+<p>If the arguments <em>(a,b,c,x)</em> are too close to a singularity then
+the function can return the error code <code>GSL_EMAXITER</code> when the
+series approximation converges too slowly.  This occurs in the region of
+<em>x=1</em>, <em>c - a - b = m</em> for integer m.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005fconj"></a><u>Function:</u> double <b>gsl_sf_hyperg_2F1_conj</b><i> (double <var>aR</var>, double <var>aI</var>, double <var>c</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005fconj_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_2F1_conj_e</b><i> (double <var>aR</var>, double <var>aI</var>, double <var>c</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Gauss hypergeometric function
+<em>2F1(a_R + i a_I, a_R - i a_I, c, x)</em> with complex parameters 
+for <em>|x| &lt; 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005frenorm"></a><u>Function:</u> double <b>gsl_sf_hyperg_2F1_renorm</b><i> (double <var>a</var>, double <var>b</var>, double <var>c</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005frenorm_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_2F1_renorm_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>c</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the renormalized Gauss hypergeometric function
+<em>2F1(a,b,c,x) / \Gamma(c)</em> for <em>|x| &lt; 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005fconj_005frenorm"></a><u>Function:</u> double <b>gsl_sf_hyperg_2F1_conj_renorm</b><i> (double <var>aR</var>, double <var>aI</var>, double <var>c</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F1_005fconj_005frenorm_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_2F1_conj_renorm_e</b><i> (double <var>aR</var>, double <var>aI</var>, double <var>c</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the renormalized Gauss hypergeometric function
+<em>2F1(a_R + i a_I, a_R - i a_I, c, x) / \Gamma(c)</em> for <em>|x| &lt; 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F0"></a><u>Function:</u> double <b>gsl_sf_hyperg_2F0</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhyperg_005f2F0_005fe"></a><u>Function:</u> int <b>gsl_sf_hyperg_2F0_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the hypergeometric function <em>2F0(a,b,x)</em>.  The series representation
+is a divergent hypergeometric series.  However, for <em>x &lt; 0</em> we
+have 
+<em>2F0(a,b,x) = (-1/x)^a U(a,1+a-b,-1/x)</em>
+</p></dd></dl>
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,1213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-solving-nonlinear-systems-of-equations"></a>
+<a name="index-nonlinear-systems-of-equations_002c-solution-of"></a>
+<a name="index-systems-of-equations_002c-nonlinear"></a>
+
+<p>This chapter describes functions for multidimensional root-finding
+(solving nonlinear systems with <em>n</em> equations in <em>n</em>
+unknowns).  The library provides low level components for a variety of
+iterative solvers and convergence tests.  These can be combined by the
+user to achieve the desired solution, with full access to the
+intermediate steps of the iteration.  Each class of methods uses the
+same framework, so that you can switch between solvers at runtime
+without needing to recompile your program.  Each instance of a solver
+keeps track of its own state, allowing the solvers to be used in
+multi-threaded programs.  The solvers are based on the original Fortran
+library <small>MINPACK</small>.
+</p>
+<p>The header file &lsquo;<tt>gsl_multiroots.h</tt>&rsquo; contains prototypes for the
+multidimensional root finding functions and related declarations.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-Multidimensional-Root-Finding">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-Multidimensional-Solver">2. Initializing the Solver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Providing-the-multidimensional-system-of-equations-to-solve">3. Providing the function to solve</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Iteration-of-the-multidimensional-solver">4. Iteration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Search-Stopping-Parameters-for-the-multidimensional-solver">5. Search Stopping Parameters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Algorithms-using-Derivatives">6. Algorithms using Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Algorithms-without-Derivatives">7. Algorithms without Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Example-programs-for-Multidimensional-Root-finding">8. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#References-and-Further-Reading-for-Multidimensional-Root-Finding">9. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Overview-of-Multidimensional-Root-Finding"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-multidimensional-root-finding_002c-overview"></a>
+
+<p>The problem of multidimensional root finding requires the simultaneous
+solution of <em>n</em> equations, <em>f_i</em>, in <em>n</em> variables,
+<em>x_i</em>,
+In general there are no bracketing methods available for <em>n</em>
+dimensional systems, and no way of knowing whether any solutions
+exist.  All algorithms proceed from an initial guess using a variant of
+the Newton iteration,
+where <em>x</em>, <em>f</em> are vector quantities and <em>J</em> is the
+Jacobian matrix <em>J_ij = d f_i / d x_j</em>.
+Additional strategies can be used to enlarge the region of
+convergence.  These include requiring a decrease in the norm <em>|f|</em> on
+each step proposed by Newton&rsquo;s method, or taking steepest-descent steps in
+the direction of the negative gradient of <em>|f|</em>.
+</p>
+<p>Several root-finding algorithms are available within a single framework.
+The user provides a high-level driver for the algorithms, and the
+library provides the individual functions necessary for each of the
+steps.  There are three main phases of the iteration.  The steps are,
+</p>
+<ul>
+<li>
+initialize solver state, <var>s</var>, for algorithm <var>T</var>
+
+</li><li>
+update <var>s</var> using the iteration <var>T</var>
+
+</li><li>
+test <var>s</var> for convergence, and repeat iteration if necessary
+</li></ul>
+
+<p>The evaluation of the Jacobian matrix can be problematic, either because
+programming the derivatives is intractable or because computation of the
+<em>n^2</em> terms of the matrix becomes too expensive.  For these reasons
+the algorithms provided by the library are divided into two classes according
+to whether the derivatives are available or not.
+</p>
+<a name="index-Jacobian-matrix_002c-root-finding"></a>
+<p>The state for solvers with an analytic Jacobian matrix is held in a
+<code>gsl_multiroot_fdfsolver</code> struct.  The updating procedure requires
+both the function and its derivatives to be supplied by the user.
+</p>
+<p>The state for solvers which do not use an analytic Jacobian matrix is
+held in a <code>gsl_multiroot_fsolver</code> struct.  The updating procedure
+uses only function evaluations (not derivatives).  The algorithms
+estimate the matrix <em>J</em> or <em>J^-1</em> by approximate methods.
+</p>
+<hr size="6">
+<a name="Initializing-the-Multidimensional-Solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-multidimensional-system-of-equations-to-solve" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-multidimensional-system-of-equations-to-solve" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-Solver"></a>
+<h2 class="section">2. Initializing the Solver</h2>
+
+<p>The following functions initialize a multidimensional solver, either
+with or without derivatives.  The solver itself depends only on the
+dimension of the problem and the algorithm and can be reused for
+different problems.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005falloc"></a><u>Function:</u> gsl_multiroot_fsolver * <b>gsl_multiroot_fsolver_alloc</b><i> (const gsl_multiroot_fsolver_type * <var>T</var>, size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fmultiroot_005ffsolver"></a>
+<a name="index-gsl_005fmultiroot_005ffsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+solver of type <var>T</var> for a system of <var>n</var> dimensions.
+For example, the following code creates an instance of a hybrid solver, 
+to solve a 3-dimensional system of equations.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_multiroot_fsolver_type * T 
+    = gsl_multiroot_fsolver_hybrid;
+gsl_multiroot_fsolver * s 
+    = gsl_multiroot_fsolver_alloc (T, 3);
+</pre></td></tr></table>
+
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005falloc"></a><u>Function:</u> gsl_multiroot_fdfsolver * <b>gsl_multiroot_fdfsolver_alloc</b><i> (const gsl_multiroot_fdfsolver_type * <var>T</var>, size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fmultiroot_005ffdfsolver"></a>
+<a name="index-gsl_005fmultiroot_005ffdfsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+derivative solver of type <var>T</var> for a system of <var>n</var> dimensions.
+For example, the following code creates an instance of a Newton-Raphson solver,
+for a 2-dimensional system of equations.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_multiroot_fdfsolver_type * T 
+    = gsl_multiroot_fdfsolver_newton;
+gsl_multiroot_fdfsolver * s = 
+    gsl_multiroot_fdfsolver_alloc (T, 2);
+</pre></td></tr></table>
+
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fset"></a><u>Function:</u> int <b>gsl_multiroot_fsolver_set</b><i> (gsl_multiroot_fsolver * <var>s</var>, gsl_multiroot_function * <var>f</var>, const gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fset"></a><u>Function:</u> int <b>gsl_multiroot_fdfsolver_set</b><i> (gsl_multiroot_fdfsolver * <var>s</var>, gsl_multiroot_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>)</i></dt>
+<dd><p>These functions set, or reset, an existing solver <var>s</var> to use the
+function <var>f</var> or function and derivative <var>fdf</var>, and the initial
+guess <var>x</var>.  Note that the initial position is copied from <var>x</var>, this
+argument is not modified by subsequent iterations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005ffree"></a><u>Function:</u> void <b>gsl_multiroot_fsolver_free</b><i> (gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005ffree"></a><u>Function:</u> void <b>gsl_multiroot_fdfsolver_free</b><i> (gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions free all the memory associated with the solver <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fname"></a><u>Function:</u> const char * <b>gsl_multiroot_fsolver_name</b><i> (const gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fname"></a><u>Function:</u> const char * <b>gsl_multiroot_fdfsolver_name</b><i> (const gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return a pointer to the name of the solver.  For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;s is a '%s' solver\n&quot;, 
+        gsl_multiroot_fdfsolver_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>s is a 'newton' solver</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Providing-the-multidimensional-system-of-equations-to-solve"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-multidimensional-solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-multidimensional-solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Providing-the-function-to-solve"></a>
+<h2 class="section">3. Providing the function to solve</h2>
+<a name="index-multidimensional-root-finding_002c-providing-a-function-to-solve"></a>
+
+<p>You must provide <em>n</em> functions of <em>n</em> variables for the root
+finders to operate on.  In order to allow for general parameters the
+functions are defined by the following data types:
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffunction"></a><u>Data Type:</u> <b>gsl_multiroot_function</b></dt>
+<dd><p>This data type defines a general system of functions with parameters.
+</p>
+<dl compact="compact">
+<dt> <code>int (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>f</var>)</code></dt>
+<dd><p>this function should store the vector result
+<em>f(x,params)</em> in <var>f</var> for argument <var>x</var> and parameters <var>params</var>,
+returning an appropriate error code if the function cannot be computed.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the dimension of the system, i.e. the number of components of the
+vectors <var>x</var> and <var>f</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>Here is an example using Powell&rsquo;s test function,
+with <em>A = 10^4</em>.  The following code defines a
+<code>gsl_multiroot_function</code> system <code>F</code> which you could pass to a
+solver:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">struct powell_params { double A; };
+
+int
+powell (gsl_vector * x, void * p, gsl_vector * f) {
+   struct powell_params * params 
+     = (struct powell_params *)p;
+   const double A = (params-&gt;A);
+   const double x0 = gsl_vector_get(x,0);
+   const double x1 = gsl_vector_get(x,1);
+
+   gsl_vector_set (f, 0, A * x0 * x1 - 1);
+   gsl_vector_set (f, 1, (exp(-x0) + exp(-x1) 
+                          - (1.0 + 1.0/A)));
+   return GSL_SUCCESS
+}
+
+gsl_multiroot_function F;
+struct powell_params params = { 10000.0 };
+
+F.f = &amp;powell;
+F.n = 2;
+F.params = &amp;params;
+</pre></td></tr></table>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffunction_005ffdf"></a><u>Data Type:</u> <b>gsl_multiroot_function_fdf</b></dt>
+<dd><p>This data type defines a general system of functions with parameters and
+the corresponding Jacobian matrix of derivatives,
+</p>
+<dl compact="compact">
+<dt> <code>int (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>f</var>)</code></dt>
+<dd><p>this function should store the vector result
+<em>f(x,params)</em> in <var>f</var> for argument <var>x</var> and parameters <var>params</var>,
+returning an appropriate error code if the function cannot be computed.
+</p>
+</dd>
+<dt> <code>int (* df) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_matrix * <var>J</var>)</code></dt>
+<dd><p>this function should store the <var>n</var>-by-<var>n</var> matrix result
+<em>J_ij = d f_i(x,params) / d x_j</em> in <var>J</var> for argument <var>x</var> 
+and parameters <var>params</var>, returning an appropriate error code if the
+function cannot be computed.
+</p>
+</dd>
+<dt> <code>int (* fdf) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>f</var>, gsl_matrix * <var>J</var>)</code></dt>
+<dd><p>This function should set the values of the <var>f</var> and <var>J</var> as above,
+for arguments <var>x</var> and parameters <var>params</var>.  This function
+provides an optimization of the separate functions for <em>f(x)</em> and
+<em>J(x)</em>&mdash;it is always faster to compute the function and its
+derivative at the same time.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the dimension of the system, i.e. the number of components of the
+vectors <var>x</var> and <var>f</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>The example of Powell&rsquo;s test function defined above can be extended to
+include analytic derivatives using the following code,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">int
+powell_df (gsl_vector * x, void * p, gsl_matrix * J) 
+{
+   struct powell_params * params 
+     = (struct powell_params *)p;
+   const double A = (params-&gt;A);
+   const double x0 = gsl_vector_get(x,0);
+   const double x1 = gsl_vector_get(x,1);
+   gsl_matrix_set (J, 0, 0, A * x1);
+   gsl_matrix_set (J, 0, 1, A * x0);
+   gsl_matrix_set (J, 1, 0, -exp(-x0));
+   gsl_matrix_set (J, 1, 1, -exp(-x1));
+   return GSL_SUCCESS
+}
+
+int
+powell_fdf (gsl_vector * x, void * p, 
+            gsl_matrix * f, gsl_matrix * J) {
+   struct powell_params * params 
+     = (struct powell_params *)p;
+   const double A = (params-&gt;A);
+   const double x0 = gsl_vector_get(x,0);
+   const double x1 = gsl_vector_get(x,1);
+
+   const double u0 = exp(-x0);
+   const double u1 = exp(-x1);
+
+   gsl_vector_set (f, 0, A * x0 * x1 - 1);
+   gsl_vector_set (f, 1, u0 + u1 - (1 + 1/A));
+
+   gsl_matrix_set (J, 0, 0, A * x1);
+   gsl_matrix_set (J, 0, 1, A * x0);
+   gsl_matrix_set (J, 1, 0, -u0);
+   gsl_matrix_set (J, 1, 1, -u1);
+   return GSL_SUCCESS
+}
+
+gsl_multiroot_function_fdf FDF;
+
+FDF.f = &amp;powell_f;
+FDF.df = &amp;powell_df;
+FDF.fdf = &amp;powell_fdf;
+FDF.n = 2;
+FDF.params = 0;
+</pre></td></tr></table>
+
+<p>Note that the function <code>powell_fdf</code> is able to reuse existing terms
+from the function when calculating the Jacobian, thus saving time.
+</p>
+<hr size="6">
+<a name="Iteration-of-the-multidimensional-solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Providing-the-multidimensional-system-of-equations-to-solve" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-the-multidimensional-solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Providing-the-multidimensional-system-of-equations-to-solve" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-the-multidimensional-solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iteration"></a>
+<h2 class="section">4. Iteration</h2>
+
+<p>The following functions drive the iteration of each algorithm.  Each
+function performs one iteration to update the state of any solver of the
+corresponding type.  The same functions work for all solvers so that
+different methods can be substituted at runtime without modifications to
+the code.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fiterate"></a><u>Function:</u> int <b>gsl_multiroot_fsolver_iterate</b><i> (gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fiterate"></a><u>Function:</u> int <b>gsl_multiroot_fdfsolver_iterate</b><i> (gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions perform a single iteration of the solver <var>s</var>.  If the
+iteration encounters an unexpected problem then an error code will be
+returned,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_EBADFUNC</code></dt>
+<dd><p>the iteration encountered a singular point where the function or its
+derivative evaluated to <code>Inf</code> or <code>NaN</code>.
+</p>
+</dd>
+<dt> <code>GSL_ENOPROG</code></dt>
+<dd><p>the iteration is not making any progress, preventing the algorithm from
+continuing.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>The solver maintains a current best estimate of the root <code>s-&gt;x</code>
+and its function value <code>s-&gt;f</code> at all times.  This information can
+be accessed with the following auxiliary functions,
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005froot"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fsolver_root</b><i> (const gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005froot"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fdfsolver_root</b><i> (const gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return the current estimate of the root for the solver <var>s</var>, given by <code>s-&gt;x</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005ff"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fsolver_f</b><i> (const gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005ff"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fdfsolver_f</b><i> (const gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return the function value <em>f(x)</em> at the current
+estimate of the root for the solver <var>s</var>, given by <code>s-&gt;f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fdx"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fsolver_dx</b><i> (const gsl_multiroot_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fdx"></a><u>Function:</u> gsl_vector * <b>gsl_multiroot_fdfsolver_dx</b><i> (const gsl_multiroot_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return the last step <em>dx</em> taken by the solver
+<var>s</var>, given by <code>s-&gt;dx</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Search-Stopping-Parameters-for-the-multidimensional-solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Iteration-of-the-multidimensional-solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Algorithms-using-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-multidimensional-solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Algorithms-using-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Search-Stopping-Parameters"></a>
+<h2 class="section">5. Search Stopping Parameters</h2>
+<a name="index-root-finding_002c-stopping-parameters"></a>
+
+<p>A root finding procedure should stop when one of the following conditions is
+true:
+</p>
+<ul>
+<li>
+A multidimensional root has been found to within the user-specified precision.
+
+</li><li>
+A user-specified maximum number of iterations has been reached.
+
+</li><li>
+An error has occurred.
+</li></ul>
+
+<p>The handling of these conditions is under user control.  The functions
+below allow the user to test the precision of the current result in
+several standard ways.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ftest_005fdelta"></a><u>Function:</u> int <b>gsl_multiroot_test_delta</b><i> (const gsl_vector * <var>dx</var>, const gsl_vector * <var>x</var>, double <var>epsabs</var>, double <var>epsrel</var>)</i></dt>
+<dd>
+<p>This function tests for the convergence of the sequence by comparing the
+last step <var>dx</var> with the absolute error <var>epsabs</var> and relative
+error <var>epsrel</var> to the current position <var>x</var>.  The test returns
+<code>GSL_SUCCESS</code> if the following condition is achieved,
+for each component of <var>x</var> and returns <code>GSL_CONTINUE</code> otherwise.
+</p></dd></dl>
+
+<a name="index-residual_002c-in-nonlinear-systems-of-equations"></a>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ftest_005fresidual"></a><u>Function:</u> int <b>gsl_multiroot_test_residual</b><i> (const gsl_vector * <var>f</var>, double <var>epsabs</var>)</i></dt>
+<dd><p>This function tests the residual value <var>f</var> against the absolute
+error bound <var>epsabs</var>.  The test returns <code>GSL_SUCCESS</code> if the
+following condition is achieved,
+and returns <code>GSL_CONTINUE</code> otherwise.  This criterion is suitable
+for situations where the precise location of the root, <em>x</em>, is
+unimportant provided a value can be found where the residual is small
+enough.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Algorithms-using-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-the-multidimensional-solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Algorithms-without-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-the-multidimensional-solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Algorithms-without-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Algorithms-using-Derivatives-1"></a>
+<h2 class="section">6. Algorithms using Derivatives</h2>
+
+<p>The root finding algorithms described in this section make use of both
+the function and its derivative.  They require an initial guess for the
+location of the root, but there is no absolute guarantee of
+convergence&mdash;the function must be suitable for this technique and the
+initial guess must be sufficiently close to the root for it to work.
+When the conditions are satisfied then convergence is quadratic.
+</p>
+
+<a name="index-HYBRID-algorithms-for-nonlinear-systems"></a>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fhybridsj"></a><u>Derivative Solver:</u> <b>gsl_multiroot_fdfsolver_hybridsj</b></dt>
+<dd><a name="index-HYBRIDSJ-algorithm"></a>
+<a name="index-MINPACK_002c-minimization-algorithms"></a>
+<p>This is a modified version of Powell&rsquo;s Hybrid method as implemented in
+the <small>HYBRJ</small> algorithm in <small>MINPACK</small>.  Minpack was written by Jorge
+J. Mor&eacute;, Burton S. Garbow and Kenneth E. Hillstrom.  The Hybrid
+algorithm retains the fast convergence of Newton&rsquo;s method but will also
+reduce the residual when Newton&rsquo;s method is unreliable. 
+</p>
+<p>The algorithm uses a generalized trust region to keep each step under
+control.  In order to be accepted a proposed new position <em>x&rsquo;</em> must
+satisfy the condition <em>|D (x&rsquo; - x)| &lt; \delta</em>, where <em>D</em> is a
+diagonal scaling matrix and <em>\delta</em> is the size of the trust
+region.  The components of <em>D</em> are computed internally, using the
+column norms of the Jacobian to estimate the sensitivity of the residual
+to each component of <em>x</em>.  This improves the behavior of the
+algorithm for badly scaled functions.
+</p>
+<p>On each iteration the algorithm first determines the standard Newton
+step by solving the system <em>J dx = - f</em>.  If this step falls inside
+the trust region it is used as a trial step in the next stage.  If not,
+the algorithm uses the linear combination of the Newton and gradient
+directions which is predicted to minimize the norm of the function while
+staying inside the trust region,
+This combination of Newton and gradient directions is referred to as a
+<em>dogleg step</em>.
+</p>
+<p>The proposed step is now tested by evaluating the function at the
+resulting point, <em>x&rsquo;</em>.  If the step reduces the norm of the function
+sufficiently then it is accepted and size of the trust region is
+increased.  If the proposed step fails to improve the solution then the
+size of the trust region is decreased and another trial step is
+computed.
+</p>
+<p>The speed of the algorithm is increased by computing the changes to the
+Jacobian approximately, using a rank-1 update.  If two successive
+attempts fail to reduce the residual then the full Jacobian is
+recomputed.  The algorithm also monitors the progress of the solution
+and returns an error if several steps fail to make any improvement,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_ENOPROG</code></dt>
+<dd><p>the iteration is not making any progress, preventing the algorithm from
+continuing.
+</p>
+</dd>
+<dt> <code>GSL_ENOPROGJ</code></dt>
+<dd><p>re-evaluations of the Jacobian indicate that the iteration is not
+making any progress, preventing the algorithm from continuing.
+</p></dd>
+</dl>
+
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fhybridj"></a><u>Derivative Solver:</u> <b>gsl_multiroot_fdfsolver_hybridj</b></dt>
+<dd><a name="index-HYBRIDJ-algorithm"></a>
+<p>This algorithm is an unscaled version of <code>hybridsj</code>.  The steps are
+controlled by a spherical trust region <em>|x&rsquo; - x| &lt; \delta</em>, instead
+of a generalized region.  This can be useful if the generalized region
+estimated by <code>hybridsj</code> is inappropriate.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fnewton"></a><u>Derivative Solver:</u> <b>gsl_multiroot_fdfsolver_newton</b></dt>
+<dd><a name="index-Newton_0027s-method-for-systems-of-nonlinear-equations"></a>
+
+<p>Newton&rsquo;s Method is the standard root-polishing algorithm.  The algorithm
+begins with an initial guess for the location of the solution.  On each
+iteration a linear approximation to the function <em>F</em> is used to
+estimate the step which will zero all the components of the residual.
+The iteration is defined by the following sequence,
+where the Jacobian matrix <em>J</em> is computed from the derivative
+functions provided by <var>f</var>.  The step <em>dx</em> is obtained by solving
+the linear system,
+using LU decomposition.  If the Jacobian matrix is singular, an error
+code of <code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffdfsolver_005fgnewton"></a><u>Derivative Solver:</u> <b>gsl_multiroot_fdfsolver_gnewton</b></dt>
+<dd><a name="index-Modified-Newton_0027s-method-for-nonlinear-systems"></a>
+<a name="index-Newton-algorithm_002c-globally-convergent"></a>
+<p>This is a modified version of Newton&rsquo;s method which attempts to improve
+global convergence by requiring every step to reduce the Euclidean norm
+of the residual, <em>|f(x)|</em>.  If the Newton step leads to an increase
+in the norm then a reduced step of relative size,
+is proposed, with <em>r</em> being the ratio of norms
+<em>|f(x&rsquo;)|^2/|f(x)|^2</em>.  This procedure is repeated until a suitable step
+size is found. 
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Algorithms-without-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Algorithms-using-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Multidimensional-Root-finding" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Algorithms-using-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Multidimensional-Root-finding" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Algorithms-without-Derivatives-1"></a>
+<h2 class="section">7. Algorithms without Derivatives</h2>
+
+<p>The algorithms described in this section do not require any derivative
+information to be supplied by the user.  Any derivatives needed are
+approximated by finite differences.  Note that if the
+finite-differencing step size chosen by these routines is inappropriate,
+an explicit user-supplied numerical derivative can always be used with
+the algorithms described in the previous section.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fhybrids"></a><u>Solver:</u> <b>gsl_multiroot_fsolver_hybrids</b></dt>
+<dd><a name="index-HYBRIDS-algorithm_002c-scaled-without-derivatives"></a>
+<p>This is a version of the Hybrid algorithm which replaces calls to the
+Jacobian function by its finite difference approximation.  The finite
+difference approximation is computed using <code>gsl_multiroots_fdjac</code>
+with a relative step size of <code>GSL_SQRT_DBL_EPSILON</code>.  Note that
+this step size will not be suitable for all problems.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fhybrid"></a><u>Solver:</u> <b>gsl_multiroot_fsolver_hybrid</b></dt>
+<dd><a name="index-HYBRID-algorithm_002c-unscaled-without-derivatives"></a>
+<p>This is a finite difference version of the Hybrid algorithm without
+internal scaling.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fdnewton"></a><u>Solver:</u> <b>gsl_multiroot_fsolver_dnewton</b></dt>
+<dd>
+<a name="index-Discrete-Newton-algorithm-for-multidimensional-roots"></a>
+<a name="index-Newton-algorithm_002c-discrete"></a>
+
+<p>The <em>discrete Newton algorithm</em> is the simplest method of solving a
+multidimensional system.  It uses the Newton iteration
+where the Jacobian matrix <em>J</em> is approximated by taking finite
+differences of the function <var>f</var>.  The approximation scheme used by
+this implementation is,
+where <em>\delta_j</em> is a step of size <em>\sqrt\epsilon |x_j|</em> with
+<em>\epsilon</em> being the machine precision 
+(<em>\epsilon \approx 2.22 \times 10^-16</em>).
+The order of convergence of Newton&rsquo;s algorithm is quadratic, but the
+finite differences require <em>n^2</em> function evaluations on each
+iteration.  The algorithm may become unstable if the finite differences
+are not a good approximation to the true derivatives.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmultiroot_005ffsolver_005fbroyden"></a><u>Solver:</u> <b>gsl_multiroot_fsolver_broyden</b></dt>
+<dd><a name="index-Broyden-algorithm-for-multidimensional-roots"></a>
+<a name="index-multidimensional-root-finding_002c-Broyden-algorithm"></a>
+
+<p>The <em>Broyden algorithm</em> is a version of the discrete Newton
+algorithm which attempts to avoids the expensive update of the Jacobian
+matrix on each iteration.  The changes to the Jacobian are also
+approximated, using a rank-1 update,
+where the vectors <em>dx</em> and <em>df</em> are the changes in <em>x</em>
+and <em>f</em>.  On the first iteration the inverse Jacobian is estimated
+using finite differences, as in the discrete Newton algorithm.
+</p> 
+<p>This approximation gives a fast update but is unreliable if the changes
+are not small, and the estimate of the inverse Jacobian becomes worse as
+time passes.  The algorithm has a tendency to become unstable unless it
+starts close to the root.  The Jacobian is refreshed if this instability
+is detected (consult the source for details).
+</p>
+<p>This algorithm is included only for demonstration purposes, and is not
+recommended for serious use.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Example-programs-for-Multidimensional-Root-finding"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Algorithms-without-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#References-and-Further-Reading-for-Multidimensional-Root-Finding" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Algorithms-without-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#References-and-Further-Reading-for-Multidimensional-Root-Finding" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">8. Examples</h2>
+
+<p>The multidimensional solvers are used in a similar way to the
+one-dimensional root finding algorithms.  This first example
+demonstrates the <code>hybrids</code> scaled-hybrid algorithm, which does not
+require derivatives. The program solves the Rosenbrock system of equations,
+with <em>a = 1, b = 10</em>. The solution of this system lies at
+<em>(x,y) = (1,1)</em> in a narrow valley.
+</p>
+<p>The first stage of the program is to define the system of equations,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_vector.h&gt;
+#include &lt;gsl/gsl_multiroots.h&gt;
+
+struct rparams
+  {
+    double a;
+    double b;
+  };
+
+int
+rosenbrock_f (const gsl_vector * x, void *params, 
+              gsl_vector * f)
+{
+  double a = ((struct rparams *) params)-&gt;a;
+  double b = ((struct rparams *) params)-&gt;b;
+
+  const double x0 = gsl_vector_get (x, 0);
+  const double x1 = gsl_vector_get (x, 1);
+
+  const double y0 = a * (1 - x0);
+  const double y1 = b * (x1 - x0 * x0);
+
+  gsl_vector_set (f, 0, y0);
+  gsl_vector_set (f, 1, y1);
+
+  return GSL_SUCCESS;
+}
+</pre></td></tr></table>
+
+<p>The main program begins by creating the function object <code>f</code>, with
+the arguments <code>(x,y)</code> and parameters <code>(a,b)</code>. The solver
+<code>s</code> is initialized to use this function, with the <code>hybrids</code>
+method.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">int
+main (void)
+{
+  const gsl_multiroot_fsolver_type *T;
+  gsl_multiroot_fsolver *s;
+
+  int status;
+  size_t i, iter = 0;
+
+  const size_t n = 2;
+  struct rparams p = {1.0, 10.0};
+  gsl_multiroot_function f = {&amp;rosenbrock_f, n, &amp;p};
+
+  double x_init[2] = {-10.0, -5.0};
+  gsl_vector *x = gsl_vector_alloc (n);
+
+  gsl_vector_set (x, 0, x_init[0]);
+  gsl_vector_set (x, 1, x_init[1]);
+
+  T = gsl_multiroot_fsolver_hybrids;
+  s = gsl_multiroot_fsolver_alloc (T, 2);
+  gsl_multiroot_fsolver_set (s, &amp;f, x);
+
+  print_state (iter, s);
+
+  do
+    {
+      iter++;
+      status = gsl_multiroot_fsolver_iterate (s);
+
+      print_state (iter, s);
+
+      if (status)   /* check if solver is stuck */
+        break;
+
+      status = 
+        gsl_multiroot_test_residual (s-&gt;f, 1e-7);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; 1000);
+
+  printf (&quot;status = %s\n&quot;, gsl_strerror (status));
+
+  gsl_multiroot_fsolver_free (s);
+  gsl_vector_free (x);
+  return 0;
+}
+</pre></td></tr></table>
+
+<p>Note that it is important to check the return status of each solver
+step, in case the algorithm becomes stuck.  If an error condition is
+detected, indicating that the algorithm cannot proceed, then the error
+can be reported to the user, a new starting point chosen or a different
+algorithm used.
+</p>
+<p>The intermediate state of the solution is displayed by the following
+function.  The solver state contains the vector <code>s-&gt;x</code> which is the
+current position, and the vector <code>s-&gt;f</code> with corresponding function
+values.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">int
+print_state (size_t iter, gsl_multiroot_fsolver * s)
+{
+  printf (&quot;iter = %3u x = % .3f % .3f &quot;
+          &quot;f(x) = % .3e % .3e\n&quot;,
+          iter,
+          gsl_vector_get (s-&gt;x, 0), 
+          gsl_vector_get (s-&gt;x, 1),
+          gsl_vector_get (s-&gt;f, 0), 
+          gsl_vector_get (s-&gt;f, 1));
+}
+</pre></td></tr></table>
+
+<p>Here are the results of running the program. The algorithm is started at
+<em>(-10,-5)</em> far from the solution.  Since the solution is hidden in
+a narrow valley the earliest steps follow the gradient of the function
+downhill, in an attempt to reduce the large value of the residual. Once
+the root has been approximately located, on iteration 8, the Newton
+behavior takes over and convergence is very rapid.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">iter =  0 x = -10.000  -5.000  f(x) = 1.100e+01 -1.050e+03
+iter =  1 x = -10.000  -5.000  f(x) = 1.100e+01 -1.050e+03
+iter =  2 x =  -3.976  24.827  f(x) = 4.976e+00  9.020e+01
+iter =  3 x =  -3.976  24.827  f(x) = 4.976e+00  9.020e+01
+iter =  4 x =  -3.976  24.827  f(x) = 4.976e+00  9.020e+01
+iter =  5 x =  -1.274  -5.680  f(x) = 2.274e+00 -7.302e+01
+iter =  6 x =  -1.274  -5.680  f(x) = 2.274e+00 -7.302e+01
+iter =  7 x =   0.249   0.298  f(x) = 7.511e-01  2.359e+00
+iter =  8 x =   0.249   0.298  f(x) = 7.511e-01  2.359e+00
+iter =  9 x =   1.000   0.878  f(x) = 1.268e-10 -1.218e+00
+iter = 10 x =   1.000   0.989  f(x) = 1.124e-11 -1.080e-01
+iter = 11 x =   1.000   1.000  f(x) = 0.000e+00  0.000e+00
+status = success
+</pre></td></tr></table>
+
+<p>Note that the algorithm does not update the location on every
+iteration. Some iterations are used to adjust the trust-region
+parameter, after trying a step which was found to be divergent, or to
+recompute the Jacobian, when poor convergence behavior is detected.
+</p>
+<p>The next example program adds derivative information, in order to
+accelerate the solution. There are two derivative functions
+<code>rosenbrock_df</code> and <code>rosenbrock_fdf</code>. The latter computes both
+the function and its derivative simultaneously. This allows the
+optimization of any common terms.  For simplicity we substitute calls to
+the separate <code>f</code> and <code>df</code> functions at this point in the code
+below.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">int
+rosenbrock_df (const gsl_vector * x, void *params, 
+               gsl_matrix * J)
+{
+  const double a = ((struct rparams *) params)-&gt;a;
+  const double b = ((struct rparams *) params)-&gt;b;
+
+  const double x0 = gsl_vector_get (x, 0);
+
+  const double df00 = -a;
+  const double df01 = 0;
+  const double df10 = -2 * b  * x0;
+  const double df11 = b;
+
+  gsl_matrix_set (J, 0, 0, df00);
+  gsl_matrix_set (J, 0, 1, df01);
+  gsl_matrix_set (J, 1, 0, df10);
+  gsl_matrix_set (J, 1, 1, df11);
+
+  return GSL_SUCCESS;
+}
+
+int
+rosenbrock_fdf (const gsl_vector * x, void *params,
+                gsl_vector * f, gsl_matrix * J)
+{
+  rosenbrock_f (x, params, f);
+  rosenbrock_df (x, params, J);
+
+  return GSL_SUCCESS;
+}
+</pre></td></tr></table>
+
+<p>The main program now makes calls to the corresponding <code>fdfsolver</code>
+versions of the functions,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">int
+main (void)
+{
+  const gsl_multiroot_fdfsolver_type *T;
+  gsl_multiroot_fdfsolver *s;
+
+  int status;
+  size_t i, iter = 0;
+
+  const size_t n = 2;
+  struct rparams p = {1.0, 10.0};
+  gsl_multiroot_function_fdf f = {&amp;rosenbrock_f, 
+                                  &amp;rosenbrock_df, 
+                                  &amp;rosenbrock_fdf, 
+                                  n, &amp;p};
+
+  double x_init[2] = {-10.0, -5.0};
+  gsl_vector *x = gsl_vector_alloc (n);
+
+  gsl_vector_set (x, 0, x_init[0]);
+  gsl_vector_set (x, 1, x_init[1]);
+
+  T = gsl_multiroot_fdfsolver_gnewton;
+  s = gsl_multiroot_fdfsolver_alloc (T, n);
+  gsl_multiroot_fdfsolver_set (s, &amp;f, x);
+
+  print_state (iter, s);
+
+  do
+    {
+      iter++;
+
+      status = gsl_multiroot_fdfsolver_iterate (s);
+
+      print_state (iter, s);
+
+      if (status)
+        break;
+
+      status = gsl_multiroot_test_residual (s-&gt;f, 1e-7);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; 1000);
+
+  printf (&quot;status = %s\n&quot;, gsl_strerror (status));
+
+  gsl_multiroot_fdfsolver_free (s);
+  gsl_vector_free (x);
+  return 0;
+}
+</pre></td></tr></table>
+
+<p>The addition of derivative information to the <code>hybrids</code> solver does
+not make any significant difference to its behavior, since it able to
+approximate the Jacobian numerically with sufficient accuracy.  To
+illustrate the behavior of a different derivative solver we switch to
+<code>gnewton</code>. This is a traditional Newton solver with the constraint
+that it scales back its step if the full step would lead &ldquo;uphill&rdquo;. Here
+is the output for the <code>gnewton</code> algorithm,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">iter = 0 x = -10.000  -5.000 f(x) =  1.100e+01 -1.050e+03
+iter = 1 x =  -4.231 -65.317 f(x) =  5.231e+00 -8.321e+02
+iter = 2 x =   1.000 -26.358 f(x) = -8.882e-16 -2.736e+02
+iter = 3 x =   1.000   1.000 f(x) = -2.220e-16 -4.441e-15
+status = success
+</pre></td></tr></table>
+
+<p>The convergence is much more rapid, but takes a wide excursion out to
+the point <em>(-4.23,-65.3)</em>. This could cause the algorithm to go
+astray in a realistic application.  The hybrid algorithm follows the
+downhill path to the solution more reliably.
+</p>
+<hr size="6">
+<a name="References-and-Further-Reading-for-Multidimensional-Root-Finding"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Example-programs-for-Multidimensional-Root-finding" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Multidimensional-Root-finding" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">9. References and Further Reading</h2>
+
+<p>The original version of the Hybrid method is described in the following
+articles by Powell,
+</p>
+<ul class="toc">
+<li>
+M.J.D. Powell, &ldquo;A Hybrid Method for Nonlinear Equations&rdquo; (Chap 6, p
+87&ndash;114) and &ldquo;A Fortran Subroutine for Solving systems of Nonlinear
+Algebraic Equations&rdquo; (Chap 7, p 115&ndash;161), in <cite>Numerical Methods for
+Nonlinear Algebraic Equations</cite>, P. Rabinowitz, editor.  Gordon and
+Breach, 1970.
+</li></ul>
+
+<p>The following papers are also relevant to the algorithms described in
+this section,
+</p>
+<ul class="toc">
+<li>
+J.J. Mor&eacute;, M.Y. Cosnard, &ldquo;Numerical Solution of Nonlinear Equations&rdquo;,
+<cite>ACM Transactions on Mathematical Software</cite>, Vol 5, No 1, (1979), p 64&ndash;85
+
+</li><li>
+C.G. Broyden, &ldquo;A Class of Methods for Solving Nonlinear
+Simultaneous Equations&rdquo;, <cite>Mathematics of Computation</cite>, Vol 19 (1965),
+p 577&ndash;593
+
+</li><li> 
+J.J. Mor&eacute;, B.S. Garbow, K.E. Hillstrom, &ldquo;Testing Unconstrained
+Optimization Software&rdquo;, ACM Transactions on Mathematical Software, Vol
+7, No 1 (1981), p 17&ndash;41
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Multidimensional-Root-Finding" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

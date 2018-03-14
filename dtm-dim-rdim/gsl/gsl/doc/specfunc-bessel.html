@@ -1,0 +1,952 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Bessel-functions"></a>
+<p>The routines described in this section compute the Cylindrical Bessel
+functions <em>J_n(x)</em>, <em>Y_n(x)</em>, Modified cylindrical Bessel
+functions <em>I_n(x)</em>, <em>K_n(x)</em>, Spherical Bessel functions
+<em>j_l(x)</em>, <em>y_l(x)</em>, and Modified Spherical Bessel functions
+<em>i_l(x)</em>, <em>k_l(x)</em>.  For more information see Abramowitz &amp; Stegun,
+Chapters 9 and 10.  The Bessel functions are defined in the header file
+&lsquo;<tt>gsl_sf_bessel.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Regular-Cylindrical-Bessel-Functions">1. Regular Cylindrical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Cylindrical-Bessel-Functions">2. Irregular Cylindrical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Regular-Modified-Cylindrical-Bessel-Functions">3. Regular Modified Cylindrical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Modified-Cylindrical-Bessel-Functions">4. Irregular Modified Cylindrical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Regular-Spherical-Bessel-Functions">5. Regular Spherical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Spherical-Bessel-Functions">6. Irregular Spherical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Regular-Modified-Spherical-Bessel-Functions">7. Regular Modified Spherical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Modified-Spherical-Bessel-Functions">8. Irregular Modified Spherical Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Regular-Bessel-Function-_002d-Fractional-Order">9. Regular Bessel Function&mdash;Fractional Order</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Bessel-Functions-_002d-Fractional-Order">10. Irregular Bessel Functions&mdash;Fractional Order</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Regular-Modified-Bessel-Functions-_002d-Fractional-Order">11. Regular Modified Bessel Functions&mdash;Fractional Order</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Irregular-Modified-Bessel-Functions-_002d-Fractional-Order">12. Irregular Modified Bessel Functions&mdash;Fractional Order</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Zeros-of-Regular-Bessel-Functions">13. Zeros of Regular Bessel Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Regular-Cylindrical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Cylindrical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Cylindrical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Cylindrical-Bessel-Functions-1"></a>
+<h3 class="subsection">1. Regular Cylindrical Bessel Functions</h3>
+<a name="index-Cylindrical-Bessel-Functions"></a>
+<a name="index-Regular-Cylindrical-Bessel-Functions"></a>
+<a name="index-J_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJ0"></a><u>Function:</u> double <b>gsl_sf_bessel_J0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJ0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_J0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular cylindrical Bessel function of zeroth
+order, <em>J_0(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJ1"></a><u>Function:</u> double <b>gsl_sf_bessel_J1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJ1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_J1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular cylindrical Bessel function of first
+order, <em>J_1(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJn"></a><u>Function:</u> double <b>gsl_sf_bessel_Jn</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJn_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Jn_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular cylindrical Bessel function of 
+order <var>n</var>, <em>J_n(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJn_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_Jn_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the regular cylindrical Bessel
+functions <em>J_n(x)</em> for <em>n</em> from <var>nmin</var> to <var>nmax</var>
+inclusive, storing the results in the array <var>result_array</var>.  The
+values are computed using recurrence relations for efficiency, and
+therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Cylindrical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Cylindrical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Cylindrical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Cylindrical-Bessel-Functions-1"></a>
+<h3 class="subsection">2. Irregular Cylindrical Bessel Functions</h3>
+<a name="index-Irregular-Cylindrical-Bessel-Functions"></a>
+<a name="index-Y_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fY0"></a><u>Function:</u> double <b>gsl_sf_bessel_Y0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fY0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Y0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular cylindrical Bessel function of zeroth
+order, <em>Y_0(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fY1"></a><u>Function:</u> double <b>gsl_sf_bessel_Y1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fY1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Y1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular cylindrical Bessel function of first
+order, <em>Y_1(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fYn"></a><u>Function:</u> double <b>gsl_sf_bessel_Yn</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fYn_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Yn_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular cylindrical Bessel function of 
+order <var>n</var>, <em>Y_n(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fYn_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_Yn_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the irregular cylindrical Bessel
+functions <em>Y_n(x)</em> for <em>n</em> from <var>nmin</var> to <var>nmax</var>
+inclusive, storing the results in the array <var>result_array</var>.  The
+domain of the function is <em>x&gt;0</em>.  The values are computed using
+recurrence relations for efficiency, and therefore may differ slightly
+from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Regular-Modified-Cylindrical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Cylindrical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Cylindrical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Cylindrical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Cylindrical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Modified-Cylindrical-Bessel-Functions-1"></a>
+<h3 class="subsection">3. Regular Modified Cylindrical Bessel Functions</h3>
+<a name="index-Modified-Cylindrical-Bessel-Functions"></a>
+<a name="index-Regular-Modified-Cylindrical-Bessel-Functions"></a>
+<a name="index-I_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI0"></a><u>Function:</u> double <b>gsl_sf_bessel_I0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_I0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular modified cylindrical Bessel function
+of zeroth order, <em>I_0(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI1"></a><u>Function:</u> double <b>gsl_sf_bessel_I1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_I1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular modified cylindrical Bessel function
+of first order, <em>I_1(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn"></a><u>Function:</u> double <b>gsl_sf_bessel_In</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_In_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular modified cylindrical Bessel function
+of order <var>n</var>, <em>I_n(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_In_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the regular modified cylindrical
+Bessel functions <em>I_n(x)</em> for <em>n</em> from <var>nmin</var> to
+<var>nmax</var> inclusive, storing the results in the array
+<var>result_array</var>.  The start of the range <var>nmin</var> must be positive
+or zero.  The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI0_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_I0_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI0_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_I0_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified cylindrical Bessel
+function of zeroth order <em>\exp(-|x|) I_0(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI1_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_I1_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fI1_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_I1_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified cylindrical Bessel
+function of first order <em>\exp(-|x|) I_1(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_In_scaled</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_In_scaled_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified cylindrical Bessel
+function of order <var>n</var>, <em>\exp(-|x|) I_n(x)</em> 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fIn_005fscaled_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_In_scaled_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the scaled regular cylindrical
+Bessel functions <em>\exp(-|x|) I_n(x)</em> for <em>n</em> from
+<var>nmin</var> to <var>nmax</var> inclusive, storing the results in the array
+<var>result_array</var>. The start of the range <var>nmin</var> must be positive
+or zero.  The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Modified-Cylindrical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Modified-Cylindrical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Spherical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Cylindrical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Spherical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Modified-Cylindrical-Bessel-Functions-1"></a>
+<h3 class="subsection">4. Irregular Modified Cylindrical Bessel Functions</h3>
+<a name="index-Irregular-Modified-Cylindrical-Bessel-Functions"></a>
+<a name="index-K_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK0"></a><u>Function:</u> double <b>gsl_sf_bessel_K0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_K0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular modified cylindrical Bessel
+function of zeroth order, <em>K_0(x)</em>, for <em>x &gt; 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK1"></a><u>Function:</u> double <b>gsl_sf_bessel_K1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_K1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular modified cylindrical Bessel
+function of first order, <em>K_1(x)</em>, for <em>x &gt; 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn"></a><u>Function:</u> double <b>gsl_sf_bessel_Kn</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Kn_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular modified cylindrical Bessel
+function of order <var>n</var>, <em>K_n(x)</em>, for <em>x &gt; 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_Kn_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the irregular modified cylindrical
+Bessel functions <em>K_n(x)</em> for <em>n</em> from <var>nmin</var> to
+<var>nmax</var> inclusive, storing the results in the array
+<var>result_array</var>. The start of the range <var>nmin</var> must be positive
+or zero. The domain of the function is <em>x&gt;0</em>. The values are
+computed using recurrence relations for efficiency, and therefore
+may differ slightly from the exact values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK0_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_K0_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK0_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_K0_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified cylindrical Bessel
+function of zeroth order <em>\exp(x) K_0(x)</em> for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK1_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_K1_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fK1_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_K1_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified cylindrical Bessel
+function of first order <em>\exp(x) K_1(x)</em> for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_Kn_scaled</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Kn_scaled_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified cylindrical Bessel
+function of order <var>n</var>, <em>\exp(x) K_n(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKn_005fscaled_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_Kn_scaled_array</b><i> (int <var>nmin</var>, int <var>nmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the scaled irregular cylindrical
+Bessel functions <em>\exp(x) K_n(x)</em> for <em>n</em> from <var>nmin</var> to
+<var>nmax</var> inclusive, storing the results in the array
+<var>result_array</var>. The start of the range <var>nmin</var> must be positive
+or zero.  The domain of the function is <em>x&gt;0</em>. The values are
+computed using recurrence relations for efficiency, and therefore
+may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Regular-Spherical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Modified-Cylindrical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Spherical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Cylindrical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Spherical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Spherical-Bessel-Functions-1"></a>
+<h3 class="subsection">5. Regular Spherical Bessel Functions</h3>
+<a name="index-Spherical-Bessel-Functions"></a>
+<a name="index-Regular-Spherical-Bessel-Functions"></a>
+<a name="index-j_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj0"></a><u>Function:</u> double <b>gsl_sf_bessel_j0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_j0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular spherical Bessel function of zeroth
+order, <em>j_0(x) = \sin(x)/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj1"></a><u>Function:</u> double <b>gsl_sf_bessel_j1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_j1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular spherical Bessel function of first
+order, <em>j_1(x) = (\sin(x)/x - \cos(x))/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj2"></a><u>Function:</u> double <b>gsl_sf_bessel_j2</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fj2_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_j2_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular spherical Bessel function of second
+order, <em>j_2(x) = ((3/x^2 - 1)\sin(x) - 3\cos(x)/x)/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fjl"></a><u>Function:</u> double <b>gsl_sf_bessel_jl</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fjl_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_jl_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular spherical Bessel function of 
+order <var>l</var>, <em>j_l(x)</em>, for <em>l &gt;= 0</em> and <em>x &gt;= 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fjl_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_jl_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the regular spherical Bessel
+functions <em>j_l(x)</em> for <em>l</em> from 0 to <var>lmax</var>
+inclusive  for <em>lmax &gt;= 0</em> and <em>x &gt;= 0</em>, storing the results in the array <var>result_array</var>.
+The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fjl_005fsteed_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_jl_steed_array</b><i> (int <var>lmax</var>, double <var>x</var>, double * <var>result_array</var>)</i></dt>
+<dd><p>This routine uses Steed&rsquo;s method to compute the values of the regular
+spherical Bessel functions <em>j_l(x)</em> for <em>l</em> from 0 to
+<var>lmax</var> inclusive for <em>lmax &gt;= 0</em> and <em>x &gt;= 0</em>, storing the results in the array
+<var>result_array</var>.
+The Steed/Barnett algorithm is described in <cite>Comp. Phys. Comm.</cite> 21,
+297 (1981).  Steed&rsquo;s method is more stable than the
+recurrence used in the other functions but is also slower.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Spherical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Spherical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Spherical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Spherical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Spherical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Spherical-Bessel-Functions-1"></a>
+<h3 class="subsection">6. Irregular Spherical Bessel Functions</h3>
+<a name="index-Irregular-Spherical-Bessel-Functions"></a>
+<a name="index-y_0028x_0029_002c-Bessel-Functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy0"></a><u>Function:</u> double <b>gsl_sf_bessel_y0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_y0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular spherical Bessel function of zeroth
+order, <em>y_0(x) = -\cos(x)/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy1"></a><u>Function:</u> double <b>gsl_sf_bessel_y1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_y1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular spherical Bessel function of first
+order, <em>y_1(x) = -(\cos(x)/x + \sin(x))/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy2"></a><u>Function:</u> double <b>gsl_sf_bessel_y2</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fy2_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_y2_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular spherical Bessel function of second
+order, <em>y_2(x) = (-3/x^3 + 1/x)\cos(x) - (3/x^2)\sin(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fyl"></a><u>Function:</u> double <b>gsl_sf_bessel_yl</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fyl_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_yl_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular spherical Bessel function of 
+order <var>l</var>, <em>y_l(x)</em>, for <em>l &gt;= 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fyl_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_yl_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the irregular spherical Bessel
+functions <em>y_l(x)</em> for <em>l</em> from 0 to <var>lmax</var>
+inclusive  for <em>lmax &gt;= 0</em>, storing the results in the array <var>result_array</var>.
+The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Regular-Modified-Spherical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Spherical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Spherical-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Spherical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Spherical-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Modified-Spherical-Bessel-Functions-1"></a>
+<h3 class="subsection">7. Regular Modified Spherical Bessel Functions</h3>
+<a name="index-Modified-Spherical-Bessel-Functions"></a>
+<a name="index-Regular-Modified-Spherical-Bessel-Functions"></a>
+<a name="index-i_0028x_0029_002c-Bessel-Functions"></a>
+
+<p>The regular modified spherical Bessel functions <em>i_l(x)</em> 
+are related to the modified Bessel functions of fractional order,
+<em>i_l(x) = \sqrt\pi/(2x) I_l+1/2(x)</em>
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi0_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_i0_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi0_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_i0_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified spherical Bessel
+function of zeroth order, <em>\exp(-|x|) i_0(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi1_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_i1_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi1_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_i1_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified spherical Bessel
+function of first order, <em>\exp(-|x|) i_1(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi2_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_i2_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fi2_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_i2_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified spherical Bessel
+function of second order, <em> \exp(-|x|) i_2(x) </em> 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fil_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_il_scaled</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fil_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_il_scaled_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified spherical Bessel
+function of order <var>l</var>, <em> \exp(-|x|) i_l(x) </em>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fil_005fscaled_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_il_scaled_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the scaled regular modified
+spherical Bessel functions <em>\exp(-|x|) i_l(x)</em> for <em>l</em> from
+0 to <var>lmax</var> inclusive for <em>lmax &gt;= 0</em>, storing the results in
+the array <var>result_array</var>. 
+The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Modified-Spherical-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Modified-Spherical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Bessel-Function-_002d-Fractional-Order" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Spherical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Bessel-Function-_002d-Fractional-Order" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Modified-Spherical-Bessel-Functions-1"></a>
+<h3 class="subsection">8. Irregular Modified Spherical Bessel Functions</h3>
+<a name="index-Irregular-Modified-Spherical-Bessel-Functions"></a>
+<a name="index-k_0028x_0029_002c-Bessel-Functions"></a>
+
+<p>The irregular modified spherical Bessel functions <em>k_l(x)</em>
+are related to the irregular modified Bessel functions of fractional order,
+<em>k_l(x) = \sqrt\pi/(2x) K_l+1/2(x)</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk0_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_k0_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk0_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_k0_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified spherical Bessel
+function of zeroth order, <em>\exp(x) k_0(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk1_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_k1_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk1_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_k1_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified spherical Bessel
+function of first order, <em>\exp(x) k_1(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk2_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_k2_scaled</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fk2_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_k2_scaled_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified spherical Bessel
+function of second order, <em>\exp(x) k_2(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fkl_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_kl_scaled</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fkl_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_kl_scaled_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified spherical Bessel
+function of order <var>l</var>, <em>\exp(x) k_l(x)</em>, for <em>x&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fkl_005fscaled_005farray"></a><u>Function:</u> int <b>gsl_sf_bessel_kl_scaled_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This routine computes the values of the scaled irregular modified
+spherical Bessel functions <em>\exp(x) k_l(x)</em> for <em>l</em> from
+0 to <var>lmax</var> inclusive for <em>lmax &gt;= 0</em> and <em>x&gt;0</em>, storing the results in
+the array <var>result_array</var>. 
+The values are computed using recurrence relations for
+efficiency, and therefore may differ slightly from the exact values.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Regular-Bessel-Function-_002d-Fractional-Order"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Modified-Spherical-Bessel-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Bessel-Functions-_002d-Fractional-Order" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Spherical-Bessel-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Bessel-Functions-_002d-Fractional-Order" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Bessel-Function_002d_002d_002dFractional-Order"></a>
+<h3 class="subsection">9. Regular Bessel Function&mdash;Fractional Order</h3>
+<a name="index-Fractional-Order-Bessel-Functions"></a>
+<a name="index-Bessel-Functions_002c-Fractional-Order"></a>
+<a name="index-Regular-Bessel-Functions_002c-Fractional-Order"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJnu"></a><u>Function:</u> double <b>gsl_sf_bessel_Jnu</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fJnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Jnu_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular cylindrical Bessel function of
+fractional order <em>\nu</em>, <em>J_\nu(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fsequence_005fJnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_sequence_Jnu_e</b><i> (double <var>nu</var>, gsl_mode_t <var>mode</var>, size_t <var>size</var>, double <var>v</var>[])</i></dt>
+<dd><p>This function computes the regular cylindrical Bessel function of
+fractional order <em>\nu</em>, <em>J_\nu(x)</em>, evaluated at a series of
+<em>x</em> values.  The array <var>v</var> of length <var>size</var> contains the
+<em>x</em> values.  They are assumed to be strictly ordered and positive.
+The array is over-written with the values of <em>J_\nu(x_i)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Bessel-Functions-_002d-Fractional-Order"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Bessel-Function-_002d-Fractional-Order" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Bessel-Function-_002d-Fractional-Order" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Bessel-Functions_002d_002d_002dFractional-Order"></a>
+<h3 class="subsection">10. Irregular Bessel Functions&mdash;Fractional Order</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fYnu"></a><u>Function:</u> double <b>gsl_sf_bessel_Ynu</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fYnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Ynu_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular cylindrical Bessel function of
+fractional order <em>\nu</em>, <em>Y_\nu(x)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Regular-Modified-Bessel-Functions-_002d-Fractional-Order"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Bessel-Functions-_002d-Fractional-Order" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Bessel-Functions-_002d-Fractional-Order" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regular-Modified-Bessel-Functions_002d_002d_002dFractional-Order"></a>
+<h3 class="subsection">11. Regular Modified Bessel Functions&mdash;Fractional Order</h3>
+<a name="index-Modified-Bessel-Functions_002c-Fractional-Order"></a>
+<a name="index-Regular-Modified-Bessel-Functions_002c-Fractional-Order"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fInu"></a><u>Function:</u> double <b>gsl_sf_bessel_Inu</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fInu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Inu_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular modified Bessel function of
+fractional order <em>\nu</em>, <em>I_\nu(x)</em> for <em>x&gt;0</em>,
+<em>\nu&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fInu_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_Inu_scaled</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fInu_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Inu_scaled_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled regular modified Bessel function of
+fractional order <em>\nu</em>, <em>\exp(-|x|)I_\nu(x)</em> for <em>x&gt;0</em>,
+<em>\nu&gt;0</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Irregular-Modified-Bessel-Functions-_002d-Fractional-Order"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Zeros-of-Regular-Bessel-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Zeros-of-Regular-Bessel-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Irregular-Modified-Bessel-Functions_002d_002d_002dFractional-Order"></a>
+<h3 class="subsection">12. Irregular Modified Bessel Functions&mdash;Fractional Order</h3>
+<a name="index-Irregular-Modified-Bessel-Functions_002c-Fractional-Order"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKnu"></a><u>Function:</u> double <b>gsl_sf_bessel_Knu</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Knu_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular modified Bessel function of
+fractional order <em>\nu</em>, <em>K_\nu(x)</em> for <em>x&gt;0</em>,
+<em>\nu&gt;0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005flnKnu"></a><u>Function:</u> double <b>gsl_sf_bessel_lnKnu</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005flnKnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_lnKnu_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the logarithm of the irregular modified Bessel
+function of fractional order <em>\nu</em>, <em>\ln(K_\nu(x))</em> for
+<em>x&gt;0</em>, <em>\nu&gt;0</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKnu_005fscaled"></a><u>Function:</u> double <b>gsl_sf_bessel_Knu_scaled</b><i> (double <var>nu</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fKnu_005fscaled_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_Knu_scaled_e</b><i> (double <var>nu</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the scaled irregular modified Bessel function of
+fractional order <em>\nu</em>, <em>\exp(+|x|) K_\nu(x)</em> for <em>x&gt;0</em>,
+<em>\nu&gt;0</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Zeros-of-Regular-Bessel-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Irregular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Irregular-Modified-Bessel-Functions-_002d-Fractional-Order" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Zeros-of-Regular-Bessel-Functions-1"></a>
+<h3 class="subsection">13. Zeros of Regular Bessel Functions</h3>
+<a name="index-Zeros-of-Regular-Bessel-Functions"></a>
+<a name="index-Regular-Bessel-Functions_002c-Zeros-of"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJ0"></a><u>Function:</u> double <b>gsl_sf_bessel_zero_J0</b><i> (unsigned int <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJ0_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_zero_J0_e</b><i> (unsigned int <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the location of the <var>s</var>-th positive zero of
+the Bessel function <em>J_0(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJ1"></a><u>Function:</u> double <b>gsl_sf_bessel_zero_J1</b><i> (unsigned int <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJ1_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_zero_J1_e</b><i> (unsigned int <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the location of the <var>s</var>-th positive zero of
+the Bessel function <em>J_1(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJnu"></a><u>Function:</u> double <b>gsl_sf_bessel_zero_Jnu</b><i> (double <var>nu</var>, unsigned int <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbessel_005fzero_005fJnu_005fe"></a><u>Function:</u> int <b>gsl_sf_bessel_zero_Jnu_e</b><i> (double <var>nu</var>, unsigned int <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the location of the <var>s</var>-th positive zero of
+the Bessel function <em>J_\nu(x)</em>.  The current implementation does not
+support negative values of <var>nu</var>. 
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Regular-Cylindrical-Bessel-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

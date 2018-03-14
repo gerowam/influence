@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-sparse-linear-algebra"></a>
+<a name="index-linear-algebra_002c-sparse"></a>
+
+<p>This chapter describes functions for solving sparse linear systems
+of equations. The library provides linear algebra routines which
+operate directly on the <code>gsl_spmatrix</code> and <code>gsl_vector</code>
+objects.
+</p>
+<p>The functions described in this chapter are declared in the header file
+&lsquo;<tt>gsl_splinalg.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-Sparse-Linear-Algebra">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Iterative-Solvers">2. Sparse Iterative Solvers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Linear-Algebra-Examples">3. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Linear-Algebra-References-and-Further-Reading">4. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="Overview-of-Sparse-Linear-Algebra"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview-1"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-sparse-linear-algebra_002c-overview"></a>
+
+<p>This chapter is primarily concerned with the solution of the
+linear system
+where <em>A</em> is a general square <em>n</em>-by-<em>n</em> non-singular
+sparse matrix, <em>x</em> is an unknown <em>n</em>-by-<em>1</em> vector, and
+<em>b</em> is a given <em>n</em>-by-1 right hand side vector. There exist
+many methods for solving such sparse linear systems, which broadly
+fall into either direct or iterative categories. Direct methods include
+LU and QR decompositions, while iterative methods start with an
+initial guess for the vector <em>x</em> and update the guess through
+iteration until convergence. GSL does not currently provide any
+direct sparse solvers.
+</p>
+<hr size="6">
+<a name="Sparse-Iterative-Solvers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solver-Overview" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sparse-Iterative-Solvers-1"></a>
+<h2 class="section">2. Sparse Iterative Solvers</h2>
+<a name="index-sparse-matrices_002c-iterative-solvers"></a>
+<a name="index-sparse-linear-algebra_002c-iterative-solvers"></a>
+<a name="index-sparse_002c-iterative-solvers"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Sparse-Iterative-Solver-Overview">2.1 Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sparse-Iterative-Solvers-Types">2.2 Types of Sparse Iterative Solvers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Iterating-the-Sparse-Linear-System">2.3 Iterating the Sparse Linear System</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Sparse-Iterative-Solver-Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers-Types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h3 class="subsection">2.1 Overview</h3>
+
+<p>Many practical iterative methods of solving large <em>n</em>-by-<em>n</em>
+sparse linear systems involve projecting an approximate solution for
+<var>x</var> onto a subspace of <em>\bf R^n</em>. If we define a <em>m</em>-dimensional
+subspace <em>\cal K</em> as the subspace of approximations to the solution
+<var>x</var>, then <em>m</em> constraints must be imposed to determine
+the next approximation. These <em>m</em> constraints define another
+<em>m</em>-dimensional subspace denoted by <em>\cal L</em>. The
+subspace dimension <em>m</em> is typically chosen to be much smaller than
+<em>n</em> in order to reduce the computational
+effort needed to generate the next approximate solution vector.
+The many iterative algorithms which exist differ mainly
+in their choice of <em>\cal K</em> and <em>\cal L</em>.
+</p>
+<hr size="6">
+<a name="Sparse-Iterative-Solvers-Types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-Iterative-Solver-Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Iterating-the-Sparse-Linear-System" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Types-of-Sparse-Iterative-Solvers"></a>
+<h3 class="subsection">2.2 Types of Sparse Iterative Solvers</h3>
+
+<p>The sparse linear algebra library provides the following types
+of iterative solvers:
+</p>
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005fgmres"></a><u>Sparse Iterative Type:</u> <b>gsl_splinalg_itersolve_gmres</b></dt>
+<dd><a name="index-gmres"></a>
+<p>This specifies the Generalized Minimum Residual Method (GMRES).
+This is a projection method using <em>\cal K = \cal K_m</em>
+and <em>\cal L = A \cal K_m</em> where <em>\cal K_m</em> is
+the <em>m</em>-th Krylov subspace
+and <em>r_0 = b - A x_0</em> is the residual vector of the initial guess
+<em>x_0</em>. If <em>m</em> is set equal to <em>n</em>, then the Krylov
+subspace is <em>\bf R^n</em> and GMRES will provide the exact solution
+<var>x</var>.  However, the goal is for the method to arrive at a very good
+approximation to <var>x</var> using a much smaller subspace <em>\cal K_m</em>. By
+default, the GMRES method selects <em>m = MIN(n,10)</em> but the user
+may specify a different value for <em>m</em>. The GMRES storage
+requirements grow as <em>O(n(m+1))</em> and the number of flops
+grow as <em>O(4 m^2 n - 4 m^3 / 3)</em>.
+</p>
+<p>In the below function <code>gsl_splinalg_itersolve_iterate</code>, one
+GMRES iteration is defined as projecting the approximate solution
+vector onto each Krylov subspace <em>\cal K_1, ..., \cal K_m</em>,
+and so <em>m</em> can be kept smaller by &quot;restarting&quot; the method
+and calling <code>gsl_splinalg_itersolve_iterate</code> multiple times,
+providing the updated approximation <var>x</var> to each new call. If
+the method is not adequately converging, the user may try increasing
+the parameter <em>m</em>.
+</p>
+<p>GMRES is considered a robust general purpose iterative solver, however
+there are cases where the method stagnates if the matrix is not
+positive-definite and fails to reduce the residual until the very last
+projection onto the subspace <em>\cal K_n = \bf R^n</em>. In these
+cases, preconditioning the linear system can help, but GSL does not
+currently provide any preconditioners.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Iterating-the-Sparse-Linear-System"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers-Types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iterating-the-Sparse-Linear-System-1"></a>
+<h3 class="subsection">2.3 Iterating the Sparse Linear System</h3>
+
+<p>The following functions are provided to allocate storage for the
+sparse linear solvers and iterate the system to a solution.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005falloc"></a><u>Function:</u> gsl_splinalg_itersolve * <b>gsl_splinalg_itersolve_alloc</b><i> (const gsl_splinalg_itersolve_type * <var>T</var>, const size_t <var>n</var>, const size_t <var>m</var>)</i></dt>
+<dd><p>This function allocates a workspace for the iterative solution of
+<var>n</var>-by-<var>n</var> sparse matrix systems. The iterative solver type
+is specified by <var>T</var>. The argument <var>m</var> specifies the size
+of the solution candidate subspace <em>\cal K_m</em>. The dimension
+<var>m</var> may be set to 0 in which case a reasonable default value is used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005ffree"></a><u>Function:</u> void <b>gsl_splinalg_itersolve_free</b><i> (gsl_splinalg_itersolve * <var>w</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005fname"></a><u>Function:</u> const char * <b>gsl_splinalg_itersolve_name</b><i> (const gsl_splinalg_itersolve * <var>w</var>)</i></dt>
+<dd><p>This function returns a string pointer to the name of the solver.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005fiterate"></a><u>Function:</u> int <b>gsl_splinalg_itersolve_iterate</b><i> (const gsl_spmatrix *<var>A</var>, const gsl_vector *<var>b</var>, const double <var>tol</var>, gsl_vector *<var>x</var>, gsl_splinalg_itersolve *<var>w</var>)</i></dt>
+<dd><p>This function performs one iteration of the iterative method for
+the sparse linear system specfied by the matrix <var>A</var>, right hand
+side vector <var>b</var> and solution vector <var>x</var>. On input, <var>x</var>
+must be set to an initial guess for the solution. On output,
+<var>x</var> is updated to give the current solution estimate. The
+parameter <var>tol</var> specifies the relative tolerance between the residual
+norm and norm of <var>b</var> in order to check for convergence.
+When the following condition is satisfied:
+the method has converged, the function returns <code>GSL_SUCCESS</code> and
+the final solution is provided in <var>x</var>. Otherwise, the function
+returns <code>GSL_CONTINUE</code> to signal that more iterations are
+required. Here, <em>|| \cdot ||</em> represents the Euclidean norm.
+The input matrix <var>A</var> may be in triplet or compressed column
+format.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsplinalg_005fitersolve_005fnormr"></a><u>Function:</u> double <b>gsl_splinalg_itersolve_normr</b><i> (const gsl_splinalg_itersolve *<var>w</var>)</i></dt>
+<dd><p>This function returns the current residual norm
+<em>||r|| = ||A x - b||</em>, which is updated after each call to
+<code>gsl_splinalg_itersolve_iterate</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sparse-Linear-Algebra-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Iterating-the-Sparse-Linear-System" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Iterative-Solvers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">3. Examples</h2>
+<a name="index-sparse-linear-algebra_002c-examples"></a>
+
+<p>This example program demonstrates the sparse linear algebra routines on
+the solution of a simple 1D Poisson equation on <em>[0,1]</em>:
+with boundary conditions <em>u(0) = u(1) = 0</em>. The analytic solution of
+this simple problem is <em>u(x) = \sin\pi x</em>. We will solve this
+problem by finite differencing the left hand side to give
+Defining a grid of <em>N</em> points, <em>h = 1/(N-1)</em>. In the finite
+difference equation above, <em>u_0 = u_N-1 = 0</em> are known from
+the boundary conditions, so we will only put the equations for
+<em>i = 1, ..., N-2</em> into the matrix system. The resulting
+<em>(N-2) \times (N-2)</em> matrix equation is
+An example program which constructs and solves this system is given below.
+The system is solved using the iterative GMRES solver. Here is
+the output of the program:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">iter 0 residual = 4.297275996844e-11
+Converged
+</pre></td></tr></table>
+<p>showing that the method converged in a single iteration.
+The calculated solution is shown in the following plot.
+</p>
+
+
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
+
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_vector.h&gt;
+#include &lt;gsl/gsl_spmatrix.h&gt;
+#include &lt;gsl/gsl_splinalg.h&gt;
+
+int
+main()
+{
+  const size_t N = 100;                       /* number of grid points */
+  const size_t n = N - 2;                     /* subtract 2 to exclude boundaries */
+  const double h = 1.0 / (N - 1.0);           /* grid spacing */
+  gsl_spmatrix *A = gsl_spmatrix_alloc(n ,n); /* triplet format */
+  gsl_spmatrix *C;                            /* compressed format */
+  gsl_vector *f = gsl_vector_alloc(n);        /* right hand side vector */
+  gsl_vector *u = gsl_vector_alloc(n);        /* solution vector */
+  size_t i;
+
+  /* construct the sparse matrix for the finite difference equation */
+
+  /* construct first row */
+  gsl_spmatrix_set(A, 0, 0, -2.0);
+  gsl_spmatrix_set(A, 0, 1, 1.0);
+
+  /* construct rows [1:n-2] */
+  for (i = 1; i &lt; n - 1; ++i)
+    {
+      gsl_spmatrix_set(A, i, i + 1, 1.0);
+      gsl_spmatrix_set(A, i, i, -2.0);
+      gsl_spmatrix_set(A, i, i - 1, 1.0);
+    }
+
+  /* construct last row */
+  gsl_spmatrix_set(A, n - 1, n - 1, -2.0);
+  gsl_spmatrix_set(A, n - 1, n - 2, 1.0);
+
+  /* scale by h^2 */
+  gsl_spmatrix_scale(A, 1.0 / (h * h));
+
+  /* construct right hand side vector */
+  for (i = 0; i &lt; n; ++i)
+    {
+      double xi = (i + 1) * h;
+      double fi = -M_PI * M_PI * sin(M_PI * xi);
+      gsl_vector_set(f, i, fi);
+    }
+
+  /* convert to compressed column format */
+  C = gsl_spmatrix_compcol(A);
+
+  /* now solve the system with the GMRES iterative solver */
+  {
+    const double tol = 1.0e-6;  /* solution relative tolerance */
+    const size_t max_iter = 10; /* maximum iterations */
+    const gsl_splinalg_itersolve_type *T = gsl_splinalg_itersolve_gmres;
+    gsl_splinalg_itersolve *work =
+      gsl_splinalg_itersolve_alloc(T, n, 0);
+    size_t iter = 0;
+    double residual;
+    int status;
+
+    /* initial guess u = 0 */
+    gsl_vector_set_zero(u);
+
+    /* solve the system A u = f */
+    do
+      {
+        status = gsl_splinalg_itersolve_iterate(C, f, tol, u, work);
+
+        /* print out residual norm ||A*u - f|| */
+        residual = gsl_splinalg_itersolve_normr(work);
+        fprintf(stderr, &quot;iter %zu residual = %.12e\n&quot;, iter, residual);
+
+        if (status == GSL_SUCCESS)
+          fprintf(stderr, &quot;Converged\n&quot;);
+      }
+    while (status == GSL_CONTINUE &amp;&amp; ++iter &lt; max_iter);
+
+    /* output solution */
+    for (i = 0; i &lt; n; ++i)
+      {
+        double xi = (i + 1) * h;
+        double u_exact = sin(M_PI * xi);
+        double u_gsl = gsl_vector_get(u, i);
+
+        printf(&quot;%f %.12e %.12e\n&quot;, xi, u_gsl, u_exact);
+      }
+
+    gsl_splinalg_itersolve_free(work);
+  }
+
+  gsl_spmatrix_free(A);
+  gsl_spmatrix_free(C);
+  gsl_vector_free(f);
+  gsl_vector_free(u);
+
+  return 0;
+} /* main() */
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Sparse-Linear-Algebra-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sparse-Linear-Algebra-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">4. References and Further Reading</h2>
+<a name="index-sparse-linear-algebra_002c-references"></a>
+
+<p>The implementation of the GMRES iterative solver closely follows
+the publications
+</p>
+<ul class="toc">
+<li>
+H. F. Walker, Implementation of the GMRES method using
+Householder transformations, SIAM J. Sci. Stat. Comput.
+9(1), 1988.
+
+</li><li>
+Y. Saad, Iterative methods for sparse linear systems, 2nd edition,
+SIAM, 2003.
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Sparse-Linear-Algebra" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

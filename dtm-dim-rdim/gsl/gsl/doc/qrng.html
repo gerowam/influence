@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-quasi_002drandom-sequences"></a>
+<a name="index-low-discrepancy-sequences"></a>
+<a name="index-Sobol-sequence"></a>
+<a name="index-Niederreiter-sequence"></a>
+<p>This chapter describes functions for generating quasi-random sequences
+in arbitrary dimensions.  A quasi-random sequence progressively covers a
+<em>d</em>-dimensional space with a set of points that are uniformly
+distributed.  Quasi-random sequences are also known as low-discrepancy
+sequences.  The quasi-random sequence generators use an interface that
+is similar to the interface for random number generators, except that
+seeding is not required&mdash;each generator produces a single sequence.
+</p>
+<p>The functions described in this section are declared in the header file
+&lsquo;<tt>gsl_qrng.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Quasi_002drandom-number-generator-initialization">1. Quasi-random number generator initialization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Sampling-from-a-quasi_002drandom-number-generator">2. Sampling from a quasi-random number generator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Auxiliary-quasi_002drandom-number-generator-functions">3. Auxiliary quasi-random number generator functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Saving-and-restoring-quasi_002drandom-number-generator-state">4. Saving and restoring quasi-random number generator state</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Quasi_002drandom-number-generator-algorithms">5. Quasi-random number generator algorithms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Quasi_002drandom-number-generator-examples">6. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Quasi_002drandom-number-references">7. References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Quasi_002drandom-number-generator-initialization"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Sampling-from-a-quasi_002drandom-number-generator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Sampling-from-a-quasi_002drandom-number-generator" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Quasi_002drandom-number-generator-initialization-1"></a>
+<h2 class="section">1. Quasi-random number generator initialization</h2>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005falloc"></a><u>Function:</u> gsl_qrng * <b>gsl_qrng_alloc</b><i> (const gsl_qrng_type * <var>T</var>, unsigned int <var>d</var>)</i></dt>
+<dd><a name="index-gsl_005fqrng"></a>
+<a name="index-gsl_005fqrng_005ftype"></a>
+<p>This function returns a pointer to a newly-created instance of a
+quasi-random sequence generator of type <var>T</var> and dimension <var>d</var>.
+If there is insufficient memory to create the generator then the
+function returns a null pointer and the error handler is invoked with an
+error code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005ffree"></a><u>Function:</u> void <b>gsl_qrng_free</b><i> (gsl_qrng * <var>q</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the generator
+<var>q</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005finit"></a><u>Function:</u> void <b>gsl_qrng_init</b><i> (gsl_qrng * <var>q</var>)</i></dt>
+<dd><p>This function reinitializes the generator <var>q</var> to its starting point.
+Note that quasi-random sequences do not use a seed and always produce
+the same set of values.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Sampling-from-a-quasi_002drandom-number-generator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Auxiliary-quasi_002drandom-number-generator-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Auxiliary-quasi_002drandom-number-generator-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Sampling-from-a-quasi_002drandom-number-generator-1"></a>
+<h2 class="section">2. Sampling from a quasi-random number generator</h2>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fget"></a><u>Function:</u> int <b>gsl_qrng_get</b><i> (const gsl_qrng * <var>q</var>, double <var>x</var>[])</i></dt>
+<dd><p>This function stores the next point from the sequence generator <var>q</var>
+in the array <var>x</var>.  The space available for <var>x</var> must match the
+dimension of the generator.  The point <var>x</var> will lie in the range
+<em>0 &lt; x_i &lt; 1</em> for each <em>x_i</em>.  @inlinefn{}
+</p></dd></dl>
+
+<hr size="6">
+<a name="Auxiliary-quasi_002drandom-number-generator-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Sampling-from-a-quasi_002drandom-number-generator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Saving-and-restoring-quasi_002drandom-number-generator-state" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Sampling-from-a-quasi_002drandom-number-generator" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Saving-and-restoring-quasi_002drandom-number-generator-state" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Auxiliary-quasi_002drandom-number-generator-functions-1"></a>
+<h2 class="section">3. Auxiliary quasi-random number generator functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fname"></a><u>Function:</u> const char * <b>gsl_qrng_name</b><i> (const gsl_qrng * <var>q</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the generator.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fsize"></a><u>Function:</u> size_t <b>gsl_qrng_size</b><i> (const gsl_qrng * <var>q</var>)</i></dt>
+<dt><a name="index-gsl_005fqrng_005fstate"></a><u>Function:</u> void * <b>gsl_qrng_state</b><i> (const gsl_qrng * <var>q</var>)</i></dt>
+<dd><p>These functions return a pointer to the state of generator <var>r</var> and
+its size.  You can use this information to access the state directly.  For
+example, the following code will write the state of a generator to a
+stream,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void * state = gsl_qrng_state (q);
+size_t n = gsl_qrng_size (q);
+fwrite (state, n, 1, stream);
+</pre></td></tr></table>
+</dd></dl>
+
+
+<hr size="6">
+<a name="Saving-and-restoring-quasi_002drandom-number-generator-state"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Auxiliary-quasi_002drandom-number-generator-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-algorithms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Auxiliary-quasi_002drandom-number-generator-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-algorithms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Saving-and-restoring-quasi_002drandom-number-generator-state-1"></a>
+<h2 class="section">4. Saving and restoring quasi-random number generator state</h2>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fmemcpy"></a><u>Function:</u> int <b>gsl_qrng_memcpy</b><i> (gsl_qrng * <var>dest</var>, const gsl_qrng * <var>src</var>)</i></dt>
+<dd><p>This function copies the quasi-random sequence generator <var>src</var> into the
+pre-existing generator <var>dest</var>, making <var>dest</var> into an exact copy
+of <var>src</var>.  The two generators must be of the same type.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fclone"></a><u>Function:</u> gsl_qrng * <b>gsl_qrng_clone</b><i> (const gsl_qrng * <var>q</var>)</i></dt>
+<dd><p>This function returns a pointer to a newly created generator which is an
+exact copy of the generator <var>q</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Quasi_002drandom-number-generator-algorithms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Saving-and-restoring-quasi_002drandom-number-generator-state" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Saving-and-restoring-quasi_002drandom-number-generator-state" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Quasi_002drandom-number-generator-algorithms-1"></a>
+<h2 class="section">5. Quasi-random number generator algorithms</h2>
+
+<p>The following quasi-random sequence algorithms are available,
+</p>
+<dl>
+<dt><a name="index-gsl_005fqrng_005fniederreiter_005f2"></a><u>Generator:</u> <b>gsl_qrng_niederreiter_2</b></dt>
+<dd><p>This generator uses the algorithm described in Bratley, Fox,
+Niederreiter, <cite>ACM Trans. Model. Comp. Sim.</cite> 2, 195 (1992). It is
+valid up to 12 dimensions.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fsobol"></a><u>Generator:</u> <b>gsl_qrng_sobol</b></dt>
+<dd><p>This generator uses the Sobol sequence described in Antonov, Saleev,
+<cite>USSR Comput. Maths. Math. Phys.</cite> 19, 252 (1980). It is valid up to
+40 dimensions.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fqrng_005fhalton"></a><u>Generator:</u> <b>gsl_qrng_halton</b></dt>
+<dt><a name="index-gsl_005fqrng_005freversehalton"></a><u>Generator:</u> <b>gsl_qrng_reversehalton</b></dt>
+<dd><p>These generators use the Halton and reverse Halton sequences described
+in J.H. Halton, <cite>Numerische Mathematik</cite> 2, 84-90 (1960) and
+B. Vandewoestyne and R. Cools <cite>Computational and Applied
+Mathematics</cite> 189, 1&amp;2, 341-361 (2006).  They are valid up to 1229
+dimensions.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Quasi_002drandom-number-generator-examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-algorithms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-references" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-algorithms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-references" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">6. Examples</h2>
+
+<p>The following program prints the first 1024 points of the 2-dimensional
+Sobol sequence.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_qrng.h&gt;
+
+int
+main (void)
+{
+  int i;
+  gsl_qrng * q = gsl_qrng_alloc (gsl_qrng_sobol, 2);
+
+  for (i = 0; i &lt; 1024; i++)
+    {
+      double v[2];
+      gsl_qrng_get (q, v);
+      printf (&quot;%.5f %.5f\n&quot;, v[0], v[1]);
+    }
+
+  gsl_qrng_free (q);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out
+0.50000 0.50000
+0.75000 0.25000
+0.25000 0.75000
+0.37500 0.37500
+0.87500 0.87500
+0.62500 0.12500
+0.12500 0.62500
+....
+</pre></td></tr></table>
+
+<p>It can be seen that successive points progressively fill-in the spaces
+between previous points. 
+</p>
+
+<hr size="6">
+<a name="Quasi_002drandom-number-references"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References"></a>
+<h2 class="section">7. References</h2>
+
+<p>The implementations of the quasi-random sequence routines are based on
+the algorithms described in the following paper,
+</p>
+<ul class="toc">
+<li>
+P. Bratley and B.L. Fox and H. Niederreiter, &ldquo;Algorithm 738: Programs
+to Generate Niederreiter&rsquo;s Low-discrepancy Sequences&rdquo;, <cite>ACM
+Transactions on Mathematical Software</cite>, Vol. 20, No. 4, December, 1994,
+p. 494&ndash;495.
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Quasi_002drandom-number-generator-initialization" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

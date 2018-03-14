@@ -1,0 +1,1437 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-fitting"></a>
+<a name="index-least-squares-fit"></a>
+<a name="index-regression_002c-least-squares"></a>
+<a name="index-weighted-linear-fits"></a>
+<a name="index-unweighted-linear-fits"></a>
+<p>This chapter describes routines for performing least squares fits to
+experimental data using linear combinations of functions.  The data
+may be weighted or unweighted, i.e. with known or unknown errors.  For
+weighted data the functions compute the best fit parameters and their
+associated covariance matrix.  For unweighted data the covariance
+matrix is estimated from the scatter of the points, giving a
+variance-covariance matrix.
+</p>
+<p>The functions are divided into separate versions for simple one- or
+two-parameter regression and multiple-parameter fits.  The functions
+are declared in the header file &lsquo;<tt>gsl_fit.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Fitting-Overview">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Linear-regression">2. Linear regression</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Linear-fitting-without-a-constant-term">3. Linear fitting without a constant term</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multi_002dparameter-fitting">4. Multi-parameter fitting</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Ridge-_0028Tikhonov_0029-regression">5. Ridge (Tikhonov) regression</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Robust-linear-regression">6. Robust linear regression</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Troubleshooting">7. Troubleshooting</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Fitting-Examples">8. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Fitting-References-and-Further-Reading">9. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Fitting-Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Linear-regression" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Linear-regression" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+
+<p>Least-squares fits are found by minimizing <em>\chi^2</em>
+(chi-squared), the weighted sum of squared residuals over <em>n</em>
+experimental datapoints <em>(x_i, y_i)</em> for the model <em>Y(c,x)</em>,
+The <em>p</em> parameters of the model are <em>c = c_0, c_1, &hellip;</em>.  The
+weight factors <em>w_i</em> are given by <em>w_i = 1/\sigma_i^2</em>,
+where <em>\sigma_i</em> is the experimental error on the data-point
+<em>y_i</em>.  The errors are assumed to be
+Gaussian and uncorrelated. 
+For unweighted data the chi-squared sum is computed without any weight factors. 
+</p>
+<p>The fitting routines return the best-fit parameters <em>c</em> and their
+<em>p \times p</em> covariance matrix.  The covariance matrix measures the
+statistical errors on the best-fit parameters resulting from the 
+errors on the data, <em>\sigma_i</em>, and is defined
+<a name="index-covariance-matrix_002c-linear-fits"></a>
+as <em>C_ab = &lt;\delta c_a \delta c_b&gt;</em> where <em>&lt; &gt;</em> denotes an average over the Gaussian error distributions of the underlying datapoints.
+</p>
+<p>The covariance matrix is calculated by error propagation from the data
+errors <em>\sigma_i</em>.  The change in a fitted parameter <em>\delta
+c_a</em> caused by a small change in the data <em>\delta y_i</em> is given
+by
+allowing the covariance matrix to be written in terms of the errors on the data,
+For uncorrelated data the fluctuations of the underlying datapoints satisfy
+<em>&lt;\delta y_i \delta y_j&gt; = \sigma_i^2 \delta_ij</em>, giving a 
+corresponding parameter covariance matrix of
+When computing the covariance matrix for unweighted data, i.e. data with unknown errors, 
+the weight factors <em>w_i</em> in this sum are replaced by the single estimate <em>w =
+1/\sigma^2</em>, where <em>\sigma^2</em> is the computed variance of the
+residuals about the best-fit model, <em>\sigma^2 = \sum (y_i - Y(c,x_i))^2 / (n-p)</em>.  
+This is referred to as the <em>variance-covariance matrix</em>.
+<a name="index-variance_002dcovariance-matrix_002c-linear-fits"></a>
+</p>
+<p>The standard deviations of the best-fit parameters are given by the
+square root of the corresponding diagonal elements of
+the covariance matrix, <em>\sigma_c_a = \sqrtC_aa</em>.
+The correlation coefficient of the fit parameters <em>c_a</em> and <em>c_b</em>
+is given by <em>\rho_ab = C_ab / \sqrtC_aa C_bb</em>.
+</p>
+<hr size="6">
+<a name="Linear-regression"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fitting-Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-fitting-without-a-constant-term" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-fitting-without-a-constant-term" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Linear-regression-1"></a>
+<h2 class="section">2. Linear regression</h2>
+<a name="index-linear-regression"></a>
+
+<p>The functions described in this section can be used to perform
+least-squares fits to a straight line model, <em>Y(c,x) = c_0 + c_1 x</em>.
+</p>
+<a name="index-covariance-matrix_002c-from-linear-regression"></a>
+<dl>
+<dt><a name="index-gsl_005ffit_005flinear"></a><u>Function:</u> int <b>gsl_fit_linear</b><i> (const double * <var>x</var>, const size_t <var>xstride</var>, const double * <var>y</var>, const size_t <var>ystride</var>, size_t <var>n</var>, double * <var>c0</var>, double * <var>c1</var>, double * <var>cov00</var>, double * <var>cov01</var>, double * <var>cov11</var>, double * <var>sumsq</var>)</i></dt>
+<dd><p>This function computes the best-fit linear regression coefficients
+(<var>c0</var>,<var>c1</var>) of the model <em>Y = c_0 + c_1 X</em> for the dataset
+(<var>x</var>, <var>y</var>), two vectors of length <var>n</var> with strides
+<var>xstride</var> and <var>ystride</var>.  The errors on <var>y</var> are assumed unknown so 
+the variance-covariance matrix for the
+parameters (<var>c0</var>, <var>c1</var>) is estimated from the scatter of the
+points around the best-fit line and returned via the parameters
+(<var>cov00</var>, <var>cov01</var>, <var>cov11</var>).   
+The sum of squares of the residuals from the best-fit line is returned
+in <var>sumsq</var>.  Note: the correlation coefficient of the data can be computed using <code>gsl_stats_correlation</code> (@pxref{Correlation}), it does not depend on the fit.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005ffit_005fwlinear"></a><u>Function:</u> int <b>gsl_fit_wlinear</b><i> (const double * <var>x</var>, const size_t <var>xstride</var>, const double * <var>w</var>, const size_t <var>wstride</var>, const double * <var>y</var>, const size_t <var>ystride</var>, size_t <var>n</var>, double * <var>c0</var>, double * <var>c1</var>, double * <var>cov00</var>, double * <var>cov01</var>, double * <var>cov11</var>, double * <var>chisq</var>)</i></dt>
+<dd><p>This function computes the best-fit linear regression coefficients
+(<var>c0</var>,<var>c1</var>) of the model <em>Y = c_0 + c_1 X</em> for the weighted
+dataset (<var>x</var>, <var>y</var>), two vectors of length <var>n</var> with strides
+<var>xstride</var> and <var>ystride</var>.  The vector <var>w</var>, of length <var>n</var>
+and stride <var>wstride</var>, specifies the weight of each datapoint. The
+weight is the reciprocal of the variance for each datapoint in <var>y</var>.
+</p>
+<p>The covariance matrix for the parameters (<var>c0</var>, <var>c1</var>) is
+computed using the weights and returned via the parameters
+(<var>cov00</var>, <var>cov01</var>, <var>cov11</var>).  The weighted sum of squares
+of the residuals from the best-fit line, <em>\chi^2</em>, is returned in
+<var>chisq</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005ffit_005flinear_005fest"></a><u>Function:</u> int <b>gsl_fit_linear_est</b><i> (double <var>x</var>, double <var>c0</var>, double <var>c1</var>, double <var>cov00</var>, double <var>cov01</var>, double <var>cov11</var>, double * <var>y</var>, double * <var>y_err</var>)</i></dt>
+<dd><p>This function uses the best-fit linear regression coefficients
+<var>c0</var>, <var>c1</var> and their covariance
+<var>cov00</var>, <var>cov01</var>, <var>cov11</var> to compute the fitted function
+<var>y</var> and its standard deviation <var>y_err</var> for the model <em>Y =
+c_0 + c_1 X</em> at the point <var>x</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Linear-fitting-without-a-constant-term"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Linear-regression" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multi_002dparameter-fitting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Linear-regression" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multi_002dparameter-fitting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Linear-fitting-without-a-constant-term-1"></a>
+<h2 class="section">3. Linear fitting without a constant term</h2>
+
+<p>The functions described in this section can be used to perform
+least-squares fits to a straight line model without a constant term,
+<em>Y = c_1 X</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005ffit_005fmul"></a><u>Function:</u> int <b>gsl_fit_mul</b><i> (const double * <var>x</var>, const size_t <var>xstride</var>, const double * <var>y</var>, const size_t <var>ystride</var>, size_t <var>n</var>, double * <var>c1</var>, double * <var>cov11</var>, double * <var>sumsq</var>)</i></dt>
+<dd><p>This function computes the best-fit linear regression coefficient
+<var>c1</var> of the model <em>Y = c_1 X</em> for the datasets (<var>x</var>,
+<var>y</var>), two vectors of length <var>n</var> with strides <var>xstride</var> and
+<var>ystride</var>.  The errors on <var>y</var> are assumed unknown so the 
+variance of the parameter <var>c1</var> is estimated from
+the scatter of the points around the best-fit line and returned via the
+parameter <var>cov11</var>.  The sum of squares of the residuals from the
+best-fit line is returned in <var>sumsq</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005ffit_005fwmul"></a><u>Function:</u> int <b>gsl_fit_wmul</b><i> (const double * <var>x</var>, const size_t <var>xstride</var>, const double * <var>w</var>, const size_t <var>wstride</var>, const double * <var>y</var>, const size_t <var>ystride</var>, size_t <var>n</var>, double * <var>c1</var>, double * <var>cov11</var>, double * <var>sumsq</var>)</i></dt>
+<dd><p>This function computes the best-fit linear regression coefficient
+<var>c1</var> of the model <em>Y = c_1 X</em> for the weighted datasets
+(<var>x</var>, <var>y</var>), two vectors of length <var>n</var> with strides
+<var>xstride</var> and <var>ystride</var>.  The vector <var>w</var>, of length <var>n</var>
+and stride <var>wstride</var>, specifies the weight of each datapoint. The
+weight is the reciprocal of the variance for each datapoint in <var>y</var>.
+</p>
+<p>The variance of the parameter <var>c1</var> is computed using the weights
+and returned via the parameter <var>cov11</var>.  The weighted sum of
+squares of the residuals from the best-fit line, <em>\chi^2</em>, is
+returned in <var>chisq</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005ffit_005fmul_005fest"></a><u>Function:</u> int <b>gsl_fit_mul_est</b><i> (double <var>x</var>, double <var>c1</var>, double <var>cov11</var>, double * <var>y</var>, double * <var>y_err</var>)</i></dt>
+<dd><p>This function uses the best-fit linear regression coefficient <var>c1</var>
+and its covariance <var>cov11</var> to compute the fitted function
+<var>y</var> and its standard deviation <var>y_err</var> for the model <em>Y =
+c_1 X</em> at the point <var>x</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multi_002dparameter-fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Linear-fitting-without-a-constant-term" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Ridge-_0028Tikhonov_0029-regression" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Linear-fitting-without-a-constant-term" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Ridge-_0028Tikhonov_0029-regression" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Multi_002dparameter-fitting-1"></a>
+<h2 class="section">4. Multi-parameter fitting</h2>
+<a name="index-multi_002dparameter-regression"></a>
+<a name="index-fits_002c-multi_002dparameter-linear"></a>
+<p>The functions described in this section perform least-squares fits to a
+general linear model, <em>y = X c</em> where <em>y</em> is a vector of
+<em>n</em> observations, <em>X</em> is an <em>n</em> by <em>p</em> matrix of
+predictor variables, and the elements of the vector <em>c</em> are the <em>p</em> unknown best-fit parameters which are to be estimated.  The chi-squared value is given by <em>\chi^2 = \sum_i w_i (y_i - \sum_j X_ij c_j)^2</em>.
+</p>
+<p>This formulation can be used for fits to any number of functions and/or
+variables by preparing the <em>n</em>-by-<em>p</em> matrix <em>X</em>
+appropriately.  For example, to fit to a <em>p</em>-th order polynomial in
+<var>x</var>, use the following matrix,
+where the index <em>i</em> runs over the observations and the index
+<em>j</em> runs from 0 to <em>p-1</em>.
+</p>
+<p>To fit to a set of <em>p</em> sinusoidal functions with fixed frequencies
+<em>\omega_1</em>, <em>\omega_2</em>, &hellip;, <em>\omega_p</em>, use,
+To fit to <em>p</em> independent variables <em>x_1</em>, <em>x_2</em>, &hellip;,
+<em>x_p</em>, use,
+where <em>x_j(i)</em> is the <em>i</em>-th value of the predictor variable
+<em>x_j</em>.
+</p>
+<p>The functions described in this section are declared in the header file
+&lsquo;<tt>gsl_multifit.h</tt>&rsquo;.
+</p>
+<p>The solution of the general linear least-squares system requires an
+additional working space for intermediate results, such as the singular
+value decomposition of the matrix <em>X</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005falloc"></a><u>Function:</u> gsl_multifit_linear_workspace * <b>gsl_multifit_linear_alloc</b><i> (size_t <var>n</var>, size_t <var>p</var>)</i></dt>
+<dd><a name="index-gsl_005fmultifit_005flinear_005fworkspace"></a>
+<p>This function allocates a workspace for fitting a model to <var>n</var>
+observations using <var>p</var> parameters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005ffree"></a><u>Function:</u> void <b>gsl_multifit_linear_free</b><i> (gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear"></a><u>Function:</u> int <b>gsl_multifit_linear</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>This function computes the best-fit parameters <var>c</var> of the model
+<em>y = X c</em> for the observations <var>y</var> and the matrix of
+predictor variables <var>X</var>, using the preallocated workspace provided
+in <var>work</var>.  The <em>p</em>-by-<em>p</em> variance-covariance matrix of the model parameters
+<var>cov</var> is set to <em>\sigma^2 (X^T X)^-1</em>, where <em>\sigma</em> is
+the standard deviation of the fit residuals.
+The sum of squares of the residuals from the best-fit,
+<em>\chi^2</em>, is returned in <var>chisq</var>. If the coefficient of
+determination is desired, it can be computed from the expression
+<em>R^2 = 1 - \chi^2 / TSS</em>, where the total sum of squares (TSS) of
+the observations <var>y</var> may be computed from <code>gsl_stats_tss</code>.
+</p>
+<p>The best-fit is found by singular value decomposition of the matrix
+<var>X</var> using the modified Golub-Reinsch SVD algorithm, with column
+scaling to improve the accuracy of the singular values. Any components
+which have zero singular value (to machine precision) are discarded
+from the fit.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005fwlinear"></a><u>Function:</u> int <b>gsl_multifit_wlinear</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>w</var>, const gsl_vector * <var>y</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>This function computes the best-fit parameters <var>c</var> of the weighted
+model <em>y = X c</em> for the observations <var>y</var> with weights <var>w</var>
+and the matrix of predictor variables <var>X</var>, using the preallocated
+workspace provided in <var>work</var>.  The <em>p</em>-by-<em>p</em> covariance matrix of the model
+parameters <var>cov</var> is computed as <em>(X^T W X)^-1</em>. The weighted
+sum of squares of the residuals from the best-fit, <em>\chi^2</em>, is
+returned in <var>chisq</var>. If the coefficient of determination is
+desired, it can be computed from the expression <em>R^2 = 1 - \chi^2
+/ WTSS</em>, where the weighted total sum of squares (WTSS) of the
+observations <var>y</var> may be computed from <code>gsl_stats_wtss</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fsvd"></a><u>Function:</u> int <b>gsl_multifit_linear_svd</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, double <var>tol</var>, size_t * <var>rank</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005fwlinear_005fsvd"></a><u>Function:</u> int <b>gsl_multifit_wlinear_svd</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>w</var>, const gsl_vector * <var>y</var>, double <var>tol</var>, size_t * <var>rank</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>In these functions components of the fit are discarded if the ratio of
+singular values <em>s_i/s_0</em> falls below the user-specified
+tolerance <var>tol</var>, and the effective rank is returned in <var>rank</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fusvd"></a><u>Function:</u> int <b>gsl_multifit_linear_usvd</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, double <var>tol</var>, size_t * <var>rank</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005fwlinear_005fusvd"></a><u>Function:</u> int <b>gsl_multifit_wlinear_usvd</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>w</var>, const gsl_vector * <var>y</var>, double <var>tol</var>, size_t * <var>rank</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>These functions compute the fit using an SVD without column scaling.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fest"></a><u>Function:</u> int <b>gsl_multifit_linear_est</b><i> (const gsl_vector * <var>x</var>, const gsl_vector * <var>c</var>, const gsl_matrix * <var>cov</var>, double * <var>y</var>, double * <var>y_err</var>)</i></dt>
+<dd><p>This function uses the best-fit multilinear regression coefficients
+<var>c</var> and their covariance matrix
+<var>cov</var> to compute the fitted function value
+<var>y</var> and its standard deviation <var>y_err</var> for the model <em>y = x.c</em> 
+at the point <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fresiduals"></a><u>Function:</u> int <b>gsl_multifit_linear_residuals</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, const gsl_vector * <var>c</var>, gsl_vector * <var>r</var>)</i></dt>
+<dd><p>This function computes the vector of residuals <em>r = y - X c</em> for
+the observations <var>y</var>, coefficients <var>c</var> and matrix of predictor
+variables <var>X</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Ridge-_0028Tikhonov_0029-regression"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multi_002dparameter-fitting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Robust-linear-regression" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multi_002dparameter-fitting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Robust-linear-regression" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Ridge-_0028Tikhonov_0029-regression-1"></a>
+<h2 class="section">5. Ridge (Tikhonov) regression</h2>
+<a name="index-ridge-regression"></a>
+<a name="index-Tikhonov-regression"></a>
+<a name="index-regression_002c-ridge"></a>
+<a name="index-regression_002c-Tikhonov"></a>
+<a name="index-least-squares_002c-regularized"></a>
+
+<p>Ordinary least squares models seek a solution vector <em>c</em> which
+minimizes the residual
+In cases where the least squares matrix <em>X</em> is ill-conditioned,
+small perturbations of the matrix could lead to widely different
+solution vectors <em>c</em>. In these cases it is often advantageous
+to include a regularization term in the least squares minimization
+for a suitably chosen matrix <em>L</em>. In many cases,
+<em>L</em> is chosen as a multiple of the identity matrix, giving
+preference to solution vectors <em>c</em> with smaller norms.
+Including this regularization term leads to the explicit solution
+which reduces to the ordinary least squares solution when <em>L = 0</em>.
+The routines below support two formats for the <em>L</em> matrix.
+The first is <em>L = \lambda I</em> giving a solution
+<em>c = \left( X^T X + \lambda^2 I \right)^-1 X^T y</em> which damps
+all solution coefficients equally, and is known as the Tikhonov
+&quot;standard form&quot;. For any square invertible matrix <em>L</em>, the
+general problem can be converted to standard form through the
+transformation
+leading to <em>\tildec = \left( \tildeX^T \tildeX + I \right)^-1 \tildeX^T y</em> which is in standard form with <em>\lambda^2 = 1</em>.
+The second regularization matrix input supported by GSL has the form
+<em>L = diag(\lambda_0,\lambda_1,...,\lambda_p-1)</em> which allows
+the user to selectively damp each coefficient differently. For
+this matrix, GSL performs the above transformation and then
+backtransforms the least squares solution to recover the original
+vector <em>c</em>.
+For applications which require
+a more complicated matrix <em>L</em>, the user can apply the
+above transformation themselves if <em>L</em> is square and
+invertible and use <code>gsl_multifit_linear_ridge</code>, setting
+the input <em>\lambda = 1</em>. If
+<em>L</em> is not square or not invertible, other techniques
+must be used (see Hansen 1998, chapter 2.3).
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fridge"></a><u>Function:</u> int <b>gsl_multifit_linear_ridge</b><i> (const double <var>lambda</var>, const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>This function computes the best-fit parameters <var>c</var> of the model
+<em>y = X c</em> for the observations <var>y</var> and the matrix of
+predictor variables <var>X</var>, using the preallocated workspace provided
+in <var>work</var>. The Tikhonov matrix appearing in the least squares
+solution is <em>L = \lambda I</em> where <em>\lambda</em>
+is provided in <var>lambda</var>, so that <em>\lambda^2</em> is added to
+the diagonal elements of <em>X^T X</em>.
+The <em>p</em>-by-<em>p</em> variance-covariance matrix of the model parameters
+<var>cov</var> is set to <em>\sigma^2 (X^T X)^-1</em>, where <em>\sigma</em> is
+the standard deviation of the fit residuals.
+The residual <em>\chi^2 = || Xc - y ||^2 + \lambda^2 || c ||^2</em>
+is returned in <var>chisq</var>.
+</p>
+<p>The best-fit is found by singular value decomposition of the matrix
+<var>X</var>. Any components which have zero singular value (to machine
+precision) are discarded from the fit.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005flinear_005fridge2"></a><u>Function:</u> int <b>gsl_multifit_linear_ridge2</b><i> (const gsl_vector * <var>lambda</var>, const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, double * <var>chisq</var>, gsl_multifit_linear_workspace * <var>work</var>)</i></dt>
+<dd><p>This function computes the best-fit parameters <var>c</var> of the model
+<em>y = X c</em> for the observations <var>y</var> and the matrix of
+predictor variables <var>X</var>, using the preallocated workspace provided
+in <var>work</var>. The Tikhonov matrix appearing in the least squares
+solution is
+<em>L = diag(\lambda_0,\lambda_1,...,\lambda_p-1)</em>
+where <em>\lambda_i</em> is provided in <var>lambda</var>[i]. The
+problem is converted to standard form as discussed above, solved
+and backtransformed to recover the desired coefficients. Therefore,
+the matrix <em>L^-1</em> must exist and so none of the
+<em>\lambda_i</em> may be zero.
+The <em>p</em>-by-<em>p</em> variance-covariance matrix of the model parameters
+<var>cov</var> is set to <em>\sigma^2 (X^T X)^-1</em>, where <em>\sigma</em> is
+the standard deviation of the fit residuals.
+The residual <em>\chi^2 = || Xc - y ||^2 + || L c ||^2</em>
+is returned in <var>chisq</var>.
+</p>
+<p>The best-fit is found by singular value decomposition of the matrix
+<var>X</var>. Any components which have zero singular value (to machine
+precision) are discarded from the fit.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Robust-linear-regression"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Ridge-_0028Tikhonov_0029-regression" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Troubleshooting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Ridge-_0028Tikhonov_0029-regression" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Troubleshooting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Robust-linear-regression-1"></a>
+<h2 class="section">6. Robust linear regression</h2>
+<a name="index-robust-regression"></a>
+<a name="index-regression_002c-robust"></a>
+<a name="index-least-squares_002c-robust"></a>
+
+<p>Ordinary least squares (OLS) models are often heavily influenced by the presence of outliers.
+Outliers are data points which do not follow the general trend of the other observations,
+although there is strictly no precise definition of an outlier. Robust linear regression
+refers to regression algorithms which are robust to outliers. The most common type of
+robust regression is M-estimation. The general M-estimator minimizes the objective function
+where <em>e_i = y_i - Y(c, x_i)</em> is the residual of the ith data point, and
+<em>\rho(e_i)</em> is a function which should have the following properties:
+</p><ul class="toc">
+<li> <em>\rho(e) \ge 0</em>
+</li><li> <em>\rho(0) = 0</em>
+</li><li> <em>\rho(-e) = \rho(e)</em>
+</li><li> <em>\rho(e_1) &gt; \rho(e_2)</em> for <em>|e_1| &gt; |e_2|</em>
+</li></ul>
+<p>The special case of ordinary least squares is given by <em>\rho(e_i) = e_i^2</em>.
+Letting <em>\psi = \rho&rsquo;</em> be the derivative of <em>\rho</em>, differentiating
+the objective function with respect to the coefficients <em>c</em>
+and setting the partial derivatives to zero produces the system of equations
+where <em>X_i</em> is a vector containing row <em>i</em> of the design matrix <em>X</em>.
+Next, we define a weight function <em>w(e) = \psi(e)/e</em>, and let
+<em>w_i = w(e_i)</em>:
+This system of equations is equivalent to solving a weighted ordinary least squares
+problem, minimizing <em>\chi^2 = \sum_i w_i e_i^2</em>. The weights however, depend
+on the residuals <em>e_i</em>, which depend on the coefficients <em>c</em>, which depend
+on the weights. Therefore, an iterative solution is used, called Iteratively Reweighted
+Least Squares (IRLS).
+</p><ol>
+<li> Compute initial estimates of the coefficients <em>c^(0)</em> using ordinary least squares
+
+</li><li> For iteration <em>k</em>, form the residuals <em>e_i^(k) = (y_i - X_i c^(k-1))/(t \sigma^(k) \sqrt1 - h_i)</em>,
+where <em>t</em> is a tuning constant depending on the choice of <em>\psi</em>, and <em>h_i</em> are the
+statistical leverages (diagonal elements of the matrix <em>X (X^T X)^-1 X^T</em>). Including <em>t</em>
+and <em>h_i</em> in the residual calculation has been shown to improve the convergence of the method.
+The residual standard deviation is approximated as <em>\sigma^(k) = MAD / 0.6745</em>, where MAD is the
+Median-Absolute-Deviation of the <em>n-p</em> largest residuals from the previous iteration.
+
+</li><li> Compute new weights <em>w_i^(k) = \psi(e_i^(k))/e_i^(k)</em>.
+
+</li><li> Compute new coefficients <em>c^(k)</em> by solving the weighted least squares problem with
+weights <em>w_i^(k)</em>.
+
+</li><li> Steps 2 through 4 are iterated until the coefficients converge or until some maximum iteration
+limit is reached. Coefficients are tested for convergence using the critera:
+for all <em>0 \le i &lt; p</em> where <em>\epsilon</em> is a small tolerance factor.
+</li></ol>
+<p>The key to this method lies in selecting the function <em>\psi(e_i)</em> to assign
+smaller weights to large residuals, and larger weights to smaller residuals. As
+the iteration proceeds, outliers are assigned smaller and smaller weights, eventually
+having very little or no effect on the fitted model.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005falloc"></a><u>Function:</u> gsl_multifit_robust_workspace * <b>gsl_multifit_robust_alloc</b><i> (const gsl_multifit_robust_type * <var>T</var>, const size_t <var>n</var>, const size_t <var>p</var>)</i></dt>
+<dd><a name="index-gsl_005fmultifit_005frobust_005fworkspace"></a>
+<p>This function allocates a workspace for fitting a model to <var>n</var>
+observations using <var>p</var> parameters. The type <var>T</var> specifies the
+function <em>\psi</em> and can be selected from the following choices.
+</p><dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fdefault"></a><u>Robust type:</u> <b>gsl_multifit_robust_default</b></dt>
+<dd><p>This specifies the <code>gsl_multifit_robust_bisquare</code> type (see below) and is a good
+general purpose choice for robust regression.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fbisquare"></a><u>Robust type:</u> <b>gsl_multifit_robust_bisquare</b></dt>
+<dd><p>This is Tukey&rsquo;s biweight (bisquare) function and is a good general purpose choice for
+robust regression. The weight function is given by
+and the default tuning constant is <em>t = 4.685</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fcauchy"></a><u>Robust type:</u> <b>gsl_multifit_robust_cauchy</b></dt>
+<dd><p>This is Cauchy&rsquo;s function, also known as the Lorentzian function.
+This function does not guarantee a unique solution,
+meaning different choices of the coefficient vector <var>c</var>
+could minimize the objective function. Therefore this option should
+be used with care. The weight function is given by
+and the default tuning constant is <em>t = 2.385</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005ffair"></a><u>Robust type:</u> <b>gsl_multifit_robust_fair</b></dt>
+<dd><p>This is the fair <em>\rho</em> function, which guarantees a unique solution and
+has continuous derivatives to three orders. The weight function is given by
+and the default tuning constant is <em>t = 1.400</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fhuber"></a><u>Robust type:</u> <b>gsl_multifit_robust_huber</b></dt>
+<dd><p>This specifies Huber&rsquo;s <em>\rho</em> function, which is a parabola in the vicinity of zero and
+increases linearly for a given threshold <em>|e| &gt; t</em>. This function is also considered
+an excellent general purpose robust estimator, however, occasional difficulties can
+be encountered due to the discontinuous first derivative of the <em>\psi</em> function.
+The weight function is given by
+and the default tuning constant is <em>t = 1.345</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fols"></a><u>Robust type:</u> <b>gsl_multifit_robust_ols</b></dt>
+<dd><p>This specifies the ordinary least squares solution, which can be useful for quickly
+checking the difference between the various robust and OLS solutions. The weight function is given by
+and the default tuning constant is <em>t = 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fwelsch"></a><u>Robust type:</u> <b>gsl_multifit_robust_welsch</b></dt>
+<dd><p>This specifies the Welsch function which can perform well in cases where the residuals have an
+exponential distribution. The weight function is given by
+and the default tuning constant is <em>t = 2.985</em>.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005ffree"></a><u>Function:</u> void <b>gsl_multifit_robust_free</b><i> (gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fname"></a><u>Function:</u> const char * <b>gsl_multifit_robust_name</b><i> (const gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function returns the name of the robust type <var>T</var> specified to <code>gsl_multifit_robust_alloc</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005ftune"></a><u>Function:</u> int <b>gsl_multifit_robust_tune</b><i> (const double <var>tune</var>, gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function sets the tuning constant <em>t</em> used to adjust the residuals at each iteration to <var>tune</var>.
+Decreasing the tuning constant increases the downweight assigned to large residuals, while increasing
+the tuning constant decreases the downweight assigned to large residuals.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fmaxiter"></a><u>Function:</u> int <b>gsl_multifit_robust_maxiter</b><i> (const size_t <var>maxiter</var>, gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function sets the maximum number of iterations in the iteratively
+reweighted least squares algorithm to <var>maxiter</var>. By default,
+this value is set to 100 by <code>gsl_multifit_robust_alloc</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fweights"></a><u>Function:</u> int <b>gsl_multifit_robust_weights</b><i> (const gsl_vector * <var>r</var>, gsl_vector * <var>wts</var>, gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function assigns weights to the vector <var>wts</var> using the residual vector <var>r</var> and
+previously specified weighting function. The output weights are given by <em>wts_i = w(r_i / (t \sigma))</em>,
+where the weighting functions <em>w</em> are detailed in <code>gsl_multifit_robust_alloc</code>. <em>\sigma</em>
+is an estimate of the residual standard deviation based on the Median-Absolute-Deviation and <em>t</em>
+is the tuning constant. This
+function is useful if the user wishes to implement their own robust regression rather than using
+the supplied <code>gsl_multifit_robust</code> routine below.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust"></a><u>Function:</u> int <b>gsl_multifit_robust</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, gsl_vector * <var>c</var>, gsl_matrix * <var>cov</var>, gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function computes the best-fit parameters <var>c</var> of the model
+<em>y = X c</em> for the observations <var>y</var> and the matrix of
+predictor variables <var>X</var>, attemping to reduce the influence
+of outliers using the algorithm outlined above.
+The <em>p</em>-by-<em>p</em> variance-covariance matrix of the model parameters
+<var>cov</var> is estimated as <em>\sigma^2 (X^T X)^-1</em>, where <em>\sigma</em> is
+an approximation of the residual standard deviation using the theory of robust
+regression. Special care must be taken when estimating <em>\sigma</em> and
+other statistics such as <em>R^2</em>, and so these
+are computed internally and are available by calling the function
+<code>gsl_multifit_robust_statistics</code>.
+</p>
+<p>If the coefficients do not converge within the maximum iteration
+limit, the function returns <code>GSL_EMAXITER</code>. In this case,
+the current estimates of the coefficients and covariance matrix
+are returned in <var>c</var> and <var>cov</var> and the internal fit statistics
+are computed with these estimates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fest"></a><u>Function:</u> int <b>gsl_multifit_robust_est</b><i> (const gsl_vector * <var>x</var>, const gsl_vector * <var>c</var>, const gsl_matrix * <var>cov</var>, double * <var>y</var>, double * <var>y_err</var>)</i></dt>
+<dd><p>This function uses the best-fit robust regression coefficients
+<var>c</var> and their covariance matrix
+<var>cov</var> to compute the fitted function value
+<var>y</var> and its standard deviation <var>y_err</var> for the model <em>y = x.c</em> 
+at the point <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fresiduals"></a><u>Function:</u> int <b>gsl_multifit_robust_residuals</b><i> (const gsl_matrix * <var>X</var>, const gsl_vector * <var>y</var>, const gsl_vector * <var>c</var>, gsl_vector * <var>r</var>, gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function computes the vector of studentized residuals
+<em>r_i = y_i - (X c)_i \over \sigma \sqrt1 - h_i</em> for
+the observations <var>y</var>, coefficients <var>c</var> and matrix of predictor
+variables <var>X</var>. The routine <code>gsl_multifit_robust</code> must
+first be called to compute the statisical leverages <em>h_i</em> of
+the matrix <var>X</var> and residual standard deviation estimate <em>\sigma</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005frobust_005fstatistics"></a><u>Function:</u> gsl_multifit_robust_stats <b>gsl_multifit_robust_statistics</b><i> (const gsl_multifit_robust_workspace * <var>w</var>)</i></dt>
+<dd><p>This function returns a structure containing relevant statistics from a robust regression. The function
+<code>gsl_multifit_robust</code> must be called first to perform the regression and calculate these statistics.
+The returned <code>gsl_multifit_robust_stats</code> structure contains the following fields.
+</p><ul class="toc">
+<li> double <code>sigma_ols</code> This contains the standard deviation of the residuals as computed from ordinary least squares (OLS).
+
+</li><li> double <code>sigma_mad</code> This contains an estimate of the standard deviation of the final residuals using the Median-Absolute-Deviation statistic
+
+</li><li> double <code>sigma_rob</code> This contains an estimate of the standard deviation of the final residuals from the theory of robust regression (see Street et al, 1988).
+
+</li><li> double <code>sigma</code> This contains an estimate of the standard deviation of the final residuals by attemping to reconcile <code>sigma_rob</code> and <code>sigma_ols</code>
+in a reasonable way.
+
+</li><li> double <code>Rsq</code> This contains the <em>R^2</em> coefficient of determination statistic using the estimate <code>sigma</code>.
+
+</li><li> double <code>adj_Rsq</code> This contains the adjusted <em>R^2</em> coefficient of determination statistic using the estimate <code>sigma</code>.
+
+</li><li> double <code>rmse</code> This contains the root mean squared error of the final residuals
+
+</li><li> double <code>sse</code> This contains the residual sum of squares taking into account the robust covariance matrix.
+
+</li><li> size_t <code>dof</code> This contains the number of degrees of freedom <em>n - p</em>
+
+</li><li> size_t <code>numit</code> Upon successful convergence, this contains the number of iterations performed
+
+</li><li> gsl_vector * <code>weights</code> This contains the final weight vector of length <var>n</var>
+
+</li><li> gsl_vector * <code>r</code> This contains the final residual vector of length <var>n</var>, <em>r = y - X c</em>
+</li></ul>
+</dd></dl>
+
+<hr size="6">
+<a name="Troubleshooting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Robust-linear-regression" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Robust-linear-regression" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Troubleshooting-1"></a>
+<h2 class="section">7. Troubleshooting</h2>
+<a name="index-least-squares-troubleshooting"></a>
+
+<p>When using models based on polynomials, care should be taken when constructing the design matrix
+<em>X</em>. If the <em>x</em> values are large, then the matrix <em>X</em> could be ill-conditioned
+since its columns are powers of <em>x</em>, leading to unstable least-squares solutions.
+In this case it can often help to center and scale the <em>x</em> values using the mean and standard deviation:
+and then construct the <em>X</em> matrix using the transformed values <em>x&rsquo;</em>.
+</p>
+<hr size="6">
+<a name="Fitting-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Troubleshooting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Troubleshooting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">8. Examples</h2>
+
+<p>The following program computes a least squares straight-line fit to a
+simple dataset, and outputs the best-fit line and its
+associated one standard-deviation error bars.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_fit.h&gt;
+
+int
+main (void)
+{
+  int i, n = 4;
+  double x[4] = { 1970, 1980, 1990, 2000 };
+  double y[4] = {   12,   11,   14,   13 };
+  double w[4] = {  0.1,  0.2,  0.3,  0.4 };
+
+  double c0, c1, cov00, cov01, cov11, chisq;
+
+  gsl_fit_wlinear (x, 1, w, 1, y, 1, n, 
+                   &amp;c0, &amp;c1, &amp;cov00, &amp;cov01, &amp;cov11, 
+                   &amp;chisq);
+
+  printf (&quot;# best fit: Y = %g + %g X\n&quot;, c0, c1);
+  printf (&quot;# covariance matrix:\n&quot;);
+  printf (&quot;# [ %g, %g\n#   %g, %g]\n&quot;, 
+          cov00, cov01, cov01, cov11);
+  printf (&quot;# chisq = %g\n&quot;, chisq);
+
+  for (i = 0; i &lt; n; i++)
+    printf (&quot;data: %g %g %g\n&quot;, 
+                   x[i], y[i], 1/sqrt(w[i]));
+
+  printf (&quot;\n&quot;);
+
+  for (i = -30; i &lt; 130; i++)
+    {
+      double xf = x[0] + (i/100.0) * (x[n-1] - x[0]);
+      double yf, yf_err;
+
+      gsl_fit_linear_est (xf, 
+                          c0, c1, 
+                          cov00, cov01, cov11, 
+                          &amp;yf, &amp;yf_err);
+
+      printf (&quot;fit: %g %g\n&quot;, xf, yf);
+      printf (&quot;hi : %g %g\n&quot;, xf, yf + yf_err);
+      printf (&quot;lo : %g %g\n&quot;, xf, yf - yf_err);
+    }
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The following commands extract the data from the output of the program
+and display it using the <small>GNU</small> plotutils <code>graph</code> utility, 
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./demo &gt; tmp
+$ more tmp
+# best fit: Y = -106.6 + 0.06 X
+# covariance matrix:
+# [ 39602, -19.9
+#   -19.9, 0.01]
+# chisq = 0.8
+
+$ for n in data fit hi lo ; 
+   do 
+     grep &quot;^$n&quot; tmp | cut -d: -f2 &gt; $n ; 
+   done
+$ graph -T X -X x -Y y -y 0 20 -m 0 -S 2 -Ie data 
+     -S 0 -I a -m 1 fit -m 2 hi -m 2 lo
+</pre></td></tr></table>
+
+
+<p>The next program performs a quadratic fit <em>y = c_0 + c_1 x + c_2
+x^2</em> to a weighted dataset using the generalised linear fitting function
+<code>gsl_multifit_wlinear</code>.  The model matrix <em>X</em> for a quadratic
+fit is given by,
+where the column of ones corresponds to the constant term <em>c_0</em>.
+The two remaining columns corresponds to the terms <em>c_1 x</em> and
+<em>c_2 x^2</em>.
+</p>
+<p>The program reads <var>n</var> lines of data in the format (<var>x</var>, <var>y</var>,
+<var>err</var>) where <var>err</var> is the error (standard deviation) in the
+value <var>y</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_multifit.h&gt;
+
+int
+main (int argc, char **argv)
+{
+  int i, n;
+  double xi, yi, ei, chisq;
+  gsl_matrix *X, *cov;
+  gsl_vector *y, *w, *c;
+
+  if (argc != 2)
+    {
+      fprintf (stderr,&quot;usage: fit n &lt; data\n&quot;);
+      exit (-1);
+    }
+
+  n = atoi (argv[1]);
+
+  X = gsl_matrix_alloc (n, 3);
+  y = gsl_vector_alloc (n);
+  w = gsl_vector_alloc (n);
+
+  c = gsl_vector_alloc (3);
+  cov = gsl_matrix_alloc (3, 3);
+
+  for (i = 0; i &lt; n; i++)
+    {
+      int count = fscanf (stdin, &quot;%lg %lg %lg&quot;,
+                          &amp;xi, &amp;yi, &amp;ei);
+
+      if (count != 3)
+        {
+          fprintf (stderr, &quot;error reading file\n&quot;);
+          exit (-1);
+        }
+
+      printf (&quot;%g %g +/- %g\n&quot;, xi, yi, ei);
+      
+      gsl_matrix_set (X, i, 0, 1.0);
+      gsl_matrix_set (X, i, 1, xi);
+      gsl_matrix_set (X, i, 2, xi*xi);
+      
+      gsl_vector_set (y, i, yi);
+      gsl_vector_set (w, i, 1.0/(ei*ei));
+    }
+
+  {
+    gsl_multifit_linear_workspace * work 
+      = gsl_multifit_linear_alloc (n, 3);
+    gsl_multifit_wlinear (X, w, y, c, cov,
+                          &amp;chisq, work);
+    gsl_multifit_linear_free (work);
+  }
+
+#define C(i) (gsl_vector_get(c,(i)))
+#define COV(i,j) (gsl_matrix_get(cov,(i),(j)))
+
+  {
+    printf (&quot;# best fit: Y = %g + %g X + %g X^2\n&quot;, 
+            C(0), C(1), C(2));
+
+    printf (&quot;# covariance matrix:\n&quot;);
+    printf (&quot;[ %+.5e, %+.5e, %+.5e  \n&quot;,
+               COV(0,0), COV(0,1), COV(0,2));
+    printf (&quot;  %+.5e, %+.5e, %+.5e  \n&quot;, 
+               COV(1,0), COV(1,1), COV(1,2));
+    printf (&quot;  %+.5e, %+.5e, %+.5e ]\n&quot;, 
+               COV(2,0), COV(2,1), COV(2,2));
+    printf (&quot;# chisq = %g\n&quot;, chisq);
+  }
+
+  gsl_matrix_free (X);
+  gsl_vector_free (y);
+  gsl_vector_free (w);
+  gsl_vector_free (c);
+  gsl_matrix_free (cov);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>A suitable set of data for fitting can be generated using the following
+program.  It outputs a set of points with gaussian errors from the curve
+<em>y = e^x</em> in the region <em>0 &lt; x &lt; 2</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+
+int
+main (void)
+{
+  double x;
+  const gsl_rng_type * T;
+  gsl_rng * r;
+  
+  gsl_rng_env_setup ();
+  
+  T = gsl_rng_default;
+  r = gsl_rng_alloc (T);
+
+  for (x = 0.1; x &lt; 2; x+= 0.1)
+    {
+      double y0 = exp (x);
+      double sigma = 0.1 * y0;
+      double dy = gsl_ran_gaussian (r, sigma);
+
+      printf (&quot;%g %g %g\n&quot;, x, y0 + dy, sigma);
+    }
+
+  gsl_rng_free(r);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The data can be prepared by running the resulting executable program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ GSL_RNG_TYPE=mt19937_1999 ./generate &gt; exp.dat
+$ more exp.dat
+0.1 0.97935 0.110517
+0.2 1.3359 0.12214
+0.3 1.52573 0.134986
+0.4 1.60318 0.149182
+0.5 1.81731 0.164872
+0.6 1.92475 0.182212
+....
+</pre></td></tr></table>
+
+<p>To fit the data use the previous program, with the number of data points
+given as the first argument.  In this case there are 19 data points.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./fit 19 &lt; exp.dat
+0.1 0.97935 +/- 0.110517
+0.2 1.3359 +/- 0.12214
+...
+# best fit: Y = 1.02318 + 0.956201 X + 0.876796 X^2
+# covariance matrix:
+[ +1.25612e-02, -3.64387e-02, +1.94389e-02  
+  -3.64387e-02, +1.42339e-01, -8.48761e-02  
+  +1.94389e-02, -8.48761e-02, +5.60243e-02 ]
+# chisq = 23.0987
+</pre></td></tr></table>
+
+<p>The parameters of the quadratic fit match the coefficients of the
+expansion of <em>e^x</em>, taking into account the errors on the
+parameters and the <em>O(x^3)</em> difference between the exponential and
+quadratic functions for the larger values of <em>x</em>.  The errors on
+the parameters are given by the square-root of the corresponding
+diagonal elements of the covariance matrix.  The chi-squared per degree
+of freedom is 1.4, indicating a reasonable fit to the data.
+</p>
+
+<p>The next program demonstrates the difference between ordinary and
+regularized least squares when the design matrix is near-singular.
+In this program, we generate two random normally distributed variables
+<em>u</em> and <em>v</em>, with <em>v = u + noise</em> so that <em>u</em>
+and <em>v</em> are nearly colinear. We then set a third dependent
+variable <em>y = u + v + noise</em> and solve for the coefficients
+<em>c_1,c_2</em> of the model <em>Y(c_1,c_2) = c_1 u + c_2 v</em>.
+Since <em>u \approx v</em>, the design matrix <em>X</em> is nearly
+singular, leading to unstable ordinary least squares solutions.
+</p>
+<p>Here is the program output:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">=== Unregularized fit ===
+best fit: y = -259.999 u + 262.007 v
+chisq/dof = 1.59069
+=== Regularized fit ===
+best fit: y = 1.01594 u + 1.02738 v
+chisq/dof = 1.69568
+</pre></td></tr></table>
+
+<p>We see that the regularized method with <em>\lambda = 1</em> finds
+the correct solution <em>c_1 \approx c_2 \approx 1</em>, while the
+ordinary least squares solution is unstable and has a large norm.
+The program is given below.
+</p><table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_vector.h&gt;
+#include &lt;gsl/gsl_matrix.h&gt;
+#include &lt;gsl/gsl_rng.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+#include &lt;gsl/gsl_multifit.h&gt;
+
+#define N   50 /* number of data */
+
+int
+main()
+{
+  const size_t n = N;
+  const size_t p = 2;
+  size_t i;
+  gsl_rng *r = gsl_rng_alloc(gsl_rng_default);
+  gsl_matrix *X = gsl_matrix_alloc(n, p);
+  gsl_vector *y = gsl_vector_alloc(n);
+
+  for (i = 0; i &lt; n; ++i)
+    {
+      /* generate first random variable u */
+      double ui = gsl_ran_gaussian(r, 1.0);
+
+      /* set v = u + noise */
+      double vi = ui + gsl_ran_gaussian(r, 0.001);
+
+      /* set y = u + v + noise */
+      double yi = ui + vi + gsl_ran_gaussian(r, 1.0);
+
+      /* since u =~ v, the matrix X is ill-conditioned */
+      gsl_matrix_set(X, i, 0, ui);
+      gsl_matrix_set(X, i, 1, vi);
+
+      /* rhs vector */
+      gsl_vector_set(y, i, yi);
+    }
+
+  {
+    gsl_multifit_linear_workspace *w =
+      gsl_multifit_linear_alloc(n, p);
+    gsl_vector *c = gsl_vector_alloc(p);
+    gsl_vector *c_ridge = gsl_vector_alloc(p);
+    gsl_matrix *cov = gsl_matrix_alloc(p, p);
+    double chisq;
+
+    /* unregularized (standard) least squares fit, lambda = 0 */
+    gsl_multifit_linear_ridge(0.0, X, y, c, cov, &amp;chisq, w);
+
+    fprintf(stderr, &quot;=== Unregularized fit ===\n&quot;);
+    fprintf(stderr, &quot;best fit: y = %g u + %g v\n&quot;,
+      gsl_vector_get(c, 0), gsl_vector_get(c, 1));
+    fprintf(stderr, &quot;chisq/dof = %g\n&quot;, chisq / (n - p));
+
+    /* regularize with lambda = 1 */
+    gsl_multifit_linear_ridge(1.0, X, y, c_ridge, cov, &amp;chisq, w);
+
+    fprintf(stderr, &quot;=== Regularized fit ===\n&quot;);
+    fprintf(stderr, &quot;best fit: y = %g u + %g v\n&quot;,
+      gsl_vector_get(c_ridge, 0), gsl_vector_get(c_ridge, 1));
+    fprintf(stderr, &quot;chisq/dof = %g\n&quot;, chisq / (n - p));
+
+    gsl_multifit_linear_free(w);
+    gsl_matrix_free(cov);
+    gsl_vector_free(c);
+    gsl_vector_free(c_ridge);
+  }
+
+  gsl_rng_free(r);
+  gsl_matrix_free(X);
+  gsl_vector_free(y);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The next program demonstrates the advantage of robust least squares on
+a dataset with outliers. The program generates linear <em>(x,y)</em>
+data pairs on the line <em>y = 1.45 x + 3.88</em>, adds some random
+noise, and inserts 3 outliers into the dataset. Both the robust
+and ordinary least squares (OLS) coefficients are computed for
+comparison.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_multifit.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+
+int
+dofit(const gsl_multifit_robust_type *T,
+      const gsl_matrix *X, const gsl_vector *y,
+      gsl_vector *c, gsl_matrix *cov)
+{
+  int s;
+  gsl_multifit_robust_workspace * work 
+    = gsl_multifit_robust_alloc (T, X-&gt;size1, X-&gt;size2);
+
+  s = gsl_multifit_robust (X, y, c, cov, work);
+  gsl_multifit_robust_free (work);
+
+  return s;
+}
+
+int
+main (int argc, char **argv)
+{
+  int i;
+  size_t n;
+  const size_t p = 2; /* linear fit */
+  gsl_matrix *X, *cov;
+  gsl_vector *x, *y, *c, *c_ols;
+  const double a = 1.45; /* slope */
+  const double b = 3.88; /* intercept */
+  gsl_rng *r;
+
+  if (argc != 2)
+    {
+      fprintf (stderr,&quot;usage: robfit n\n&quot;);
+      exit (-1);
+    }
+
+  n = atoi (argv[1]);
+
+  X = gsl_matrix_alloc (n, p);
+  x = gsl_vector_alloc (n);
+  y = gsl_vector_alloc (n);
+
+  c = gsl_vector_alloc (p);
+  c_ols = gsl_vector_alloc (p);
+  cov = gsl_matrix_alloc (p, p);
+
+  r = gsl_rng_alloc(gsl_rng_default);
+
+  /* generate linear dataset */
+  for (i = 0; i &lt; n - 3; i++)
+    {
+      double dx = 10.0 / (n - 1.0);
+      double ei = gsl_rng_uniform(r);
+      double xi = -5.0 + i * dx;
+      double yi = a * xi + b;
+
+      gsl_vector_set (x, i, xi);
+      gsl_vector_set (y, i, yi + ei);
+    }
+
+  /* add a few outliers */
+  gsl_vector_set(x, n - 3, 4.7);
+  gsl_vector_set(y, n - 3, -8.3);
+
+  gsl_vector_set(x, n - 2, 3.5);
+  gsl_vector_set(y, n - 2, -6.7);
+
+  gsl_vector_set(x, n - 1, 4.1);
+  gsl_vector_set(y, n - 1, -6.0);
+
+  /* construct design matrix X for linear fit */
+  for (i = 0; i &lt; n; ++i)
+    {
+      double xi = gsl_vector_get(x, i);
+
+      gsl_matrix_set (X, i, 0, 1.0);
+      gsl_matrix_set (X, i, 1, xi);
+    }
+
+  /* perform robust and OLS fit */
+  dofit(gsl_multifit_robust_ols, X, y, c_ols, cov);
+  dofit(gsl_multifit_robust_bisquare, X, y, c, cov);
+
+  /* output data and model */
+  for (i = 0; i &lt; n; ++i)
+    {
+      double xi = gsl_vector_get(x, i);
+      double yi = gsl_vector_get(y, i);
+      gsl_vector_view v = gsl_matrix_row(X, i);
+      double y_ols, y_rob, y_err;
+
+      gsl_multifit_robust_est(&amp;v.vector, c, cov, &amp;y_rob, &amp;y_err);
+      gsl_multifit_robust_est(&amp;v.vector, c_ols, cov, &amp;y_ols, &amp;y_err);
+
+      printf(&quot;%g %g %g %g\n&quot;, xi, yi, y_rob, y_ols);
+    }
+
+#define C(i) (gsl_vector_get(c,(i)))
+#define COV(i,j) (gsl_matrix_get(cov,(i),(j)))
+
+  {
+    printf (&quot;# best fit: Y = %g + %g X\n&quot;, 
+            C(0), C(1));
+
+    printf (&quot;# covariance matrix:\n&quot;);
+    printf (&quot;# [ %+.5e, %+.5e\n&quot;,
+               COV(0,0), COV(0,1));
+    printf (&quot;#   %+.5e, %+.5e\n&quot;, 
+               COV(1,0), COV(1,1));
+  }
+
+  gsl_matrix_free (X);
+  gsl_vector_free (x);
+  gsl_vector_free (y);
+  gsl_vector_free (c);
+  gsl_vector_free (c_ols);
+  gsl_matrix_free (cov);
+  gsl_rng_free(r);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The output from the program is shown in the following plot.
+</p>
+
+<hr size="6">
+<a name="Fitting-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fitting-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">9. References and Further Reading</h2>
+
+<p>A summary of formulas and techniques for least squares fitting can be
+found in the &ldquo;Statistics&rdquo; chapter of the Annual Review of Particle
+Physics prepared by the Particle Data Group,
+</p>
+<ul class="toc">
+<li>
+<cite>Review of Particle Properties</cite>,
+R.M. Barnett et al., Physical Review D54, 1 (1996)
+<a href="http://pdg.lbl.gov/">http://pdg.lbl.gov/</a>
+</li></ul>
+
+<p>The Review of Particle Physics is available online at the website given
+above.
+</p>
+<a name="index-NIST-Statistical-Reference-Datasets"></a>
+<a name="index-Statistical-Reference-Datasets-_0028StRD_0029"></a>
+<p>The tests used to prepare these routines are based on the NIST
+Statistical Reference Datasets. The datasets and their documentation are
+available from NIST at the following website,
+</p>
+<p align="center"> <a href="http://www.nist.gov/itl/div898/strd/index.html">http://www.nist.gov/itl/div898/strd/index.html</a>.
+</p>
+<p>More information on performing ridge regression with non-square or
+non-invertible regularizing matrices can be found in
+</p>
+<ul class="toc">
+<li> Hansen, P. C. (1998), Rank-Deficient and Discrete Ill-Posed Problems:
+Numerical Aspects of Linear Inversion. SIAM Monogr. on Mathematical
+Modeling and Computation, Society for Industrial and Applied Mathematics
+</li></ul>
+
+<p>The GSL implementation of robust linear regression closely follows the publications
+</p>
+<ul class="toc">
+<li> DuMouchel, W. and F. O&rsquo;Brien (1989), &quot;Integrating a robust
+option into a multiple regression computing environment,&quot;
+Computer Science and Statistics:  Proceedings of the 21st
+Symposium on the Interface, American Statistical Association
+
+</li><li> Street, J.O., R.J. Carroll, and D. Ruppert (1988), &quot;A note on
+computing robust regression estimates via iteratively
+reweighted least squares,&quot; The American Statistician, v. 42, 
+pp. 152-154.
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fitting-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

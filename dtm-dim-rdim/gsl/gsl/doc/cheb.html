@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Chebyshev-series"></a>
+<a name="index-fitting_002c-using-Chebyshev-polynomials"></a>
+<a name="index-interpolation_002c-using-Chebyshev-polynomials"></a>
+
+<p>This chapter describes routines for computing Chebyshev approximations
+to univariate functions.  A Chebyshev approximation is a truncation of
+the series <em>f(x) = \sum c_n T_n(x)</em>, where the Chebyshev
+polynomials <em>T_n(x) = \cos(n \arccos x)</em> provide an orthogonal
+basis of polynomials on the interval <em>[-1,1]</em> with the weight
+function <em>1 / \sqrt1-x^2</em>.  The first few Chebyshev polynomials are,
+<em>T_0(x) = 1</em>, <em>T_1(x) = x</em>, <em>T_2(x) = 2 x^2 - 1</em>.
+For further information see Abramowitz &amp; Stegun, Chapter 22. 
+</p>
+<p>The functions described in this chapter are declared in the header file
+&lsquo;<tt>gsl_chebyshev.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Chebyshev-Definitions">1. Definitions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Creation-and-Calculation-of-Chebyshev-Series">2. Creation and Calculation of Chebyshev Series</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Auxiliary-Functions-for-Chebyshev-Series">3. Auxiliary Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Chebyshev-Series-Evaluation">4. Chebyshev Series Evaluation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Derivatives-and-Integrals">5. Derivatives and Integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Chebyshev-Approximation-Examples">6. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Chebyshev-Approximation-References-and-Further-Reading">7. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Chebyshev-Definitions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Creation-and-Calculation-of-Chebyshev-Series" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Creation-and-Calculation-of-Chebyshev-Series" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Definitions"></a>
+<h2 class="section">1. Definitions</h2>
+<a name="index-gsl_005fcheb_005fseries"></a>
+<p>A Chebyshev series  is stored using the following structure,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  double * c;   /* coefficients  c[0] .. c[order] */
+  int order;    /* order of expansion             */
+  double a;     /* lower interval point           */
+  double b;     /* upper interval point           */
+  ...
+} gsl_cheb_series
+</pre></td></tr></table>
+
+<p>The approximation is made over the range <em>[a,b]</em> using
+<var>order</var>+1 terms, including the coefficient <em>c[0]</em>.  The series
+is computed using the following convention,
+which is needed when accessing the coefficients directly.
+</p>
+<hr size="6">
+<a name="Creation-and-Calculation-of-Chebyshev-Series"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Auxiliary-Functions-for-Chebyshev-Series" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Auxiliary-Functions-for-Chebyshev-Series" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Creation-and-Calculation-of-Chebyshev-Series-1"></a>
+<h2 class="section">2. Creation and Calculation of Chebyshev Series</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005falloc"></a><u>Function:</u> gsl_cheb_series * <b>gsl_cheb_alloc</b><i> (const size_t <var>n</var>)</i></dt>
+<dd><p>This function allocates space for a Chebyshev series of order <var>n</var>
+and returns a pointer to a new <code>gsl_cheb_series</code> struct.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005ffree"></a><u>Function:</u> void <b>gsl_cheb_free</b><i> (gsl_cheb_series * <var>cs</var>)</i></dt>
+<dd><p>This function frees a previously allocated Chebyshev series <var>cs</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005finit"></a><u>Function:</u> int <b>gsl_cheb_init</b><i> (gsl_cheb_series * <var>cs</var>, const gsl_function * <var>f</var>, const double <var>a</var>, const double <var>b</var>)</i></dt>
+<dd><p>This function computes the Chebyshev approximation <var>cs</var> for the
+function <var>f</var> over the range <em>(a,b)</em> to the previously specified
+order.  The computation of the Chebyshev approximation is an
+<em>O(n^2)</em> process, and requires <em>n</em> function evaluations.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Auxiliary-Functions-for-Chebyshev-Series"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Creation-and-Calculation-of-Chebyshev-Series" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Series-Evaluation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Creation-and-Calculation-of-Chebyshev-Series" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Series-Evaluation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Auxiliary-Functions"></a>
+<h2 class="section">3. Auxiliary Functions</h2>
+<p>The following functions provide information about an existing
+Chebyshev series.
+</p>
+<dl>
+<dt><a name="index-gsl_005fcheb_005forder"></a><u>Function:</u> size_t <b>gsl_cheb_order</b><i> (const gsl_cheb_series * <var>cs</var>)</i></dt>
+<dd><p>This function returns the order of Chebyshev series <var>cs</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005fsize"></a><u>Function:</u> size_t <b>gsl_cheb_size</b><i> (const gsl_cheb_series * <var>cs</var>)</i></dt>
+<dt><a name="index-gsl_005fcheb_005fcoeffs"></a><u>Function:</u> double * <b>gsl_cheb_coeffs</b><i> (const gsl_cheb_series * <var>cs</var>)</i></dt>
+<dd><p>These functions return the size of the Chebyshev coefficient array
+<code>c[]</code> and a pointer to its location in memory for the Chebyshev
+series <var>cs</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Chebyshev-Series-Evaluation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Auxiliary-Functions-for-Chebyshev-Series" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Derivatives-and-Integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Auxiliary-Functions-for-Chebyshev-Series" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Derivatives-and-Integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Chebyshev-Series-Evaluation-1"></a>
+<h2 class="section">4. Chebyshev Series Evaluation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005feval"></a><u>Function:</u> double <b>gsl_cheb_eval</b><i> (const gsl_cheb_series * <var>cs</var>, double <var>x</var>)</i></dt>
+<dd><p>This function evaluates the Chebyshev series <var>cs</var> at a given point <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005feval_005ferr"></a><u>Function:</u> int <b>gsl_cheb_eval_err</b><i> (const gsl_cheb_series * <var>cs</var>, const double <var>x</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function computes the Chebyshev series <var>cs</var> at a given point
+<var>x</var>, estimating both the series <var>result</var> and its absolute error
+<var>abserr</var>.  The error estimate is made from the first neglected term
+in the series.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005feval_005fn"></a><u>Function:</u> double <b>gsl_cheb_eval_n</b><i> (const gsl_cheb_series * <var>cs</var>, size_t <var>order</var>, double <var>x</var>)</i></dt>
+<dd><p>This function evaluates the Chebyshev series <var>cs</var> at a given point
+<var>x</var>, to (at most) the given order <var>order</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005feval_005fn_005ferr"></a><u>Function:</u> int <b>gsl_cheb_eval_n_err</b><i> (const gsl_cheb_series * <var>cs</var>, const size_t <var>order</var>, const double <var>x</var>, double * <var>result</var>, double * <var>abserr</var>)</i></dt>
+<dd><p>This function evaluates a Chebyshev series <var>cs</var> at a given point
+<var>x</var>, estimating both the series <var>result</var> and its absolute error
+<var>abserr</var>, to (at most) the given order <var>order</var>.  The error
+estimate is made from the first neglected term in the series.
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Derivatives-and-Integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Chebyshev-Series-Evaluation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Approximation-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Series-Evaluation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Approximation-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Derivatives-and-Integrals-1"></a>
+<h2 class="section">5. Derivatives and Integrals</h2>
+
+<p>The following functions allow a Chebyshev series to be differentiated or
+integrated, producing a new Chebyshev series.  Note that the error
+estimate produced by evaluating the derivative series will be
+underestimated due to the contribution of higher order terms being
+neglected.
+</p>
+<dl>
+<dt><a name="index-gsl_005fcheb_005fcalc_005fderiv"></a><u>Function:</u> int <b>gsl_cheb_calc_deriv</b><i> (gsl_cheb_series * <var>deriv</var>, const gsl_cheb_series * <var>cs</var>)</i></dt>
+<dd><p>This function computes the derivative of the series <var>cs</var>, storing
+the derivative coefficients in the previously allocated <var>deriv</var>.
+The two series <var>cs</var> and <var>deriv</var> must have been allocated with
+the same order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcheb_005fcalc_005finteg"></a><u>Function:</u> int <b>gsl_cheb_calc_integ</b><i> (gsl_cheb_series * <var>integ</var>, const gsl_cheb_series * <var>cs</var>)</i></dt>
+<dd><p>This function computes the integral of the series <var>cs</var>, storing the
+integral coefficients in the previously allocated <var>integ</var>.  The two
+series <var>cs</var> and <var>integ</var> must have been allocated with the same
+order.  The lower limit of the integration is taken to be the left hand
+end of the range <var>a</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Chebyshev-Approximation-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Derivatives-and-Integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Approximation-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Derivatives-and-Integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Approximation-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">6. Examples</h2>
+
+<p>The following example program computes Chebyshev approximations to a
+step function.  This is an extremely difficult approximation to make,
+due to the discontinuity, and was chosen as an example where
+approximation error is visible.  For smooth functions the Chebyshev
+approximation converges extremely rapidly and errors would not be
+visible.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_chebyshev.h&gt;
+
+double
+f (double x, void *p)
+{
+  if (x &lt; 0.5)
+    return 0.25;
+  else
+    return 0.75;
+}
+
+int
+main (void)
+{
+  int i, n = 10000; 
+
+  gsl_cheb_series *cs = gsl_cheb_alloc (40);
+
+  gsl_function F;
+
+  F.function = f;
+  F.params = 0;
+
+  gsl_cheb_init (cs, &amp;F, 0.0, 1.0);
+
+  for (i = 0; i &lt; n; i++)
+    {
+      double x = i / (double)n;
+      double r10 = gsl_cheb_eval_n (cs, 10, x);
+      double r40 = gsl_cheb_eval (cs, x);
+      printf (&quot;%g %g %g %g\n&quot;, 
+              x, GSL_FN_EVAL (&amp;F, x), r10, r40);
+    }
+
+  gsl_cheb_free (cs);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The output from the program gives the original function, 10-th order
+approximation and 40-th order approximation, all sampled at intervals of
+0.001 in <em>x</em>.
+</p>
+
+<hr size="6">
+<a name="Chebyshev-Approximation-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Chebyshev-Approximation-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Approximation-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">7. References and Further Reading</h2>
+
+<p>The following paper describes the use of Chebyshev series,
+</p>
+<ul class="toc">
+<li> 
+R. Broucke, &ldquo;Ten Subroutines for the Manipulation of Chebyshev Series
+[C1] (Algorithm 446)&rdquo;. <cite>Communications of the ACM</cite> 16(4), 254&ndash;256
+(1973)
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Chebyshev-Definitions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Legendre-polynomials"></a>
+<a name="index-Legendre-functions"></a>
+<a name="index-spherical-harmonics"></a>
+<a name="index-conical-functions"></a>
+<a name="index-hyperbolic-space"></a>
+
+<p>The Legendre Functions and Legendre Polynomials are described in
+Abramowitz &amp; Stegun, Chapter 8.  These functions are declared in 
+the header file &lsquo;<tt>gsl_sf_legendre.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Legendre-Polynomials">1. Legendre Polynomials</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Associated-Legendre-Polynomials-and-Spherical-Harmonics">2. Associated Legendre Polynomials and Spherical Harmonics</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conical-Functions">3. Conical Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Radial-Functions-for-Hyperbolic-Space">4. Radial Functions for Hyperbolic Space</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Legendre-Polynomials"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Associated-Legendre-Polynomials-and-Spherical-Harmonics" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Associated-Legendre-Polynomials-and-Spherical-Harmonics" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Legendre-Polynomials-1"></a>
+<h3 class="subsection">1. Legendre Polynomials</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP1"></a><u>Function:</u> double <b>gsl_sf_legendre_P1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP2"></a><u>Function:</u> double <b>gsl_sf_legendre_P2</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP3"></a><u>Function:</u> double <b>gsl_sf_legendre_P3</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP1_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_P1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP2_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_P2_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fP3_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_P3_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These functions evaluate the Legendre polynomials
+<em>P_l(x)</em> using explicit
+representations for <em>l=1, 2, 3</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPl"></a><u>Function:</u> double <b>gsl_sf_legendre_Pl</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPl_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_Pl_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These functions evaluate the Legendre polynomial <em>P_l(x)</em> for a specific value of <var>l</var>,
+<var>x</var> subject to <em>l &gt;= 0</em>, 
+<em>|x| &lt;= 1</em>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPl_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_Pl_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPl_005fderiv_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_Pl_deriv_array</b><i> (int <var>lmax</var>, double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dd>
+<p>These functions compute arrays of Legendre polynomials
+<em>P_l(x)</em> and derivatives <em>dP_l(x)/dx</em>, 
+for <em>l = 0, \dots, lmax</em>, 
+<em>|x| &lt;= 1</em>
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQ0"></a><u>Function:</u> double <b>gsl_sf_legendre_Q0</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQ0_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_Q0_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Legendre function <em>Q_0(x)</em> for <em>x &gt;
+-1</em>, <em>x != 1</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQ1"></a><u>Function:</u> double <b>gsl_sf_legendre_Q1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQ1_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_Q1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Legendre function <em>Q_1(x)</em> for <em>x &gt;
+-1</em>, <em>x != 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQl"></a><u>Function:</u> double <b>gsl_sf_legendre_Ql</b><i> (int <var>l</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fQl_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_Ql_e</b><i> (int <var>l</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Legendre function <em>Q_l(x)</em> for <em>x &gt;
+-1</em>, <em>x != 1</em> and <em>l &gt;= 0</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Associated-Legendre-Polynomials-and-Spherical-Harmonics"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Conical-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Conical-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Associated-Legendre-Polynomials-and-Spherical-Harmonics-1"></a>
+<h3 class="subsection">2. Associated Legendre Polynomials and Spherical Harmonics</h3>
+
+<p>The following functions compute the associated Legendre polynomials
+<em>P_l^m(x)</em> which are solutions of the differential equation
+where the degree <em>l</em> and order <em>m</em> satisfy <em>0 \le l</em> and
+<em>0 \le m \le l</em>.
+The functions <em>P_l^m(x)</em> grow combinatorially with
+<em>l</em> and can overflow for <em>l</em> larger than about 150.
+Alternatively, one may calculate normalized associated Legendre
+polynomials. There are a number of different normalization conventions,
+and these
+functions can be stably computed up to degree and order 2700. The
+following normalizations are provided:
+</p><dl compact="compact">
+<dt> <code>Schmidt semi-normalization</code></dt>
+<dd><p>Schmidt semi-normalized associated Legendre polynomials are often
+used in the magnetics community and are defined as
+The factor of <em>(-1)^m</em> is called the Condon-Shortley phase
+factor and can be excluded if desired by setting the parameter
+<code>csphase = 1</code> in the functions below.
+</p>
+</dd>
+<dt> <code>Spherical Harmonic Normalization</code></dt>
+<dd><p>The associated Legendre polynomials suitable for calculating spherical
+harmonics are defined as
+where again the phase factor <em>(-1)^m</em> can be included or excluded
+if desired.
+</p>
+</dd>
+<dt> <code>Full Normalization</code></dt>
+<dd><p>The fully normalized associated Legendre polynomials are defined as
+and have the property
+</p>
+</dd>
+</dl>
+<p>The normalized associated Legendre routines below use a recurrence
+relation which is stable up to a degree and order of about 2700.
+Beyond this, the computed functions could suffer from underflow
+leading to incorrect results. Routines are provided to compute
+first and second derivatives
+<em>dP_l^m(x)/dx</em> and <em>d^2 P_l^m(x)/dx^2</em> as well as their alternate
+versions <em>d P_l^m(\cos\theta)/d\theta</em> and
+<em>d^2 P_l^m(\cos\theta)/d\theta^2</em>. While there is a simple
+scaling relationship between the two forms, the derivatives
+involving <em>\theta</em> are heavily used in spherical harmonic
+expansions and so these routines are also provided.
+</p>
+<p>In the functions below, a parameter of type <code>gsl_sf_legendre_t</code>
+specifies the type of normalization to use. The possible values are
+</p><dl compact="compact">
+<dt> <code>GSL_SF_LEGENDRE_NONE</code></dt>
+<dd><p>This specifies the computation of the unnormalized associated
+Legendre polynomials <em>P_l^m(x)</em>.
+</p>
+</dd>
+<dt> <code>GSL_SF_LEGENDRE_SCHMIDT</code></dt>
+<dd><p>This specifies the computation of the Schmidt semi-normalized associated
+Legendre polynomials <em>S_l^m(x)</em>.
+</p>
+</dd>
+<dt> <code>GSL_SF_LEGENDRE_SPHARM</code></dt>
+<dd><p>This specifies the computation of the spherical harmonic associated
+Legendre polynomials <em>Y_l^m(x)</em>.
+</p>
+</dd>
+<dt> <code>GSL_SF_LEGENDRE_FULL</code></dt>
+<dd><p>This specifies the computation of the fully normalized associated
+Legendre polynomials <em>N_l^m(x)</em>.
+</p></dd>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_array</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005farray_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_array_e</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, const double <var>csphase</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>These functions calculate all normalized associated Legendre
+polynomials for <em>0 \le l \le lmax</em> and
+<em>0 \le m \le l</em> for
+<em>|x| &lt;= 1</em>.
+The <var>norm</var> parameter specifies which normalization is used.
+The normalized <em>P_l^m(x)</em> values are stored in <var>result_array</var>, whose
+minimum size can be obtained from calling <code>gsl_sf_legendre_array_n</code>.
+The array index of <em>P_l^m(x)</em> is obtained from calling
+<code>gsl_sf_legendre_array_index(l, m)</code>. To include or exclude
+the Condon-Shortley phase factor of <em>(-1)^m</em>, set the parameter
+<var>csphase</var> to either <em>-1</em> or <em>1</em> respectively in the
+<code>_e</code> function. This factor is included by default.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv_array</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv_005farray_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv_array_e</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, const double <var>csphase</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dd><p>These functions calculate all normalized associated Legendre
+functions and their first derivatives up to degree <var>lmax</var> for
+<em>|x| &lt; 1</em>.
+The parameter <var>norm</var> specifies the normalization used. The
+normalized <em>P_l^m(x)</em> values and their derivatives
+<em>dP_l^m(x)/dx</em> are stored in <var>result_array</var> and
+<var>result_deriv_array</var> respectively.
+To include or exclude
+the Condon-Shortley phase factor of <em>(-1)^m</em>, set the parameter
+<var>csphase</var> to either <em>-1</em> or <em>1</em> respectively in the
+<code>_e</code> function. This factor is included by default.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv_005falt_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv_alt_array</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv_005falt_005farray_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv_alt_array_e</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, const double <var>csphase</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dd><p>These functions calculate all normalized associated Legendre
+functions and their (alternate) first derivatives up to degree <var>lmax</var> for
+<em>|x| &lt; 1</em>.
+The normalized <em>P_l^m(x)</em> values and their derivatives
+<em>dP_l^m(\cos\theta)/d\theta</em> are stored in <var>result_array</var> and
+<var>result_deriv_array</var> respectively.
+To include or exclude
+the Condon-Shortley phase factor of <em>(-1)^m</em>, set the parameter
+<var>csphase</var> to either <em>-1</em> or <em>1</em> respectively in the
+<code>_e</code> function. This factor is included by default.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv2_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv2_array</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[], double <var>result_deriv2_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv2_005farray_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv2_array_e</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, const double <var>csphase</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[], double <var>result_deriv2_array</var>[])</i></dt>
+<dd><p>These functions calculate all normalized associated Legendre
+functions and their first and second derivatives up to degree <var>lmax</var> for
+<em>|x| &lt; 1</em>.
+The parameter <var>norm</var> specifies the normalization used. The
+normalized <em>P_l^m(x)</em>, their first derivatives
+<em>dP_l^m(x)/dx</em>, and their second derivatives
+<em>d^2 P_l^m(x)/dx^2</em> are stored in <var>result_array</var>,
+<var>result_deriv_array</var>, and <var>result_deriv2_array</var> respectively.
+To include or exclude
+the Condon-Shortley phase factor of <em>(-1)^m</em>, set the parameter
+<var>csphase</var> to either <em>-1</em> or <em>1</em> respectively in the
+<code>_e</code> function. This factor is included by default.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv2_005falt_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv2_alt_array</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[], double <var>result_deriv2_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fderiv2_005falt_005farray_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_deriv2_alt_array_e</b><i> (const gsl_sf_legendre_t <var>norm</var>, const size_t <var>lmax</var>, const double <var>x</var>, const double <var>csphase</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[], double <var>result_deriv2_array</var>[])</i></dt>
+<dd><p>These functions calculate all normalized associated Legendre
+functions and their (alternate) first and second derivatives up to degree
+<var>lmax</var> for
+<em>|x| &lt; 1</em>.
+The parameter <var>norm</var> specifies the normalization used. The
+normalized <em>P_l^m(x)</em>, their first derivatives
+<em>dP_l^m(\cos\theta)/d\theta</em>, and their second derivatives
+<em>d^2 P_l^m(\cos\theta)/d\theta^2</em> are stored in <var>result_array</var>,
+<var>result_deriv_array</var>, and <var>result_deriv2_array</var> respectively.
+To include or exclude
+the Condon-Shortley phase factor of <em>(-1)^m</em>, set the parameter
+<var>csphase</var> to either <em>-1</em> or <em>1</em> respectively in the
+<code>_e</code> function. This factor is included by default.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005farray_005fn"></a><u>Function:</u> size_t <b>gsl_sf_legendre_array_n</b><i> (const size_t <var>lmax</var>)</i></dt>
+<dd><p>This function returns the minimum array size for maximum degree <var>lmax</var>
+needed for the array versions of the associated Legendre functions.
+Size is calculated as the total number of <em>P_l^m(x)</em> functions,
+plus extra space for precomputing multiplicative factors used in the
+recurrence relations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005farray_005findex"></a><u>Function:</u> size_t <b>gsl_sf_legendre_array_index</b><i> (const size_t <var>l</var>, const size_t <var>m</var>)</i></dt>
+<dd><p>This function returns the index into <var>result_array</var>,
+<var>result_deriv_array</var>, or <var>result_deriv2_array</var> corresponding
+to <em>P_l^m(x)</em>, <em>P_l^&rsquo;m(x)</em>, or <em>P_l^&rdquo;m(x)</em>. The
+index is given by <em>l(l+1)/2 + m</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPlm"></a><u>Function:</u> double <b>gsl_sf_legendre_Plm</b><i> (int <var>l</var>, int <var>m</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPlm_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_Plm_e</b><i> (int <var>l</var>, int <var>m</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the associated Legendre polynomial
+<em>P_l^m(x)</em> for <em>m &gt;= 0</em>, <em>l &gt;= m</em>, <em>|x| &lt;= 1</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fsphPlm"></a><u>Function:</u> double <b>gsl_sf_legendre_sphPlm</b><i> (int <var>l</var>, int <var>m</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fsphPlm_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_sphPlm_e</b><i> (int <var>l</var>, int <var>m</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the normalized associated Legendre polynomial
+<em>\sqrt(2l+1)/(4\pi) \sqrt(l-m)!/(l+m)! P_l^m(x)</em> suitable
+for use in spherical harmonics.  The parameters must satisfy <em>m &gt;= 0</em>, <em>l &gt;= m</em>, <em>|x| &lt;= 1</em>. Theses routines avoid the overflows
+that occur for the standard normalization of <em>P_l^m(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPlm_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_Plm_array</b><i> (int <var>lmax</var>, int <var>m</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fPlm_005fderiv_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_Plm_deriv_array</b><i> (int <var>lmax</var>, int <var>m</var>, double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dd><p>These functions are now deprecated and will be removed in a future
+release; see <code>gsl_sf_legendre_array</code> and
+<code>gsl_sf_legendre_deriv_array</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fsphPlm_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_sphPlm_array</b><i> (int <var>lmax</var>, int <var>m</var>, double <var>x</var>, double <var>result_array</var>[])</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fsphPlm_005fderiv_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_sphPlm_deriv_array</b><i> (int <var>lmax</var>, int <var>m</var>, double <var>x</var>, double <var>result_array</var>[], double <var>result_deriv_array</var>[])</i></dt>
+<dd><p>These functions are now deprecated and will be removed in a future
+release; see <code>gsl_sf_legendre_array</code> and
+<code>gsl_sf_legendre_deriv_array</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005farray_005fsize"></a><u>Function:</u> int <b>gsl_sf_legendre_array_size</b><i> (const int <var>lmax</var>, const int <var>m</var>)</i></dt>
+<dd><p>This function is now deprecated and will be removed in a future
+release.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Conical-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Associated-Legendre-Polynomials-and-Spherical-Harmonics" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Radial-Functions-for-Hyperbolic-Space" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Associated-Legendre-Polynomials-and-Spherical-Harmonics" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Radial-Functions-for-Hyperbolic-Space" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Conical-Functions-1"></a>
+<h3 class="subsection">3. Conical Functions</h3>
+
+<p>The Conical Functions <em>P^\mu_-(1/2)+i\lambda(x)</em> and <em>Q^\mu_-(1/2)+i\lambda</em> 
+are described in Abramowitz &amp; Stegun, Section 8.12.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fhalf"></a><u>Function:</u> double <b>gsl_sf_conicalP_half</b><i> (double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fhalf_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_half_e</b><i> (double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the irregular Spherical Conical Function
+<em>P^1/2_-1/2 + i \lambda(x)</em> for <em>x &gt; -1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fmhalf"></a><u>Function:</u> double <b>gsl_sf_conicalP_mhalf</b><i> (double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fmhalf_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_mhalf_e</b><i> (double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the regular Spherical Conical Function
+<em>P^-1/2_-1/2 + i \lambda(x)</em> for <em>x &gt; -1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005f0"></a><u>Function:</u> double <b>gsl_sf_conicalP_0</b><i> (double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005f0_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_0_e</b><i> (double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the conical function
+<em>P^0_-1/2 + i \lambda(x)</em>
+for <em>x &gt; -1</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005f1"></a><u>Function:</u> double <b>gsl_sf_conicalP_1</b><i> (double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005f1_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_1_e</b><i> (double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the conical function 
+<em>P^1_-1/2 + i \lambda(x)</em> for <em>x &gt; -1</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fsph_005freg"></a><u>Function:</u> double <b>gsl_sf_conicalP_sph_reg</b><i> (int <var>l</var>, double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fsph_005freg_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_sph_reg_e</b><i> (int <var>l</var>, double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Regular Spherical Conical Function
+<em>P^-1/2-l_-1/2 + i \lambda(x)</em> for <em>x &gt; -1</em>, <em>l &gt;= -1</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fcyl_005freg"></a><u>Function:</u> double <b>gsl_sf_conicalP_cyl_reg</b><i> (int <var>m</var>, double <var>lambda</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fconicalP_005fcyl_005freg_005fe"></a><u>Function:</u> int <b>gsl_sf_conicalP_cyl_reg_e</b><i> (int <var>m</var>, double <var>lambda</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Regular Cylindrical Conical Function
+<em>P^-m_-1/2 + i \lambda(x)</em> for <em>x &gt; -1</em>, <em>m &gt;= -1</em>.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Radial-Functions-for-Hyperbolic-Space"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Conical-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Conical-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Radial-Functions-for-Hyperbolic-Space-1"></a>
+<h3 class="subsection">4. Radial Functions for Hyperbolic Space</h3>
+
+<p>The following spherical functions are specializations of Legendre
+functions which give the regular eigenfunctions of the Laplacian on a
+3-dimensional hyperbolic space <em>H3d</em>.  Of particular interest is
+the flat limit, <em>\lambda \to \infty</em>, <em>\eta \to 0</em>,
+<em>\lambda\eta</em> fixed.
+</p>  
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005f0"></a><u>Function:</u> double <b>gsl_sf_legendre_H3d_0</b><i> (double <var>lambda</var>, double <var>eta</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005f0_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_H3d_0_e</b><i> (double <var>lambda</var>, double <var>eta</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the zeroth radial eigenfunction of the Laplacian on the
+3-dimensional hyperbolic space,
+<em>L^H3d_0(\lambda,\eta) := \sin(\lambda\eta)/(\lambda\sinh(\eta))</em>
+for <em>\eta &gt;= 0</em>.
+In the flat limit this takes the form
+<em>L^H3d_0(\lambda,\eta) = j_0(\lambda\eta)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005f1"></a><u>Function:</u> double <b>gsl_sf_legendre_H3d_1</b><i> (double <var>lambda</var>, double <var>eta</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005f1_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_H3d_1_e</b><i> (double <var>lambda</var>, double <var>eta</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the first radial eigenfunction of the Laplacian on
+the 3-dimensional hyperbolic space,
+<em>L^H3d_1(\lambda,\eta) := 1/\sqrt\lambda^2 + 1 \sin(\lambda \eta)/(\lambda \sinh(\eta)) (\coth(\eta) - \lambda \cot(\lambda\eta))</em>
+for <em>\eta &gt;= 0</em>.
+In the flat limit this takes the form 
+<em>L^H3d_1(\lambda,\eta) = j_1(\lambda\eta)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d"></a><u>Function:</u> double <b>gsl_sf_legendre_H3d</b><i> (int <var>l</var>, double <var>lambda</var>, double <var>eta</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005fe"></a><u>Function:</u> int <b>gsl_sf_legendre_H3d_e</b><i> (int <var>l</var>, double <var>lambda</var>, double <var>eta</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the <var>l</var>-th radial eigenfunction of the
+Laplacian on the 3-dimensional hyperbolic space <em>\eta &gt;= 0</em>, <em>l &gt;= 0</em>. In the flat limit this takes the form
+<em>L^H3d_l(\lambda,\eta) = j_l(\lambda\eta)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flegendre_005fH3d_005farray"></a><u>Function:</u> int <b>gsl_sf_legendre_H3d_array</b><i> (int <var>lmax</var>, double <var>lambda</var>, double <var>eta</var>, double <var>result_array</var>[])</i></dt>
+<dd><p>This function computes an array of radial eigenfunctions
+<em>L^H3d_l(\lambda, \eta)</em> 
+for <em>0 &lt;= l &lt;= lmax</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Legendre-Polynomials" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

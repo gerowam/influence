@@ -1,0 +1,1189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-physical-constants"></a>
+<a name="index-constants_002c-physical"></a>
+<a name="index-conversion-of-units"></a>
+<a name="index-units_002c-conversion-of"></a>
+<p>This chapter describes macros for the values of physical constants, such
+as the speed of light, <em>c</em>, and gravitational constant, <em>G</em>.
+The values are available in different unit systems, including the
+standard MKSA system (meters, kilograms, seconds, amperes) and the CGSM
+system (centimeters, grams, seconds, gauss), which is commonly used in
+Astronomy.
+</p>
+<p>The definitions of constants in the MKSA system are available in the file
+&lsquo;<tt>gsl_const_mksa.h</tt>&rsquo;.  The constants in the CGSM system are defined in
+&lsquo;<tt>gsl_const_cgsm.h</tt>&rsquo;.  Dimensionless constants, such as the fine
+structure constant, which are pure numbers are defined in
+&lsquo;<tt>gsl_const_num.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Fundamental-Constants">1. Fundamental Constants</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Astronomy-and-Astrophysics">2. Astronomy and Astrophysics</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Atomic-and-Nuclear-Physics">3. Atomic and Nuclear Physics</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Measurement-of-Time">4. Measurement of Time</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Imperial-Units">5. Imperial Units</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Speed-and-Nautical-Units">6. Speed and Nautical Units</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Printers-Units">7. Printers Units</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Volume-Area-and-Length">8. Volume, Area and Length</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Mass-and-Weight">9. Mass and Weight</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Thermal-Energy-and-Power">10. Thermal Energy and Power</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Pressure">11. Pressure</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Viscosity">12. Viscosity</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Light-and-Illumination">13. Light and Illumination</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Radioactivity">14. Radioactivity</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Force-and-Energy">15. Force and Energy</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Prefixes">16. Prefixes</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Physical-Constant-Examples">17. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Physical-Constant-References-and-Further-Reading">18. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<p>The full list of constants is described briefly below.  Consult the
+header files themselves for the values of the constants used in the
+library.
+</p>
+<a name="Fundamental-Constants"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Astronomy-and-Astrophysics" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Astronomy-and-Astrophysics" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Fundamental-Constants-1"></a>
+<h2 class="section">1. Fundamental Constants</h2>
+<a name="index-fundamental-constants"></a>
+<a name="index-constants_002c-fundamental"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_SPEED_OF_LIGHT</code></dt>
+<dd><p>The speed of light in vacuum, <em>c</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_VACUUM_PERMEABILITY</code></dt>
+<dd><p>The permeability of free space, <em>\mu_0</em>. This constant is defined
+in the MKSA system only.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_VACUUM_PERMITTIVITY</code></dt>
+<dd><p>The permittivity of free space, <em>\epsilon_0</em>.  This constant is
+defined in the MKSA system only.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PLANCKS_CONSTANT_H</code></dt>
+<dd><p>Planck&rsquo;s constant, <em>h</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR</code></dt>
+<dd><p>Planck&rsquo;s constant divided by <em>2\pi</em>, <em>\hbar</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_AVOGADRO</code></dt>
+<dd><p>Avogadro&rsquo;s number, <em>N_a</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_FARADAY</code></dt>
+<dd><p>The molar charge of 1 Faraday.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_BOLTZMANN</code></dt>
+<dd><p>The Boltzmann constant, <em>k</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MOLAR_GAS</code></dt>
+<dd><p>The molar gas constant, <em>R_0</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_STANDARD_GAS_VOLUME</code></dt>
+<dd><p>The standard gas volume, <em>V_0</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_STEFAN_BOLTZMANN_CONSTANT</code></dt>
+<dd><p>The Stefan-Boltzmann radiation constant, <em>\sigma</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_GAUSS</code></dt>
+<dd><p>The magnetic field of 1 Gauss.
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Astronomy-and-Astrophysics"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Atomic-and-Nuclear-Physics" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Atomic-and-Nuclear-Physics" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Astronomy-and-Astrophysics-1"></a>
+<h2 class="section">2. Astronomy and Astrophysics</h2>
+<a name="index-astronomical-constants"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_ASTRONOMICAL_UNIT</code></dt>
+<dd><p>The length of 1 astronomical unit (mean earth-sun distance), <em>au</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_GRAVITATIONAL_CONSTANT</code></dt>
+<dd><p>The gravitational constant, <em>G</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_LIGHT_YEAR</code></dt>
+<dd><p>The distance of 1 light-year, <em>ly</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PARSEC</code></dt>
+<dd><p>The distance of 1 parsec, <em>pc</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_GRAV_ACCEL</code></dt>
+<dd><p>The standard gravitational acceleration on Earth, <em>g</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_SOLAR_MASS</code></dt>
+<dd><p>The mass of the Sun.
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Atomic-and-Nuclear-Physics"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Astronomy-and-Astrophysics" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Measurement-of-Time" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Astronomy-and-Astrophysics" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Measurement-of-Time" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Atomic-and-Nuclear-Physics-1"></a>
+<h2 class="section">3. Atomic and Nuclear Physics</h2>
+<a name="index-atomic-physics_002c-constants"></a>
+<a name="index-nuclear-physics_002c-constants"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_ELECTRON_CHARGE</code></dt>
+<dd><p>The charge of the electron, <em>e</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ELECTRON_VOLT</code></dt>
+<dd><p>The energy of 1 electron volt, <em>eV</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS</code></dt>
+<dd><p>The unified atomic mass, <em>amu</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MASS_ELECTRON</code></dt>
+<dd><p>The mass of the electron, <em>m_e</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MASS_MUON</code></dt>
+<dd><p>The mass of the muon, <em>m_\mu</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MASS_PROTON</code></dt>
+<dd><p>The mass of the proton, <em>m_p</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MASS_NEUTRON</code></dt>
+<dd><p>The mass of the neutron, <em>m_n</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_FINE_STRUCTURE</code></dt>
+<dd><p>The electromagnetic fine structure constant <em>\alpha</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_RYDBERG</code></dt>
+<dd><p>The Rydberg constant, <em>Ry</em>, in units of energy.  This is related to
+the Rydberg inverse wavelength <em>R_\infty</em> by <em>Ry = h c R_\infty</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_BOHR_RADIUS</code></dt>
+<dd><p>The Bohr radius, <em>a_0</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ANGSTROM</code></dt>
+<dd><p>The length of 1 angstrom.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_BARN</code></dt>
+<dd><p>The area of 1 barn.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_BOHR_MAGNETON</code></dt>
+<dd><p>The Bohr Magneton, <em>\mu_B</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_NUCLEAR_MAGNETON</code></dt>
+<dd><p>The Nuclear Magneton, <em>\mu_N</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ELECTRON_MAGNETIC_MOMENT</code></dt>
+<dd><p>The absolute value of the magnetic moment of the electron, <em>\mu_e</em>.
+The physical magnetic moment of the electron is negative.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PROTON_MAGNETIC_MOMENT</code></dt>
+<dd><p>The magnetic moment of the proton, <em>\mu_p</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_THOMSON_CROSS_SECTION</code></dt>
+<dd><p>The Thomson cross section, <em>\sigma_T</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_DEBYE</code></dt>
+<dd><p>The electric dipole moment of 1 Debye, <em>D</em>.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Measurement-of-Time"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Atomic-and-Nuclear-Physics" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Imperial-Units" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Atomic-and-Nuclear-Physics" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Imperial-Units" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Measurement-of-Time-1"></a>
+<h2 class="section">4. Measurement of Time</h2>
+<a name="index-time-units"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_MINUTE</code></dt>
+<dd><p>The number of seconds in 1 minute.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_HOUR</code></dt>
+<dd><p>The number of seconds in 1 hour.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_DAY</code></dt>
+<dd><p>The number of seconds in 1 day.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_WEEK</code></dt>
+<dd><p>The number of seconds in 1 week.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Imperial-Units"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Measurement-of-Time" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Speed-and-Nautical-Units" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Measurement-of-Time" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Speed-and-Nautical-Units" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Imperial-Units-1"></a>
+<h2 class="section">5. Imperial Units</h2>
+<a name="index-imperial-units"></a>
+<a name="index-units_002c-imperial"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_INCH</code></dt>
+<dd><p>The length of 1 inch.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_FOOT</code></dt>
+<dd><p>The length of 1 foot.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_YARD</code></dt>
+<dd><p>The length of 1 yard.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MILE</code></dt>
+<dd><p>The length of 1 mile.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MIL</code></dt>
+<dd><p>The length of 1 mil (1/1000th of an inch).
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Speed-and-Nautical-Units"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Imperial-Units" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Printers-Units" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Imperial-Units" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Printers-Units" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Speed-and-Nautical-Units-1"></a>
+<h2 class="section">6. Speed and Nautical Units</h2>
+<a name="index-nautical-units"></a>
+
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_KILOMETERS_PER_HOUR</code></dt>
+<dd><p>The speed of 1 kilometer per hour.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_MILES_PER_HOUR</code></dt>
+<dd><p>The speed of 1 mile per hour.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_NAUTICAL_MILE</code></dt>
+<dd><p>The length of 1 nautical mile.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_FATHOM</code></dt>
+<dd><p>The length of 1 fathom.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_KNOT</code></dt>
+<dd><p>The speed of 1 knot.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Printers-Units"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Speed-and-Nautical-Units" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Volume-Area-and-Length" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Speed-and-Nautical-Units" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Volume-Area-and-Length" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Printers-Units-1"></a>
+<h2 class="section">7. Printers Units</h2>
+<a name="index-printers-units"></a>
+
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_POINT</code></dt>
+<dd><p>The length of 1 printer&rsquo;s point (1/72 inch).
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_TEXPOINT</code></dt>
+<dd><p>The length of 1 TeX point (1/72.27 inch).
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Volume-Area-and-Length"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Printers-Units" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mass-and-Weight" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Printers-Units" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Mass-and-Weight" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Volume_002c-Area-and-Length"></a>
+<h2 class="section">8. Volume, Area and Length</h2>
+<a name="index-volume-units"></a>
+
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_MICRON</code></dt>
+<dd><p>The length of 1 micron.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_HECTARE</code></dt>
+<dd><p>The area of 1 hectare.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ACRE</code></dt>
+<dd><p>The area of 1 acre.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_LITER</code></dt>
+<dd><p>The volume of 1 liter.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_US_GALLON</code></dt>
+<dd><p>The volume of 1 US gallon.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_CANADIAN_GALLON</code></dt>
+<dd><p>The volume of 1 Canadian gallon.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_UK_GALLON</code></dt>
+<dd><p>The volume of 1 UK gallon.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_QUART</code></dt>
+<dd><p>The volume of 1 quart.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PINT</code></dt>
+<dd><p>The volume of 1 pint.
+</p></dd>
+</dl>
+
+
+
+
+
+
+
+
+<hr size="6">
+<a name="Mass-and-Weight"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Volume-Area-and-Length" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Thermal-Energy-and-Power" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Volume-Area-and-Length" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Thermal-Energy-and-Power" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Mass-and-Weight-1"></a>
+<h2 class="section">9. Mass and Weight</h2>
+<a name="index-mass_002c-units-of"></a>
+<a name="index-weight_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_POUND_MASS</code></dt>
+<dd><p>The mass of 1 pound.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_OUNCE_MASS</code></dt>
+<dd><p>The mass of 1 ounce.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_TON</code></dt>
+<dd><p>The mass of 1 ton.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_METRIC_TON</code></dt>
+<dd><p>The mass of 1 metric ton (1000 kg).
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_UK_TON</code></dt>
+<dd><p>The mass of 1 UK ton.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_TROY_OUNCE</code></dt>
+<dd><p>The mass of 1 troy ounce.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_CARAT</code></dt>
+<dd><p>The mass of 1 carat.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_GRAM_FORCE</code></dt>
+<dd><p>The force of 1 gram weight.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_POUND_FORCE</code></dt>
+<dd><p>The force of 1 pound weight.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_KILOPOUND_FORCE</code></dt>
+<dd><p>The force of 1 kilopound weight.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_POUNDAL</code></dt>
+<dd><p>The force of 1 poundal.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Thermal-Energy-and-Power"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mass-and-Weight" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Pressure" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mass-and-Weight" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Pressure" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Thermal-Energy-and-Power-1"></a>
+<h2 class="section">10. Thermal Energy and Power</h2>
+<a name="index-energy_002c-units-of"></a>
+<a name="index-power_002c-units-of"></a>
+<a name="index-thermal-energy_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_CALORIE</code></dt>
+<dd><p>The energy of 1 calorie.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_BTU</code></dt>
+<dd><p>The energy of 1 British Thermal Unit, <em>btu</em>.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_THERM</code></dt>
+<dd><p>The energy of 1 Therm.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_HORSEPOWER</code></dt>
+<dd><p>The power of 1 horsepower.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Pressure"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Thermal-Energy-and-Power" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Viscosity" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Thermal-Energy-and-Power" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Viscosity" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Pressure-1"></a>
+<h2 class="section">11. Pressure</h2>
+<a name="index-pressure_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_BAR</code></dt>
+<dd><p>The pressure of 1 bar.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_STD_ATMOSPHERE</code></dt>
+<dd><p>The pressure of 1 standard atmosphere.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_TORR</code></dt>
+<dd><p>The pressure of 1 torr.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_METER_OF_MERCURY</code></dt>
+<dd><p>The pressure of 1 meter of mercury.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_INCH_OF_MERCURY</code></dt>
+<dd><p>The pressure of 1 inch of mercury.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_INCH_OF_WATER</code></dt>
+<dd><p>The pressure of 1 inch of water.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PSI</code></dt>
+<dd><p>The pressure of 1 pound per square inch.
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Viscosity"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Pressure" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Light-and-Illumination" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Pressure" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Light-and-Illumination" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Viscosity-1"></a>
+<h2 class="section">12. Viscosity</h2>
+<a name="index-viscosity_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_POISE</code></dt>
+<dd><p>The dynamic viscosity of 1 poise.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_STOKES</code></dt>
+<dd><p>The kinematic viscosity of 1 stokes.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Light-and-Illumination"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Viscosity" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Radioactivity" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Viscosity" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Radioactivity" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Light-and-Illumination-1"></a>
+<h2 class="section">13. Light and Illumination</h2>
+<a name="index-light_002c-units-of"></a>
+<a name="index-illumination_002c-units-of"></a>
+
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_STILB</code></dt>
+<dd><p>The luminance of 1 stilb.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_LUMEN</code></dt>
+<dd><p>The luminous flux of 1 lumen.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_LUX</code></dt>
+<dd><p>The illuminance of 1 lux.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_PHOT</code></dt>
+<dd><p>The illuminance of 1 phot.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_FOOTCANDLE</code></dt>
+<dd><p>The illuminance of 1 footcandle.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_LAMBERT</code></dt>
+<dd><p>The luminance of 1 lambert.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_FOOTLAMBERT</code></dt>
+<dd><p>The luminance of 1 footlambert.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Radioactivity"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Light-and-Illumination" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Force-and-Energy" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Light-and-Illumination" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Force-and-Energy" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Radioactivity-1"></a>
+<h2 class="section">14. Radioactivity</h2>
+<a name="index-radioactivity_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_CURIE</code></dt>
+<dd><p>The activity of 1 curie.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ROENTGEN</code></dt>
+<dd><p>The exposure of 1 roentgen.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_RAD</code></dt>
+<dd><p>The absorbed dose of 1 rad.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Force-and-Energy"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Radioactivity" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Prefixes" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Radioactivity" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Prefixes" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Force-and-Energy-1"></a>
+<h2 class="section">15. Force and Energy</h2>
+<a name="index-force-and-energy_002c-units-of"></a>
+<dl compact="compact">
+<dt> <code>GSL_CONST_MKSA_NEWTON</code></dt>
+<dd><p>The SI unit of force, 1 Newton.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_DYNE</code></dt>
+<dd><p>The force of 1 Dyne = <em>10^-5</em> Newton.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_JOULE</code></dt>
+<dd><p>The SI unit of energy, 1 Joule.
+</p>
+</dd>
+<dt> <code>GSL_CONST_MKSA_ERG</code> </dt>
+<dd><p>The energy 1 erg = <em>10^-7</em> Joule.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Prefixes"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Force-and-Energy" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Physical-Constant-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Force-and-Energy" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Physical-Constant-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Prefixes-1"></a>
+<h2 class="section">16. Prefixes</h2>
+<a name="index-prefixes"></a>
+<a name="index-constants_002c-prefixes"></a>
+
+<p>These constants are dimensionless scaling factors.
+</p>
+<dl compact="compact">
+<dt> <code>GSL_CONST_NUM_YOTTA</code></dt>
+<dd><p><em>10^24</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_ZETTA</code></dt>
+<dd><p><em>10^21</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_EXA</code></dt>
+<dd><p><em>10^18</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_PETA</code></dt>
+<dd><p><em>10^15</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_TERA</code></dt>
+<dd><p><em>10^12</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_GIGA</code></dt>
+<dd><p><em>10^9</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_MEGA</code></dt>
+<dd><p><em>10^6</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_KILO</code></dt>
+<dd><p><em>10^3</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_MILLI</code></dt>
+<dd><p><em>10^-3</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_MICRO</code></dt>
+<dd><p><em>10^-6</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_NANO</code></dt>
+<dd><p><em>10^-9</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_PICO</code></dt>
+<dd><p><em>10^-12</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_FEMTO</code></dt>
+<dd><p><em>10^-15</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_ATTO</code></dt>
+<dd><p><em>10^-18</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_ZEPTO</code></dt>
+<dd><p><em>10^-21</em>
+</p>
+</dd>
+<dt> <code>GSL_CONST_NUM_YOCTO</code></dt>
+<dd><p><em>10^-24</em>
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Physical-Constant-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Prefixes" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Physical-Constant-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Prefixes" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Physical-Constant-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">17. Examples</h2>
+
+<p>The following program demonstrates the use of the physical constants in
+a calculation.  In this case, the goal is to calculate the range of
+light-travel times from Earth to Mars.
+</p>
+<p>The required data is the average distance of each planet from the Sun in
+astronomical units (the eccentricities and inclinations of the orbits
+will be neglected for the purposes of this calculation).  The average
+radius of the orbit of Mars is 1.52 astronomical units, and for the
+orbit of Earth it is 1 astronomical unit (by definition).  These values
+are combined with the MKSA values of the constants for the speed of
+light and the length of an astronomical unit to produce a result for the
+shortest and longest light-travel times in seconds.  The figures are
+converted into minutes before being displayed.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_const_mksa.h&gt;
+
+int
+main (void)
+{
+  double c  = GSL_CONST_MKSA_SPEED_OF_LIGHT;
+  double au = GSL_CONST_MKSA_ASTRONOMICAL_UNIT;
+  double minutes = GSL_CONST_MKSA_MINUTE;
+
+  /* distance stored in meters */
+  double r_earth = 1.00 * au;  
+  double r_mars  = 1.52 * au;
+
+  double t_min, t_max;
+
+  t_min = (r_mars - r_earth) / c;
+  t_max = (r_mars + r_earth) / c;
+
+  printf (&quot;light travel time from Earth to Mars:\n&quot;);
+  printf (&quot;minimum = %.1f minutes\n&quot;, t_min / minutes);
+  printf (&quot;maximum = %.1f minutes\n&quot;, t_max / minutes);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">light travel time from Earth to Mars:
+minimum = 4.3 minutes
+maximum = 21.0 minutes
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Physical-Constant-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Physical-Constant-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Physical-Constant-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">18. References and Further Reading</h2>
+
+<p>The authoritative sources for physical constants are the 2006 CODATA
+recommended values, published in the article below. Further
+information on the values of physical constants is also available from
+the NIST website.
+</p>
+<ul class="toc">
+<li> P.J. Mohr, B.N. Taylor, D.B. Newell, &ldquo;CODATA Recommended
+Values of the Fundamental Physical Constants: 2006&rdquo;, Reviews of
+Modern Physics, 80(2), pp. 633&ndash;730 (2008).
+</li><li> <a href="http://www.physics.nist.gov/cuu/Constants/index.html">http://www.physics.nist.gov/cuu/Constants/index.html</a>
+</li><li> <a href="http://physics.nist.gov/Pubs/SP811/appenB9.html">http://physics.nist.gov/Pubs/SP811/appenB9.html</a>
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Fundamental-Constants" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

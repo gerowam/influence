@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-combinations"></a>
+
+<p>This chapter describes functions for creating and manipulating
+combinations. A combination <em>c</em> is represented by an array of
+<em>k</em> integers in the range 0 to <em>n-1</em>, where each value
+<em>c_i</em> occurs at most once.  The combination <em>c</em> corresponds to
+indices of <em>k</em> elements chosen from an <em>n</em> element vector.
+Combinations are useful for iterating over all <em>k</em>-element subsets
+of a set.
+</p>
+<p>The functions described in this chapter are defined in the header file
+&lsquo;<tt>gsl_combination.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#The-Combination-struct">1. The Combination struct</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Combination-allocation">2. Combination allocation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Accessing-combination-elements">3. Accessing combination elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Combination-properties">4. Combination properties</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Combination-functions">5. Combination functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reading-and-writing-combinations">6. Reading and writing combinations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Combination-Examples">7. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Combination-References-and-Further-Reading">8. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="The-Combination-struct"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Combination-allocation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Combination-allocation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="The-Combination-struct-1"></a>
+<h2 class="section">1. The Combination struct</h2>
+<a name="index-gsl_005fcombination"></a>
+<p>A combination is defined by a structure containing three components, the
+values of <em>n</em> and <em>k</em>, and a pointer to the combination array.
+The elements of the combination array are all of type <code>size_t</code>, and
+are stored in increasing order.  The <code>gsl_combination</code> structure
+looks like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  size_t n;
+  size_t k;
+  size_t *data;
+} gsl_combination;
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="Combination-allocation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Combination-struct" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-combination-elements" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Accessing-combination-elements" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Combination-allocation-1"></a>
+<h2 class="section">2. Combination allocation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005falloc"></a><u>Function:</u> gsl_combination * <b>gsl_combination_alloc</b><i> (size_t <var>n</var>, size_t <var>k</var>)</i></dt>
+<dd><p>This function allocates memory for a new combination with parameters
+<var>n</var>, <var>k</var>.  The combination is not initialized and its elements
+are undefined.  Use the function <code>gsl_combination_calloc</code> if you
+want to create a combination which is initialized to the
+lexicographically first combination. A null pointer is returned if
+insufficient memory is available to create the combination.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fcalloc"></a><u>Function:</u> gsl_combination * <b>gsl_combination_calloc</b><i> (size_t <var>n</var>, size_t <var>k</var>)</i></dt>
+<dd><p>This function allocates memory for a new combination with parameters
+<var>n</var>, <var>k</var> and initializes it to the lexicographically first
+combination. A null pointer is returned if insufficient memory is
+available to create the combination.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005finit_005ffirst"></a><u>Function:</u> void <b>gsl_combination_init_first</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function initializes the combination <var>c</var> to the
+lexicographically first combination, i.e.  <em>(0,1,2,&hellip;,k-1)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005finit_005flast"></a><u>Function:</u> void <b>gsl_combination_init_last</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function initializes the combination <var>c</var> to the
+lexicographically last combination, i.e.  <em>(n-k,n-k+1,&hellip;,n-1)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005ffree"></a><u>Function:</u> void <b>gsl_combination_free</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function frees all the memory used by the combination <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fmemcpy"></a><u>Function:</u> int <b>gsl_combination_memcpy</b><i> (gsl_combination * <var>dest</var>, const gsl_combination * <var>src</var>)</i></dt>
+<dd><p>This function copies the elements of the combination <var>src</var> into the
+combination <var>dest</var>.  The two combinations must have the same size.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Accessing-combination-elements"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Combination-allocation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-properties" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Combination-allocation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-properties" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Accessing-combination-elements-1"></a>
+<h2 class="section">3. Accessing combination elements</h2>
+
+<p>The following function can be used to access the elements of a combination.
+</p>
+<dl>
+<dt><a name="index-gsl_005fcombination_005fget"></a><u>Function:</u> size_t <b>gsl_combination_get</b><i> (const gsl_combination * <var>c</var>, const size_t <var>i</var>)</i></dt>
+<dd><p>This function returns the value of the <var>i</var>-th element of the
+combination <var>c</var>.  If <var>i</var> lies outside the allowed range of 0 to
+<em><var>k</var>-1</em> then the error handler is invoked and 0 is returned.  @inlinefn{}
+</p></dd></dl>
+
+<hr size="6">
+<a name="Combination-properties"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Accessing-combination-elements" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Accessing-combination-elements" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Combination-properties-1"></a>
+<h2 class="section">4. Combination properties</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fn"></a><u>Function:</u> size_t <b>gsl_combination_n</b><i> (const gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function returns the range (<em>n</em>) of the combination <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fk"></a><u>Function:</u> size_t <b>gsl_combination_k</b><i> (const gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function returns the number of elements (<em>k</em>) in the combination <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fdata"></a><u>Function:</u> size_t * <b>gsl_combination_data</b><i> (const gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function returns a pointer to the array of elements in the
+combination <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fvalid"></a><u>Function:</u> int <b>gsl_combination_valid</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><a name="index-checking-combination-for-validity"></a>
+<a name="index-testing-combination-for-validity"></a>
+<p>This function checks that the combination <var>c</var> is valid.  The <var>k</var>
+elements should lie in the range 0 to <em><var>n</var>-1</em>, with each
+value occurring once at most and in increasing order.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Combination-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Combination-properties" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-combinations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Combination-properties" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-combinations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Combination-functions-1"></a>
+<h2 class="section">5. Combination functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fnext"></a><u>Function:</u> int <b>gsl_combination_next</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><a name="index-iterating-through-combinations"></a>
+<p>This function advances the combination <var>c</var> to the next combination
+in lexicographic order and returns <code>GSL_SUCCESS</code>.  If no further
+combinations are available it returns <code>GSL_FAILURE</code> and leaves
+<var>c</var> unmodified.  Starting with the first combination and
+repeatedly applying this function will iterate through all possible
+combinations of a given order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005fprev"></a><u>Function:</u> int <b>gsl_combination_prev</b><i> (gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function steps backwards from the combination <var>c</var> to the
+previous combination in lexicographic order, returning
+<code>GSL_SUCCESS</code>.  If no previous combination is available it returns
+<code>GSL_FAILURE</code> and leaves <var>c</var> unmodified.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Reading-and-writing-combinations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Combination-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Combination-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reading-and-writing-combinations-1"></a>
+<h2 class="section">6. Reading and writing combinations</h2>
+
+<p>The library provides functions for reading and writing combinations to a
+file as binary data or formatted text.
+</p>
+<dl>
+<dt><a name="index-gsl_005fcombination_005ffwrite"></a><u>Function:</u> int <b>gsl_combination_fwrite</b><i> (FILE * <var>stream</var>, const gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function writes the elements of the combination <var>c</var> to the
+stream <var>stream</var> in binary format.  The function returns
+<code>GSL_EFAILED</code> if there was a problem writing to the file.  Since the
+data is written in the native binary format it may not be portable
+between different architectures.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005ffread"></a><u>Function:</u> int <b>gsl_combination_fread</b><i> (FILE * <var>stream</var>, gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function reads elements from the open stream <var>stream</var> into the
+combination <var>c</var> in binary format.  The combination <var>c</var> must be
+preallocated with correct values of <em>n</em> and <em>k</em> since the
+function uses the size of <var>c</var> to determine how many bytes to read.
+The function returns <code>GSL_EFAILED</code> if there was a problem reading
+from the file.  The data is assumed to have been written in the native
+binary format on the same architecture.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005ffprintf"></a><u>Function:</u> int <b>gsl_combination_fprintf</b><i> (FILE * <var>stream</var>, const gsl_combination * <var>c</var>, const char * <var>format</var>)</i></dt>
+<dd><p>This function writes the elements of the combination <var>c</var>
+line-by-line to the stream <var>stream</var> using the format specifier
+<var>format</var>, which should be suitable for a type of <var>size_t</var>.  
+In ISO C99 the type modifier <code>z</code> represents <code>size_t</code>, so
+<code>&quot;%zu\n&quot;</code> is a suitable format.<a name="DOCF1" href="#FOOT1">(1)</a>  The function returns
+<code>GSL_EFAILED</code> if there was a problem writing to the file.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcombination_005ffscanf"></a><u>Function:</u> int <b>gsl_combination_fscanf</b><i> (FILE * <var>stream</var>, gsl_combination * <var>c</var>)</i></dt>
+<dd><p>This function reads formatted data from the stream <var>stream</var> into the
+combination <var>c</var>.  The combination <var>c</var> must be preallocated with
+correct values of <em>n</em> and <em>k</em> since the function uses the size of <var>c</var> to
+determine how many numbers to read.  The function returns
+<code>GSL_EFAILED</code> if there was a problem reading from the file.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Combination-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reading-and-writing-combinations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reading-and-writing-combinations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Combination-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">7. Examples</h2>
+<p>The example program below prints all subsets of the set
+<em>0,1,2,3</em> ordered by size.  Subsets of the same size are
+ordered lexicographically.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_combination.h&gt;
+
+int 
+main (void) 
+{
+  gsl_combination * c;
+  size_t i;
+
+  printf (&quot;All subsets of {0,1,2,3} by size:\n&quot;) ;
+  for (i = 0; i &lt;= 4; i++)
+    {
+      c = gsl_combination_calloc (4, i);
+      do
+        {
+          printf (&quot;{&quot;);
+          gsl_combination_fprintf (stdout, c, &quot; %u&quot;);
+          printf (&quot; }\n&quot;);
+        }
+      while (gsl_combination_next (c) == GSL_SUCCESS);
+      gsl_combination_free (c);
+    }
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+<pre class="verbatim">All subsets of {0,1,2,3} by size:
+{ }
+{ 0 }
+{ 1 }
+{ 2 }
+{ 3 }
+{ 0 1 }
+{ 0 2 }
+{ 0 3 }
+{ 1 2 }
+{ 1 3 }
+{ 2 3 }
+{ 0 1 2 }
+{ 0 1 3 }
+{ 0 2 3 }
+{ 1 2 3 }
+{ 0 1 2 3 }
+</pre></pre></td></tr></table>
+
+<p>All 16 subsets are generated, and the subsets of each size are sorted
+lexicographically.
+</p>
+
+<hr size="6">
+<a name="Combination-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Combination-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Combination-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">8. References and Further Reading</h2>
+
+<p>Further information on combinations can be found in,
+</p>
+<ul class="toc">
+<li>
+Donald L. Kreher, Douglas R. Stinson, <cite>Combinatorial Algorithms:
+Generation, Enumeration and Search</cite>, 1998, CRC Press LLC, ISBN
+084933988X
+</li></ul>
+
+
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>In versions of the 
+GNU C library prior to the ISO C99 standard, 
+the type modifier <code>Z</code> was used instead.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Combination-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

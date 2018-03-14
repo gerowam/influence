@@ -1,0 +1,973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-standards-conformance_002c-ANSI-C"></a>
+<a name="index-ANSI-C_002c-use-of"></a>
+<a name="index-C-extensions_002c-compatible-use-of"></a>
+<a name="index-compatibility"></a>
+<p>This chapter describes how to compile programs that use GSL, and
+introduces its conventions.  
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#An-Example-Program">1. An Example Program</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Compiling-and-Linking">2. Compiling and Linking</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Shared-Libraries">3. Shared Libraries</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ANSI-C-Compliance">4. ANSI C Compliance</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Inline-functions">5. Inline functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Long-double">6. Long double</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Portability-functions">7. Portability functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Alternative-optimized-functions">8. Alternative optimized functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Support-for-different-numeric-types">9. Support for different numeric types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Compatibility-with-C_002b_002b">10. Compatibility with C++</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Aliasing-of-arrays">11. Aliasing of arrays</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Thread_002dsafety">12. Thread-safety</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Deprecated-Functions">13. Deprecated Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Code-Reuse">14. Code Reuse</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  
+</td></tr>
+</table>
+
+<a name="An-Example-Program"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="An-Example-Program-1"></a>
+<h2 class="section">1. An Example Program</h2>
+
+<p>The following short program demonstrates the use of the library by
+computing the value of the Bessel function <em>J_0(x)</em> for <em>x=5</em>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_sf_bessel.h&gt;
+
+int
+main (void)
+{
+  double x = 5.0;
+  double y = gsl_sf_bessel_J0 (x);
+  printf (&quot;J0(%g) = %.18e\n&quot;, x, y);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The output is shown below, and should be correct to double-precision
+accuracy,<a name="DOCF1" href="#FOOT1">(1)</a>
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">J0(5) = -1.775967713143382920e-01
+</pre></pre></td></tr></table>
+
+<p>The steps needed to compile this program are described
+in the following sections.
+</p>
+<hr size="6">
+<a name="Compiling-and-Linking"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#An-Example-Program" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Linking-programs-with-the-library" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Shared-Libraries" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Compiling-and-Linking-1"></a>
+<h2 class="section">2. Compiling and Linking</h2>
+<a name="index-compiling-programs_002c-include-paths"></a>
+<a name="index-including-GSL-header-files"></a>
+<a name="index-header-files_002c-including"></a>
+<p>The library header files are installed in their own &lsquo;<tt>gsl</tt>&rsquo;
+directory.  You should write any preprocessor include statements with a
+&lsquo;<tt>gsl/</tt>&rsquo; directory prefix thus,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#include &lt;gsl/gsl_math.h&gt;
+</pre></td></tr></table>
+
+<p>If the directory is not installed on the standard search path of your
+compiler you will also need to provide its location to the preprocessor
+as a command line flag.  The default location of the &lsquo;<tt>gsl</tt>&rsquo;
+directory is &lsquo;<tt>/usr/local/include/gsl</tt>&rsquo;.  A typical compilation
+command for a source file &lsquo;<tt>example.c</tt>&rsquo; with the GNU C compiler
+<code>gcc</code> is,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc -Wall -I/usr/local/include -c example.c
+</pre></td></tr></table>
+
+<p>This results in an object file &lsquo;<tt>example.o</tt>&rsquo;.   The default
+include path for <code>gcc</code> searches &lsquo;<tt>/usr/local/include</tt>&rsquo; automatically so
+the <code>-I</code> option can actually be omitted when GSL is installed 
+in its default location.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Linking-programs-with-the-library">2.1 Linking programs with the library</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Linking-with-an-alternative-BLAS-library">2.2 Linking with an alternative BLAS library</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Linking-programs-with-the-library"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Linking-with-an-alternative-BLAS-library" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Shared-Libraries" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Linking-programs-with-the-library-1"></a>
+<h3 class="subsection">2.1 Linking programs with the library</h3>
+<a name="index-compiling-programs_002c-library-paths"></a>
+<a name="index-linking-with-GSL-libraries"></a>
+<a name="index-libraries_002c-linking-with"></a>
+<p>The library is installed as a single file, &lsquo;<tt>libgsl.a</tt>&rsquo;.  A shared
+version of the library &lsquo;<tt>libgsl.so</tt>&rsquo; is also installed on systems
+that support shared libraries.  The default location of these files is
+&lsquo;<tt>/usr/local/lib</tt>&rsquo;.  If this directory is not on the standard search
+path of your linker you will also need to provide its location as a
+command line flag.
+</p>
+<p>To link against the library you need to specify
+both the main library and a supporting <small>CBLAS</small> library, which
+provides standard basic linear algebra subroutines.  A suitable
+<small>CBLAS</small> implementation is provided in the library
+&lsquo;<tt>libgslcblas.a</tt>&rsquo; if your system does not provide one.  The following
+example shows how to link an application with the library,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc -L/usr/local/lib example.o -lgsl -lgslcblas -lm
+</pre></td></tr></table>
+
+<p>The default library path for <code>gcc</code> searches &lsquo;<tt>/usr/local/lib</tt>&rsquo;
+automatically so the <code>-L</code> option can be omitted when GSL is
+installed in its default location.  
+</p>
+<p>The option <code>-lm</code> links with the system math library. On some
+systems it is not needed.<a name="DOCF2" href="#FOOT2">(2)</a>
+</p>
+<p>For a tutorial introduction to the GNU C Compiler and related programs,
+see <a href="http://www.network-theory.co.uk/gcc/intro/"><cite>An Introduction to GCC</cite></a> (ISBN 0954161793).<a name="DOCF3" href="#FOOT3">(3)</a>
+</p>
+<hr size="6">
+<a name="Linking-with-an-alternative-BLAS-library"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Linking-programs-with-the-library" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Shared-Libraries" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Shared-Libraries" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Linking-with-an-alternative-BLAS-library-1"></a>
+<h3 class="subsection">2.2 Linking with an alternative BLAS library</h3>
+
+<p>The following command line shows how you would link the same application
+with an alternative <small>CBLAS</small> library &lsquo;<tt>libcblas.a</tt>&rsquo;,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc example.o -lgsl -lcblas -lm
+</pre></td></tr></table>
+
+<p>For the best performance an optimized platform-specific <small>CBLAS</small>
+library should be used for <code>-lcblas</code>.  The library must conform to
+the <small>CBLAS</small> standard.  The <small>ATLAS</small> package provides a portable
+high-performance <small>BLAS</small> library with a <small>CBLAS</small> interface.  It is
+free software and should be installed for any work requiring fast vector
+and matrix operations.  The following command line will link with the
+<small>ATLAS</small> library and its <small>CBLAS</small> interface,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc example.o -lgsl -lcblas -latlas -lm
+</pre></td></tr></table>
+
+<p>If the <small>ATLAS</small> library is installed in a non-standard directory use
+the <code>-L</code> option to add it to the search path, as described above.  
+</p>
+<p>For more information about <small>BLAS</small> functions see @ref{BLAS Support}.
+</p>
+
+
+<hr size="6">
+<a name="Shared-Libraries"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Linking-with-an-alternative-BLAS-library" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ANSI-C-Compliance" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Compiling-and-Linking" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#ANSI-C-Compliance" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Shared-Libraries-1"></a>
+<h2 class="section">3. Shared Libraries</h2>
+<a name="index-shared-libraries"></a>
+<a name="index-libraries_002c-shared"></a>
+<a name="index-LD_005fLIBRARY_005fPATH"></a>
+<p>To run a program linked with the shared version of the library the
+operating system must be able to locate the corresponding &lsquo;<tt>.so</tt>&rsquo;
+file at runtime.  If the library cannot be found, the following error
+will occur:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+./a.out: error while loading shared libraries: 
+libgsl.so.0: cannot open shared object file: No such 
+file or directory
+</pre></td></tr></table>
+
+<p>To avoid this error, either modify the system dynamic linker
+configuration<a name="DOCF4" href="#FOOT4">(4)</a> or
+define the shell variable <code>LD_LIBRARY_PATH</code> to include the
+directory where the library is installed.
+</p>
+<p>For example, in the Bourne shell (<code>/bin/sh</code> or <code>/bin/bash</code>),
+the library search path can be set with the following commands:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ LD_LIBRARY_PATH=/usr/local/lib
+$ export LD_LIBRARY_PATH
+$ ./example
+</pre></td></tr></table>
+
+<p>In the C-shell (<code>/bin/csh</code> or <code>/bin/tcsh</code>) the equivalent
+command is,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">% setenv LD_LIBRARY_PATH /usr/local/lib
+</pre></td></tr></table>
+
+<p>The standard prompt for the C-shell in the example above is the percent
+character &lsquo;<samp>%</samp>&rsquo;, and should not be typed as part of the command.
+</p>
+<p>To save retyping these commands each session they can be placed in an
+individual or system-wide login file.
+</p>
+<p>To compile a statically linked version of the program, use the
+<code>-static</code> flag in <code>gcc</code>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc -static example.o -lgsl -lgslcblas -lm
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="ANSI-C-Compliance"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Shared-Libraries" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Inline-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Shared-Libraries" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Inline-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="ANSI-C-Compliance-1"></a>
+<h2 class="section">4. ANSI C Compliance</h2>
+
+<p>The library is written in ANSI C and is intended to conform to the ANSI
+C standard (C89).  It should be portable to any system with a working
+ANSI C compiler.
+</p>
+<p>The library does not rely on any non-ANSI extensions in the interface it
+exports to the user.  Programs you write using GSL can be ANSI
+compliant.  Extensions which can be used in a way compatible with pure
+ANSI C are supported, however, via conditional compilation.  This allows
+the library to take advantage of compiler extensions on those platforms
+which support them.
+</p>
+<p>When an ANSI C feature is known to be broken on a particular system the
+library will exclude any related functions at compile-time.  This should
+make it impossible to link a program that would use these functions and
+give incorrect results.
+</p>
+<p>To avoid namespace conflicts all exported function names and variables
+have the prefix <code>gsl_</code>, while exported macros have the prefix
+<code>GSL_</code>.
+</p>
+<hr size="6">
+<a name="Inline-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ANSI-C-Compliance" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Long-double" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#ANSI-C-Compliance" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Long-double" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Inline-functions-1"></a>
+<h2 class="section">5. Inline functions</h2>
+<a name="index-HAVE_005fINLINE"></a>
+<a name="index-GSL_005fC99_005fINLINE"></a>
+<a name="index-inline-functions"></a>
+<a name="index-HAVE_005fINLINE-1"></a>
+<a name="index-GSL_005fC99_005fINLINE-1"></a>
+<a name="index-C99_002c-inline-keyword"></a>
+<a name="index-extern-inline"></a>
+<p>The <code>inline</code> keyword is not part of the original ANSI C standard
+(C89) so the library does not export any inline function definitions
+by default.  Inline functions were introduced officially in the newer
+C99 standard but most C89 compilers have also included <code>inline</code> as
+an extension for a long time.
+</p>
+<p>To allow the use of inline functions, the library provides optional
+inline versions of performance-critical routines by conditional
+compilation in the exported header files.  The inline versions of these
+functions can be included by defining the macro <code>HAVE_INLINE</code>
+when compiling an application,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ gcc -Wall -c -DHAVE_INLINE example.c
+</pre></td></tr></table>
+
+<p>If you use <code>autoconf</code> this macro can be defined automatically.  If
+you do not define the macro <code>HAVE_INLINE</code> then the slower
+non-inlined versions of the functions will be used instead.
+</p>
+<p>By default, the actual form of the inline keyword is <code>extern
+inline</code>, which is a <code>gcc</code> extension that eliminates unnecessary
+function definitions.  If the form <code>extern inline</code> causes
+problems with other compilers a stricter autoconf test can be used,
+see @ref{Autoconf Macros}.
+</p>
+<p>When compiling with <code>gcc</code> in C99 mode (<code>gcc -std=c99</code>) the
+header files automatically switch to C99-compatible inline function
+declarations instead of <code>extern inline</code>.  With other C99
+compilers, define the macro <code>GSL_C99_INLINE</code> to use these
+declarations.
+</p>
+<hr size="6">
+<a name="Long-double"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Inline-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Portability-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Inline-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Portability-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Long-double-1"></a>
+<h2 class="section">6. Long double</h2>
+<a name="index-long-double"></a>
+<p>In general, the algorithms in the library are written for double
+precision only.  The <code>long double</code> type is not supported for
+actual computation.
+</p>
+<p>One reason for this choice is that the precision of <code>long double</code>
+is platform dependent.  The IEEE standard only specifies the minimum
+precision of extended precision numbers, while the precision of
+<code>double</code> is the same on all platforms.
+</p>
+<p>However, it is sometimes necessary to interact with external data in
+long-double format, so the vector and matrix datatypes include
+long-double versions.
+</p>
+<p>It should be noted that in some system libraries the <code>stdio.h</code>
+formatted input/output functions <code>printf</code> and <code>scanf</code> are
+not implemented correctly for <code>long double</code>.  Undefined or
+incorrect results are avoided by testing these functions during the
+<code>configure</code> stage of library compilation and eliminating certain
+GSL functions which depend on them if necessary.  The corresponding
+line in the <code>configure</code> output looks like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">checking whether printf works with long double... no
+</pre></td></tr></table>
+
+<p>Consequently when <code>long double</code> formatted input/output does not
+work on a given system it should be impossible to link a program which
+uses GSL functions dependent on this.
+</p>
+<p>If it is necessary to work on a system which does not support formatted
+<code>long double</code> input/output then the options are to use binary
+formats or to convert <code>long double</code> results into <code>double</code> for
+reading and writing.
+</p>
+<hr size="6">
+<a name="Portability-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Long-double" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Alternative-optimized-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Long-double" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Alternative-optimized-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Portability-functions-1"></a>
+<h2 class="section">7. Portability functions</h2>
+
+<p>To help in writing portable applications GSL provides some
+implementations of functions that are found in other libraries, such as
+the BSD math library.  You can write your application to use the native
+versions of these functions, and substitute the GSL versions via a
+preprocessor macro if they are unavailable on another platform. 
+</p>
+<p>For example, after determining whether the BSD function <code>hypot</code> is
+available you can include the following macro definitions in a file
+&lsquo;<tt>config.h</tt>&rsquo; with your application,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">/* Substitute gsl_hypot for missing system hypot */
+
+#ifndef HAVE_HYPOT
+#define hypot gsl_hypot
+#endif
+</pre></td></tr></table>
+
+<p>The application source files can then use the include command
+<code>#include &lt;config.h&gt;</code> to replace each occurrence of <code>hypot</code> by
+<code>gsl_hypot</code> when <code>hypot</code> is not available.  This substitution
+can be made automatically if you use <code>autoconf</code>, see @ref{Autoconf
+Macros}.
+</p>
+<p>In most circumstances the best strategy is to use the native versions of
+these functions when available, and fall back to GSL versions otherwise,
+since this allows your application to take advantage of any
+platform-specific optimizations in the system library.  This is the
+strategy used within GSL itself.
+</p>
+<hr size="6">
+<a name="Alternative-optimized-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Portability-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Support-for-different-numeric-types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Portability-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Support-for-different-numeric-types" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Alternative-optimized-functions-1"></a>
+<h2 class="section">8. Alternative optimized functions</h2>
+
+<a name="index-alternative-optimized-functions"></a>
+<a name="index-optimized-functions_002c-alternatives"></a>
+<p>The main implementation of some functions in the library will not be
+optimal on all architectures.  For example, there are several ways to
+compute a Gaussian random variate and their relative speeds are
+platform-dependent.  In cases like this the library provides alternative
+implementations of these functions with the same interface.  If you
+write your application using calls to the standard implementation you
+can select an alternative version later via a preprocessor definition.
+It is also possible to introduce your own optimized functions this way
+while retaining portability.  The following lines demonstrate the use of
+a platform-dependent choice of methods for sampling from the Gaussian
+distribution,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#ifdef SPARC
+#define gsl_ran_gaussian gsl_ran_gaussian_ratio_method
+#endif
+#ifdef INTEL
+#define gsl_ran_gaussian my_gaussian
+#endif
+</pre></td></tr></table>
+
+<p>These lines would be placed in the configuration header file
+&lsquo;<tt>config.h</tt>&rsquo; of the application, which should then be included by all
+the source files.  Note that the alternative implementations will not
+produce bit-for-bit identical results, and in the case of random number
+distributions will produce an entirely different stream of random
+variates.
+</p>
+<hr size="6">
+<a name="Support-for-different-numeric-types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Alternative-optimized-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Compatibility-with-C_002b_002b" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Alternative-optimized-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Compatibility-with-C_002b_002b" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Support-for-different-numeric-types-1"></a>
+<h2 class="section">9. Support for different numeric types</h2>
+
+<p>Many functions in the library are defined for different numeric types.
+This feature is implemented by varying the name of the function with a
+type-related modifier&mdash;a primitive form of C++ templates.  The
+modifier is inserted into the function name after the initial module
+prefix.  The following table shows the function names defined for all
+the numeric types of an imaginary module <code>gsl_foo</code> with function
+<code>fn</code>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">gsl_foo_fn               double        
+gsl_foo_long_double_fn   long double   
+gsl_foo_float_fn         float         
+gsl_foo_long_fn          long          
+gsl_foo_ulong_fn         unsigned long 
+gsl_foo_int_fn           int           
+gsl_foo_uint_fn          unsigned int  
+gsl_foo_short_fn         short         
+gsl_foo_ushort_fn        unsigned short
+gsl_foo_char_fn          char          
+gsl_foo_uchar_fn         unsigned char 
+</pre></td></tr></table>
+
+<p>The normal numeric precision <code>double</code> is considered the default and
+does not require a suffix.  For example, the function
+<code>gsl_stats_mean</code> computes the mean of double precision numbers,
+while the function <code>gsl_stats_int_mean</code> computes the mean of
+integers.
+</p>
+<p>A corresponding scheme is used for library defined types, such as
+<code>gsl_vector</code> and <code>gsl_matrix</code>.  In this case the modifier is
+appended to the type name.  For example, if a module defines a new
+type-dependent struct or typedef <code>gsl_foo</code> it is modified for other
+types in the following way,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">gsl_foo                  double        
+gsl_foo_long_double      long double   
+gsl_foo_float            float         
+gsl_foo_long             long          
+gsl_foo_ulong            unsigned long 
+gsl_foo_int              int           
+gsl_foo_uint             unsigned int  
+gsl_foo_short            short         
+gsl_foo_ushort           unsigned short
+gsl_foo_char             char          
+gsl_foo_uchar            unsigned char 
+</pre></td></tr></table>
+
+<p>When a module contains type-dependent definitions the library provides
+individual header files for each type.  The filenames are modified as
+shown in the below.  For convenience the default header includes the
+definitions for all the types.  To include only the double precision
+header file, or any other specific type, use its individual filename.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#include &lt;gsl/gsl_foo.h&gt;               All types
+#include &lt;gsl/gsl_foo_double.h&gt;        double        
+#include &lt;gsl/gsl_foo_long_double.h&gt;   long double   
+#include &lt;gsl/gsl_foo_float.h&gt;         float         
+#include &lt;gsl/gsl_foo_long.h&gt;          long          
+#include &lt;gsl/gsl_foo_ulong.h&gt;         unsigned long 
+#include &lt;gsl/gsl_foo_int.h&gt;           int           
+#include &lt;gsl/gsl_foo_uint.h&gt;          unsigned int  
+#include &lt;gsl/gsl_foo_short.h&gt;         short         
+#include &lt;gsl/gsl_foo_ushort.h&gt;        unsigned short
+#include &lt;gsl/gsl_foo_char.h&gt;          char          
+#include &lt;gsl/gsl_foo_uchar.h&gt;         unsigned char 
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Compatibility-with-C_002b_002b"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Support-for-different-numeric-types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Aliasing-of-arrays" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Support-for-different-numeric-types" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Aliasing-of-arrays" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Compatibility-with-C_002b_002b-1"></a>
+<h2 class="section">10. Compatibility with C++</h2>
+<a name="index-C_002b_002b_002c-compatibility"></a>
+<a name="index-exceptions_002c-C_002b_002b"></a>
+<p>The library header files automatically define functions to have
+<code>extern &quot;C&quot;</code> linkage when included in C++ programs.  This allows
+the functions to be called directly from C++.
+</p>
+<p>To use C++ exception handling within user-defined functions passed to
+the library as parameters, the library must be built with the
+additional <code>CFLAGS</code> compilation option &lsquo;<samp>-fexceptions</samp>&rsquo;.
+</p>
+<hr size="6">
+<a name="Aliasing-of-arrays"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Compatibility-with-C_002b_002b" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Thread_002dsafety" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Compatibility-with-C_002b_002b" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Thread_002dsafety" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Aliasing-of-arrays-1"></a>
+<h2 class="section">11. Aliasing of arrays</h2>
+<a name="index-aliasing-of-arrays"></a>
+<p>The library assumes that arrays, vectors and matrices passed as
+modifiable arguments are not aliased and do not overlap with each other.
+This removes the need for the library to handle overlapping memory
+regions as a special case, and allows additional optimizations to be
+used.  If overlapping memory regions are passed as modifiable arguments
+then the results of such functions will be undefined.  If the arguments
+will not be modified (for example, if a function prototype declares them
+as <code>const</code> arguments) then overlapping or aliased memory regions
+can be safely used.
+</p>
+<hr size="6">
+<a name="Thread_002dsafety"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Aliasing-of-arrays" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Deprecated-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Aliasing-of-arrays" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Deprecated-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Thread_002dsafety-1"></a>
+<h2 class="section">12. Thread-safety</h2>
+
+<p>The library can be used in multi-threaded programs.  All the functions
+are thread-safe, in the sense that they do not use static variables.
+Memory is always associated with objects and not with functions.  For
+functions which use <em>workspace</em> objects as temporary storage the
+workspaces should be allocated on a per-thread basis.  For functions
+which use <em>table</em> objects as read-only memory the tables can be used
+by multiple threads simultaneously.  Table arguments are always declared
+<code>const</code> in function prototypes, to indicate that they may be
+safely accessed by different threads.
+</p>
+<p>There are a small number of static global variables which are used to
+control the overall behavior of the library (e.g. whether to use
+range-checking, the function to call on fatal error, etc).  These
+variables are set directly by the user, so they should be initialized
+once at program startup and not modified by different threads.
+</p>
+<hr size="6">
+<a name="Deprecated-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Thread_002dsafety" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Code-Reuse" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Thread_002dsafety" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Code-Reuse" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Deprecated-Functions-1"></a>
+<h2 class="section">13. Deprecated Functions</h2>
+<a name="index-deprecated-functions"></a>
+
+<p>From time to time, it may be necessary for the definitions of some
+functions to be altered or removed from the library.  In these
+circumstances the functions will first be declared <em>deprecated</em> and
+then removed from subsequent versions of the library.  Functions that
+are deprecated can be disabled in the current release by setting the
+preprocessor definition <code>GSL_DISABLE_DEPRECATED</code>.  This allows
+existing code to be tested for forwards compatibility.
+</p>
+<hr size="6">
+<a name="Code-Reuse"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Deprecated-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Deprecated-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Code-Reuse-1"></a>
+<h2 class="section">14. Code Reuse</h2>
+<a name="index-code-reuse-in-applications"></a>
+<a name="index-source-code_002c-reuse-in-applications"></a>
+<p>Where possible the routines in the library have been written to avoid
+dependencies between modules and files.  This should make it possible to
+extract individual functions for use in your own applications, without
+needing to have the whole library installed.  You may need to define
+certain macros such as <code>GSL_ERROR</code> and remove some <code>#include</code>
+statements in order to compile the files as standalone units. Reuse of
+the library code in this way is encouraged, subject to the terms of the
+GNU General Public License.
+</p><hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>The last few digits may vary slightly depending on
+the compiler and platform used&mdash;this is normal.
+</p><h3><a name="FOOT2" href="#DOCF2">(2)</a></h3>
+<p>It is not needed on MacOS X.
+</p><h3><a name="FOOT3" href="#DOCF3">(3)</a></h3>
+<p><a href="http://www.network-theory.co.uk/gcc/intro/">http://www.network-theory.co.uk/gcc/intro/</a>
+</p><h3><a name="FOOT4" href="#DOCF4">(4)</a></h3>
+<p>&lsquo;<tt>/etc/ld.so.conf</tt>&rsquo; on GNU/Linux systems.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#An-Example-Program" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Zeta-functions"></a>
+
+<p>The Riemann zeta function is defined in Abramowitz &amp; Stegun, Section
+23.2.  The functions described in this section are declared in the
+header file &lsquo;<tt>gsl_sf_zeta.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Riemann-Zeta-Function">1. Riemann Zeta Function</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Riemann-Zeta-Function-Minus-One">2. Riemann Zeta Function Minus One</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hurwitz-Zeta-Function">3. Hurwitz Zeta Function</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Eta-Function">4. Eta Function</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="Riemann-Zeta-Function"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function-Minus-One" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function-Minus-One" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Riemann-Zeta-Function-1"></a>
+<h3 class="subsection">1. Riemann Zeta Function</h3>
+<a name="index-Riemann-Zeta-Function"></a>
+
+<p>The Riemann zeta function is defined by the infinite sum 
+<em>\zeta(s) = \sum_k=1^\infty k^-s</em>.  
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fzeta_005fint"></a><u>Function:</u> double <b>gsl_sf_zeta_int</b><i> (int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fzeta_005fint_005fe"></a><u>Function:</u> int <b>gsl_sf_zeta_int_e</b><i> (int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Riemann zeta function <em>\zeta(n)</em> 
+for integer <var>n</var>,
+<em>n \ne 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fzeta"></a><u>Function:</u> double <b>gsl_sf_zeta</b><i> (double <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fzeta_005fe"></a><u>Function:</u> int <b>gsl_sf_zeta_e</b><i> (double <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Riemann zeta function <em>\zeta(s)</em>
+for arbitrary <var>s</var>,
+<em>s \ne 1</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Riemann-Zeta-Function-Minus-One"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hurwitz-Zeta-Function" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Hurwitz-Zeta-Function" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Riemann-Zeta-Function-Minus-One-1"></a>
+<h3 class="subsection">2. Riemann Zeta Function Minus One</h3>
+
+<p>For large positive argument, the Riemann zeta function approaches one.
+In this region the fractional part is interesting, and therefore we
+need a function to evaluate it explicitly.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fzetam1_005fint"></a><u>Function:</u> double <b>gsl_sf_zetam1_int</b><i> (int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fzetam1_005fint_005fe"></a><u>Function:</u> int <b>gsl_sf_zetam1_int_e</b><i> (int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute <em>\zeta(n) - 1</em> for integer <var>n</var>,
+<em>n \ne 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fzetam1"></a><u>Function:</u> double <b>gsl_sf_zetam1</b><i> (double <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fzetam1_005fe"></a><u>Function:</u> int <b>gsl_sf_zetam1_e</b><i> (double <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute <em>\zeta(s) - 1</em> for arbitrary <var>s</var>,
+<em>s \ne 1</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Hurwitz-Zeta-Function"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Riemann-Zeta-Function-Minus-One" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Eta-Function" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function-Minus-One" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Eta-Function" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Hurwitz-Zeta-Function-1"></a>
+<h3 class="subsection">3. Hurwitz Zeta Function</h3>
+<a name="index-Hurwitz-Zeta-Function"></a>
+
+<p>The Hurwitz zeta function is defined by
+<em>\zeta(s,q) = \sum_0^\infty (k+q)^-s</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fhzeta"></a><u>Function:</u> double <b>gsl_sf_hzeta</b><i> (double <var>s</var>, double <var>q</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhzeta_005fe"></a><u>Function:</u> int <b>gsl_sf_hzeta_e</b><i> (double <var>s</var>, double <var>q</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Hurwitz zeta function <em>\zeta(s,q)</em> for
+<em>s &gt; 1</em>, <em>q &gt; 0</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Eta-Function"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hurwitz-Zeta-Function" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Hurwitz-Zeta-Function" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Eta-Function-1"></a>
+<h3 class="subsection">4. Eta Function</h3>
+<a name="index-Eta-Function"></a>
+
+<p>The eta function is defined by
+<em>\eta(s) = (1-2^1-s) \zeta(s)</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005feta_005fint"></a><u>Function:</u> double <b>gsl_sf_eta_int</b><i> (int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005feta_005fint_005fe"></a><u>Function:</u> int <b>gsl_sf_eta_int_e</b><i> (int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the eta function <em>\eta(n)</em> for integer <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005feta"></a><u>Function:</u> double <b>gsl_sf_eta</b><i> (double <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005feta_005fe"></a><u>Function:</u> int <b>gsl_sf_eta_e</b><i> (double <var>s</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the eta function <em>\eta(s)</em> for arbitrary <var>s</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Riemann-Zeta-Function" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

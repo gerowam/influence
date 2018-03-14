@@ -1,0 +1,1516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-linear-algebra"></a>
+<a name="index-solution-of-linear-systems_002c-Ax_003db"></a>
+<a name="index-matrix-factorization"></a>
+<a name="index-factorization-of-matrices"></a>
+
+<p>This chapter describes functions for solving linear systems.  The
+library provides linear algebra operations which operate directly on
+the <code>gsl_vector</code> and <code>gsl_matrix</code> objects.  These routines
+use the standard algorithms from Golub &amp; Van Loan&rsquo;s <cite>Matrix
+Computations</cite> with Level-1 and Level-2 BLAS calls for efficiency.
+</p>
+<p>The functions described in this chapter are declared in the header file
+&lsquo;<tt>gsl_linalg.h</tt>&rsquo;.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#LU-Decomposition">1. LU Decomposition</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QR-Decomposition">2. QR Decomposition</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#QR-Decomposition-with-Column-Pivoting">3. QR Decomposition with Column Pivoting</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Singular-Value-Decomposition">4. Singular Value Decomposition</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Cholesky-Decomposition">5. Cholesky Decomposition</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Tridiagonal-Decomposition-of-Real-Symmetric-Matrices">6. Tridiagonal Decomposition of Real Symmetric Matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Tridiagonal-Decomposition-of-Hermitian-Matrices">7. Tridiagonal Decomposition of Hermitian Matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hessenberg-Decomposition-of-Real-Matrices">8. Hessenberg Decomposition of Real Matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hessenberg_002dTriangular-Decomposition-of-Real-Matrices">9. Hessenberg-Triangular Decomposition of Real Matrices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Bidiagonalization">10. Bidiagonalization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Givens-Rotations">11. Givens Rotations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Householder-Transformations">12. Householder Transformations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Householder-solver-for-linear-systems">13. Householder solver for linear systems</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Tridiagonal-Systems">14. Tridiagonal Systems</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Balancing">15. Balancing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Linear-Algebra-Examples">16. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Linear-Algebra-References-and-Further-Reading">17. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="LU-Decomposition"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="LU-Decomposition-1"></a>
+<h2 class="section">1. LU Decomposition</h2>
+<a name="index-LU-decomposition"></a>
+
+<p>A general square matrix <em>A</em> has an <em>LU</em> decomposition into
+upper and lower triangular matrices,
+where <em>P</em> is a permutation matrix, <em>L</em> is unit lower
+triangular matrix and <em>U</em> is upper triangular matrix. For square
+matrices this decomposition can be used to convert the linear system
+<em>A x = b</em> into a pair of triangular systems (<em>L y = P b</em>,
+<em>U x = y</em>), which can be solved by forward and back-substitution.
+Note that the <em>LU</em> decomposition is valid for singular matrices.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_LU_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_permutation * <var>p</var>, int * <var>signum</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_complex_LU_decomp</b><i> (gsl_matrix_complex * <var>A</var>, gsl_permutation * <var>p</var>, int * <var>signum</var>)</i></dt>
+<dd><p>These functions factorize the square matrix <var>A</var> into the <em>LU</em>
+decomposition <em>PA = LU</em>.  On output the diagonal and upper
+triangular part of the input matrix <var>A</var> contain the matrix
+<em>U</em>. The lower triangular part of the input matrix (excluding the
+diagonal) contains <em>L</em>.  The diagonal elements of <em>L</em> are
+unity, and are not stored.
+</p>
+<p>The permutation matrix <em>P</em> is encoded in the permutation
+<var>p</var> on output. The <em>j</em>-th column of the matrix <em>P</em>
+is given by the <em>k</em>-th column of the identity matrix, where
+<em>k = p_j</em> the
+<em>j</em>-th element of the permutation vector. The sign of the
+permutation is given by <var>signum</var>. It has the value <em>(-1)^n</em>,
+where <em>n</em> is the number of interchanges in the permutation.
+</p>
+<p>The algorithm used in the decomposition is Gaussian Elimination with
+partial pivoting (Golub &amp; Van Loan, <cite>Matrix Computations</cite>,
+Algorithm 3.4.1).
+</p></dd></dl>
+
+<a name="index-linear-systems_002c-solution-of"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_LU_solve</b><i> (const gsl_matrix * <var>LU</var>, const gsl_permutation * <var>p</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_complex_LU_solve</b><i> (const gsl_matrix_complex * <var>LU</var>, const gsl_permutation * <var>p</var>, const gsl_vector_complex * <var>b</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions solve the square system <em>A x = b</em> using the <em>LU</em>
+decomposition of <em>A</em> into (<var>LU</var>, <var>p</var>) given by
+<code>gsl_linalg_LU_decomp</code> or <code>gsl_linalg_complex_LU_decomp</code> as input.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_LU_svx</b><i> (const gsl_matrix * <var>LU</var>, const gsl_permutation * <var>p</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_complex_LU_svx</b><i> (const gsl_matrix_complex * <var>LU</var>, const gsl_permutation * <var>p</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions solve the square system <em>A x = b</em> in-place using the
+precomputed <em>LU</em> decomposition of <em>A</em> into (<var>LU</var>,<var>p</var>). On input
+<var>x</var> should contain the right-hand side <em>b</em>, which is replaced
+by the solution on output.
+</p></dd></dl>
+
+<a name="index-refinement-of-solutions-in-linear-systems"></a>
+<a name="index-iterative-refinement-of-solutions-in-linear-systems"></a>
+<a name="index-linear-systems_002c-refinement-of-solutions"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005frefine"></a><u>Function:</u> int <b>gsl_linalg_LU_refine</b><i> (const gsl_matrix * <var>A</var>, const gsl_matrix * <var>LU</var>, const gsl_permutation * <var>p</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>, gsl_vector * <var>residual</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005frefine"></a><u>Function:</u> int <b>gsl_linalg_complex_LU_refine</b><i> (const gsl_matrix_complex * <var>A</var>, const gsl_matrix_complex * <var>LU</var>, const gsl_permutation * <var>p</var>, const gsl_vector_complex * <var>b</var>, gsl_vector_complex * <var>x</var>, gsl_vector_complex * <var>residual</var>)</i></dt>
+<dd><p>These functions apply an iterative improvement to <var>x</var>, the solution
+of <em>A x = b</em>, from the precomputed <em>LU</em> decomposition of <em>A</em> into
+(<var>LU</var>,<var>p</var>). The initial residual <em>r = A x - b</em> is also
+computed and stored in <var>residual</var>.
+</p></dd></dl>
+
+<a name="index-inverse-of-a-matrix_002c-by-LU-decomposition"></a>
+<a name="index-matrix-inverse"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005finvert"></a><u>Function:</u> int <b>gsl_linalg_LU_invert</b><i> (const gsl_matrix * <var>LU</var>, const gsl_permutation * <var>p</var>, gsl_matrix * <var>inverse</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005finvert"></a><u>Function:</u> int <b>gsl_linalg_complex_LU_invert</b><i> (const gsl_matrix_complex * <var>LU</var>, const gsl_permutation * <var>p</var>, gsl_matrix_complex * <var>inverse</var>)</i></dt>
+<dd><p>These functions compute the inverse of a matrix <em>A</em> from its
+<em>LU</em> decomposition (<var>LU</var>,<var>p</var>), storing the result in the
+matrix <var>inverse</var>. The inverse is computed by solving the system
+<em>A x = b</em> for each column of the identity matrix.  It is preferable
+to avoid direct use of the inverse whenever possible, as the linear
+solver functions can obtain the same result more efficiently and
+reliably (consult any introductory textbook on numerical linear algebra
+for details).
+</p></dd></dl>
+
+<a name="index-determinant-of-a-matrix_002c-by-LU-decomposition"></a>
+<a name="index-matrix-determinant"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005fdet"></a><u>Function:</u> double <b>gsl_linalg_LU_det</b><i> (gsl_matrix * <var>LU</var>, int <var>signum</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005fdet"></a><u>Function:</u> gsl_complex <b>gsl_linalg_complex_LU_det</b><i> (gsl_matrix_complex * <var>LU</var>, int <var>signum</var>)</i></dt>
+<dd><p>These functions compute the determinant of a matrix <em>A</em> from its
+<em>LU</em> decomposition, <var>LU</var>. The determinant is computed as the
+product of the diagonal elements of <em>U</em> and the sign of the row
+permutation <var>signum</var>.
+</p></dd></dl>
+
+<a name="index-logarithm-of-the-determinant-of-a-matrix"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005flndet"></a><u>Function:</u> double <b>gsl_linalg_LU_lndet</b><i> (gsl_matrix * <var>LU</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005flndet"></a><u>Function:</u> double <b>gsl_linalg_complex_LU_lndet</b><i> (gsl_matrix_complex * <var>LU</var>)</i></dt>
+<dd><p>These functions compute the logarithm of the absolute value of the
+determinant of a matrix <em>A</em>, <em>\ln|\det(A)|</em>, from its <em>LU</em>
+decomposition, <var>LU</var>.  This function may be useful if the direct
+computation of the determinant would overflow or underflow.
+</p></dd></dl>
+
+<a name="index-sign-of-the-determinant-of-a-matrix"></a>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fLU_005fsgndet"></a><u>Function:</u> int <b>gsl_linalg_LU_sgndet</b><i> (gsl_matrix * <var>LU</var>, int <var>signum</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fLU_005fsgndet"></a><u>Function:</u> gsl_complex <b>gsl_linalg_complex_LU_sgndet</b><i> (gsl_matrix_complex * <var>LU</var>, int <var>signum</var>)</i></dt>
+<dd><p>These functions compute the sign or phase factor of the determinant of a
+matrix <em>A</em>, <em>\det(A)/|\det(A)|</em>, from its <em>LU</em> decomposition,
+<var>LU</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="QR-Decomposition"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#LU-Decomposition" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition-with-Column-Pivoting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition-with-Column-Pivoting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QR-Decomposition-1"></a>
+<h2 class="section">2. QR Decomposition</h2>
+<a name="index-QR-decomposition"></a>
+
+<p>A general rectangular <em>M</em>-by-<em>N</em> matrix <em>A</em> has a
+<em>QR</em> decomposition into the product of an orthogonal
+<em>M</em>-by-<em>M</em> square matrix <em>Q</em> (where <em>Q^T Q = I</em>) and
+an <em>M</em>-by-<em>N</em> right-triangular matrix <em>R</em>,
+This decomposition can be used to convert the linear system <em>A x =
+b</em> into the triangular system <em>R x = Q^T b</em>, which can be solved by
+back-substitution. Another use of the <em>QR</em> decomposition is to
+compute an orthonormal basis for a set of vectors. The first <em>N</em>
+columns of <em>Q</em> form an orthonormal basis for the range of <em>A</em>,
+<em>ran(A)</em>, when <em>A</em> has full column rank.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_QR_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau</var>)</i></dt>
+<dd><p>This function factorizes the <em>M</em>-by-<em>N</em> matrix <var>A</var> into
+the <em>QR</em> decomposition <em>A = Q R</em>.  On output the diagonal and
+upper triangular part of the input matrix contain the matrix
+<em>R</em>. The vector <var>tau</var> and the columns of the lower triangular
+part of the matrix <var>A</var> contain the Householder coefficients and
+Householder vectors which encode the orthogonal matrix <var>Q</var>.  The
+vector <var>tau</var> must be of length <em>k=\min(M,N)</em>. The matrix
+<em>Q</em> is related to these components by, <em>Q = Q_k ... Q_2 Q_1</em>
+where <em>Q_i = I - \tau_i v_i v_i^T</em> and <em>v_i</em> is the
+Householder vector <em>v_i =
+(0,...,1,A(i+1,i),A(i+2,i),...,A(m,i))</em>. This is the same storage scheme
+as used by <small>LAPACK</small>.
+</p>
+<p>The algorithm used to perform the decomposition is Householder QR (Golub
+&amp; Van Loan, <cite>Matrix Computations</cite>, Algorithm 5.2.1).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_QR_solve</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the square system <em>A x = b</em> using the <em>QR</em>
+decomposition of <em>A</em> held in (<var>QR</var>, <var>tau</var>) which must 
+have been computed previously with <code>gsl_linalg_QR_decomp</code>. 
+The least-squares solution for 
+rectangular systems can be found using <code>gsl_linalg_QR_lssolve</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_QR_svx</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the square system <em>A x = b</em> in-place using
+the <em>QR</em> decomposition of <em>A</em> held in (<var>QR</var>,<var>tau</var>)
+which must have been computed previously by
+<code>gsl_linalg_QR_decomp</code>.  On input <var>x</var> should contain the
+right-hand side <em>b</em>, which is replaced by the solution on output.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005flssolve"></a><u>Function:</u> int <b>gsl_linalg_QR_lssolve</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>, gsl_vector * <var>residual</var>)</i></dt>
+<dd><p>This function finds the least squares solution to the overdetermined
+system <em>A x = b</em> where the matrix <var>A</var> has more rows than
+columns.  The least squares solution minimizes the Euclidean norm of the
+residual, <em>||Ax - b||</em>.The routine requires as input 
+the <em>QR</em> decomposition
+of <em>A</em> into (<var>QR</var>, <var>tau</var>) given by
+<code>gsl_linalg_QR_decomp</code>.  The solution is returned in <var>x</var>.  The
+residual is computed as a by-product and stored in <var>residual</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fQTvec"></a><u>Function:</u> int <b>gsl_linalg_QR_QTvec</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function applies the matrix <em>Q^T</em> encoded in the decomposition
+(<var>QR</var>,<var>tau</var>) to the vector <var>v</var>, storing the result <em>Q^T
+v</em> in <var>v</var>.  The matrix multiplication is carried out directly using
+the encoding of the Householder vectors without needing to form the full
+matrix <em>Q^T</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fQvec"></a><u>Function:</u> int <b>gsl_linalg_QR_Qvec</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function applies the matrix <em>Q</em> encoded in the decomposition
+(<var>QR</var>,<var>tau</var>) to the vector <var>v</var>, storing the result <em>Q
+v</em> in <var>v</var>.  The matrix multiplication is carried out directly using
+the encoding of the Householder vectors without needing to form the full
+matrix <em>Q</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fQTmat"></a><u>Function:</u> int <b>gsl_linalg_QR_QTmat</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dd><p>This function applies the matrix <em>Q^T</em> encoded in the decomposition
+(<var>QR</var>,<var>tau</var>) to the matrix <var>A</var>, storing the result <em>Q^T
+A</em> in <var>A</var>.  The matrix multiplication is carried out directly using
+the encoding of the Householder vectors without needing to form the full
+matrix <em>Q^T</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fRsolve"></a><u>Function:</u> int <b>gsl_linalg_QR_Rsolve</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R x = b</em> for
+<var>x</var>. It may be useful if the product <em>b&rsquo; = Q^T b</em> has already
+been computed using <code>gsl_linalg_QR_QTvec</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fRsvx"></a><u>Function:</u> int <b>gsl_linalg_QR_Rsvx</b><i> (const gsl_matrix * <var>QR</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R x = b</em> for <var>x</var>
+in-place. On input <var>x</var> should contain the right-hand side <em>b</em>
+and is replaced by the solution on output. This function may be useful if
+the product <em>b&rsquo; = Q^T b</em> has already been computed using
+<code>gsl_linalg_QR_QTvec</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005funpack"></a><u>Function:</u> int <b>gsl_linalg_QR_unpack</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, gsl_matrix * <var>Q</var>, gsl_matrix * <var>R</var>)</i></dt>
+<dd><p>This function unpacks the encoded <em>QR</em> decomposition
+(<var>QR</var>,<var>tau</var>) into the matrices <var>Q</var> and <var>R</var>, where
+<var>Q</var> is <em>M</em>-by-<em>M</em> and <var>R</var> is <em>M</em>-by-<em>N</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fQRsolve"></a><u>Function:</u> int <b>gsl_linalg_QR_QRsolve</b><i> (gsl_matrix * <var>Q</var>, gsl_matrix * <var>R</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the system <em>R x = Q^T b</em> for <var>x</var>. It can
+be used when the <em>QR</em> decomposition of a matrix is available in
+unpacked form as (<var>Q</var>, <var>R</var>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQR_005fupdate"></a><u>Function:</u> int <b>gsl_linalg_QR_update</b><i> (gsl_matrix * <var>Q</var>, gsl_matrix * <var>R</var>, gsl_vector * <var>w</var>, const gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function performs a rank-1 update <em>w v^T</em> of the <em>QR</em>
+decomposition (<var>Q</var>, <var>R</var>). The update is given by <em>Q&rsquo;R&rsquo; = Q
+(R + w v^T)</em> where the output matrices <em>Q&rsquo;</em> and <em>R&rsquo;</em> are also
+orthogonal and right triangular. Note that <var>w</var> is destroyed by the
+update.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fR_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_R_solve</b><i> (const gsl_matrix * <var>R</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R x = b</em> for the
+<em>N</em>-by-<em>N</em> matrix <var>R</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fR_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_R_svx</b><i> (const gsl_matrix * <var>R</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R x = b</em> in-place. On
+input <var>x</var> should contain the right-hand side <em>b</em>, which is
+replaced by the solution on output.
+</p></dd></dl>
+
+<hr size="6">
+<a name="QR-Decomposition-with-Column-Pivoting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QR-Decomposition" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Singular-Value-Decomposition" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Singular-Value-Decomposition" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="QR-Decomposition-with-Column-Pivoting-1"></a>
+<h2 class="section">3. QR Decomposition with Column Pivoting</h2>
+<a name="index-QR-decomposition-with-column-pivoting"></a>
+
+<p>The <em>QR</em> decomposition can be extended to the rank deficient case
+by introducing a column permutation <em>P</em>,
+The first <em>r</em> columns of <em>Q</em> form an orthonormal basis
+for the range of <em>A</em> for a matrix with column rank <em>r</em>.  This
+decomposition can also be used to convert the linear system <em>A x =
+b</em> into the triangular system <em>R y = Q^T b, x = P y</em>, which can be
+solved by back-substitution and permutation.  We denote the <em>QR</em>
+decomposition with column pivoting by <em>QRP^T</em> since <em>A = Q R
+P^T</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_QRPT_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau</var>, gsl_permutation * <var>p</var>, int * <var>signum</var>, gsl_vector * <var>norm</var>)</i></dt>
+<dd><p>This function factorizes the <em>M</em>-by-<em>N</em> matrix <var>A</var> into
+the <em>QRP^T</em> decomposition <em>A = Q R P^T</em>.  On output the
+diagonal and upper triangular part of the input matrix contain the
+matrix <em>R</em>. The permutation matrix <em>P</em> is stored in the
+permutation <var>p</var>.  The sign of the permutation is given by
+<var>signum</var>. It has the value <em>(-1)^n</em>, where <em>n</em> is the
+number of interchanges in the permutation. The vector <var>tau</var> and the
+columns of the lower triangular part of the matrix <var>A</var> contain the
+Householder coefficients and vectors which encode the orthogonal matrix
+<var>Q</var>.  The vector <var>tau</var> must be of length <em>k=\min(M,N)</em>. The
+matrix <em>Q</em> is related to these components by, <em>Q = Q_k ... Q_2
+Q_1</em> where <em>Q_i = I - \tau_i v_i v_i^T</em> and <em>v_i</em> is the
+Householder vector <em>v_i =
+(0,...,1,A(i+1,i),A(i+2,i),...,A(m,i))</em>. This is the same storage scheme
+as used by <small>LAPACK</small>.  The vector <var>norm</var> is a workspace of length
+<var>N</var> used for column pivoting.
+</p>
+<p>The algorithm used to perform the decomposition is Householder QR with
+column pivoting (Golub &amp; Van Loan, <cite>Matrix Computations</cite>, Algorithm
+5.4.1).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fdecomp2"></a><u>Function:</u> int <b>gsl_linalg_QRPT_decomp2</b><i> (const gsl_matrix * <var>A</var>, gsl_matrix * <var>q</var>, gsl_matrix * <var>r</var>, gsl_vector * <var>tau</var>, gsl_permutation * <var>p</var>, int * <var>signum</var>, gsl_vector * <var>norm</var>)</i></dt>
+<dd><p>This function factorizes the matrix <var>A</var> into the decomposition
+<em>A = Q R P^T</em> without modifying <var>A</var> itself and storing the
+output in the separate matrices <var>q</var> and <var>r</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_QRPT_solve</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, const gsl_permutation * <var>p</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the square system <em>A x = b</em> using the <em>QRP^T</em>
+decomposition of <em>A</em> held in (<var>QR</var>, <var>tau</var>, <var>p</var>) which must 
+have been computed previously by <code>gsl_linalg_QRPT_decomp</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_QRPT_svx</b><i> (const gsl_matrix * <var>QR</var>, const gsl_vector * <var>tau</var>, const gsl_permutation * <var>p</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the square system <em>A x = b</em> in-place using the
+<em>QRP^T</em> decomposition of <em>A</em> held in
+(<var>QR</var>,<var>tau</var>,<var>p</var>). On input <var>x</var> should contain the
+right-hand side <em>b</em>, which is replaced by the solution on output.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fQRsolve"></a><u>Function:</u> int <b>gsl_linalg_QRPT_QRsolve</b><i> (const gsl_matrix * <var>Q</var>, const gsl_matrix * <var>R</var>, const gsl_permutation * <var>p</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the square system <em>R P^T x = Q^T b</em> for
+<var>x</var>. It can be used when the <em>QR</em> decomposition of a matrix is
+available in unpacked form as (<var>Q</var>, <var>R</var>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fupdate"></a><u>Function:</u> int <b>gsl_linalg_QRPT_update</b><i> (gsl_matrix * <var>Q</var>, gsl_matrix * <var>R</var>, const gsl_permutation * <var>p</var>, gsl_vector * <var>w</var>, const gsl_vector * <var>v</var>)</i></dt>
+<dd><p>This function performs a rank-1 update <em>w v^T</em> of the <em>QRP^T</em>
+decomposition (<var>Q</var>, <var>R</var>, <var>p</var>). The update is given by
+<em>Q&rsquo;R&rsquo; = Q (R + w v^T P)</em> where the output matrices <em>Q&rsquo;</em> and
+<em>R&rsquo;</em> are also orthogonal and right triangular. Note that <var>w</var> is
+destroyed by the update. The permutation <var>p</var> is not changed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fRsolve"></a><u>Function:</u> int <b>gsl_linalg_QRPT_Rsolve</b><i> (const gsl_matrix * <var>QR</var>, const gsl_permutation * <var>p</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R P^T x = b</em> for the
+<em>N</em>-by-<em>N</em> matrix <em>R</em> contained in <var>QR</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fQRPT_005fRsvx"></a><u>Function:</u> int <b>gsl_linalg_QRPT_Rsvx</b><i> (const gsl_matrix * <var>QR</var>, const gsl_permutation * <var>p</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the triangular system <em>R P^T x = b</em> in-place
+for the <em>N</em>-by-<em>N</em> matrix <em>R</em> contained in <var>QR</var>. On
+input <var>x</var> should contain the right-hand side <em>b</em>, which is
+replaced by the solution on output.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Singular-Value-Decomposition"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#QR-Decomposition-with-Column-Pivoting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Cholesky-Decomposition" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#QR-Decomposition-with-Column-Pivoting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Cholesky-Decomposition" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Singular-Value-Decomposition-1"></a>
+<h2 class="section">4. Singular Value Decomposition</h2>
+<a name="index-SVD"></a>
+<a name="index-singular-value-decomposition"></a>
+
+<p>A general rectangular <em>M</em>-by-<em>N</em> matrix <em>A</em> has a
+singular value decomposition (<small>SVD</small>) into the product of an
+<em>M</em>-by-<em>N</em> orthogonal matrix <em>U</em>, an <em>N</em>-by-<em>N</em>
+diagonal matrix of singular values <em>S</em> and the transpose of an
+<em>N</em>-by-<em>N</em> orthogonal square matrix <em>V</em>,
+The singular values
+<em>\sigma_i = S_ii</em> are all non-negative and are
+generally chosen to form a non-increasing sequence 
+<em>\sigma_1 &gt;= \sigma_2 &gt;= ... &gt;= \sigma_N &gt;= 0</em>.  
+</p>
+<p>The singular value decomposition of a matrix has many practical uses.
+The condition number of the matrix is given by the ratio of the largest
+singular value to the smallest singular value. The presence of a zero
+singular value indicates that the matrix is singular. The number of
+non-zero singular values indicates the rank of the matrix.  In practice
+singular value decomposition of a rank-deficient matrix will not produce
+exact zeroes for singular values, due to finite numerical
+precision.  Small singular values should be edited by choosing a suitable
+tolerance.
+</p>
+<p>For a rank-deficient matrix, the null space of <em>A</em> is given by
+the columns of <em>V</em> corresponding to the zero singular values.
+Similarly, the range of <em>A</em> is given by columns of <em>U</em>
+corresponding to the non-zero singular values.
+</p>
+<p>Note that the routines here compute the &ldquo;thin&rdquo; version of the SVD
+with <em>U</em> as <em>M</em>-by-<em>N</em> orthogonal matrix. This allows
+in-place computation and is the most commonly-used form in practice.
+Mathematically, the &ldquo;full&rdquo; SVD is defined with <em>U</em> as an
+<em>M</em>-by-<em>M</em> orthogonal matrix and <em>S</em> as an
+<em>M</em>-by-<em>N</em> diagonal matrix (with additional rows of zeros).
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fSV_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_SV_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_matrix * <var>V</var>, gsl_vector * <var>S</var>, gsl_vector * <var>work</var>)</i></dt>
+<dd><p>This function factorizes the <em>M</em>-by-<em>N</em> matrix <var>A</var> into
+the singular value decomposition <em>A = U S V^T</em> for <em>M &gt;= N</em>.  On output the matrix <var>A</var> is replaced by
+<em>U</em>. The diagonal elements of the singular value matrix <em>S</em>
+are stored in the vector <var>S</var>. The singular values are non-negative
+and form a non-increasing sequence from <em>S_1</em> to <em>S_N</em>. The
+matrix <var>V</var> contains the elements of <em>V</em> in untransposed
+form. To form the product <em>U S V^T</em> it is necessary to take the
+transpose of <var>V</var>.  A workspace of length <var>N</var> is required in
+<var>work</var>.
+</p>
+<p>This routine uses the Golub-Reinsch SVD algorithm.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fSV_005fdecomp_005fmod"></a><u>Function:</u> int <b>gsl_linalg_SV_decomp_mod</b><i> (gsl_matrix * <var>A</var>, gsl_matrix * <var>X</var>, gsl_matrix * <var>V</var>, gsl_vector * <var>S</var>, gsl_vector * <var>work</var>)</i></dt>
+<dd><p>This function computes the SVD using the modified Golub-Reinsch
+algorithm, which is faster for <em>M&gt;&gt;N</em>.  It requires the vector <var>work</var> of length <var>N</var> and the
+<em>N</em>-by-<em>N</em> matrix <var>X</var> as additional working space.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fSV_005fdecomp_005fjacobi"></a><u>Function:</u> int <b>gsl_linalg_SV_decomp_jacobi</b><i> (gsl_matrix * <var>A</var>, gsl_matrix * <var>V</var>, gsl_vector * <var>S</var>)</i></dt>
+<dd><a name="index-Jacobi-orthogonalization"></a>
+<p>This function computes the SVD of the <em>M</em>-by-<em>N</em> matrix <var>A</var>
+using one-sided Jacobi orthogonalization for <em>M &gt;= N</em>.  The Jacobi method can compute singular values to higher
+relative accuracy than Golub-Reinsch algorithms (see references for
+details).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fSV_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_SV_solve</b><i> (const gsl_matrix * <var>U</var>, const gsl_matrix * <var>V</var>, const gsl_vector * <var>S</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the system <em>A x = b</em> using the singular value
+decomposition (<var>U</var>, <var>S</var>, <var>V</var>) of <em>A</em> which must 
+have been computed previously with <code>gsl_linalg_SV_decomp</code>.
+</p>
+<p>Only non-zero singular values are used in computing the solution. The
+parts of the solution corresponding to singular values of zero are
+ignored.  Other singular values can be edited out by setting them to
+zero before calling this function. 
+</p>
+<p>In the over-determined case where <var>A</var> has more rows than columns the
+system is solved in the least squares sense, returning the solution
+<var>x</var> which minimizes <em>||A x - b||_2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fSV_005fleverage"></a><u>Function:</u> int <b>gsl_linalg_SV_leverage</b><i> (const gsl_matrix * <var>U</var>, gsl_vector * <var>h</var>)</i></dt>
+<dd><p>This function computes the statistical leverage values <em>h_i</em> of a matrix <em>A</em>
+using its singular value decomposition (<var>U</var>, <var>S</var>, <var>V</var>) previously computed
+with <code>gsl_linalg_SV_decomp</code>. <em>h_i</em> are the diagonal values of the matrix
+<em>A (A^T A)^-1 A^T</em> and depend only on the matrix <var>U</var> which is the input to
+this function.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Cholesky-Decomposition"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Singular-Value-Decomposition" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Real-Symmetric-Matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Singular-Value-Decomposition" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Real-Symmetric-Matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Cholesky-Decomposition-1"></a>
+<h2 class="section">5. Cholesky Decomposition</h2>
+<a name="index-Cholesky-decomposition"></a>
+<a name="index-square-root-of-a-matrix_002c-Cholesky-decomposition"></a>
+<a name="index-matrix-square-root_002c-Cholesky-decomposition"></a>
+
+<p>A symmetric, positive definite square matrix <em>A</em> has a Cholesky
+decomposition into a product of a lower triangular matrix <em>L</em> and
+its transpose <em>L^T</em>,
+This is sometimes referred to as taking the square-root of a matrix. The
+Cholesky decomposition can only be carried out when all the eigenvalues
+of the matrix are positive.  This decomposition can be used to convert
+the linear system <em>A x = b</em> into a pair of triangular systems
+(<em>L y = b</em>, <em>L^T x = y</em>), which can be solved by forward and
+back-substitution.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fcholesky_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_cholesky_decomp</b><i> (gsl_matrix * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fcholesky_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_complex_cholesky_decomp</b><i> (gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><p>These functions factorize the symmetric, positive-definite square matrix
+<var>A</var> into the Cholesky decomposition <em>A = L L^T</em> (or
+<em>A = L L^H</em>
+for the complex case). On input, the values from the diagonal and lower-triangular part of the matrix <var>A</var> are used (the upper triangular part is ignored).  On output the diagonal and lower triangular part of the input
+matrix <var>A</var> contain the matrix <em>L</em>, while the upper triangular part
+of the input matrix is overwritten with <em>L^T</em> (the diagonal terms being
+identical for both <em>L</em> and <em>L^T</em>).  If the matrix is not
+positive-definite then the decomposition will fail, returning the
+error code <code>GSL_EDOM</code>.  
+</p>
+<p>When testing whether a matrix is positive-definite, disable the error
+handler first to avoid triggering an error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fcholesky_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_cholesky_solve</b><i> (const gsl_matrix * <var>cholesky</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fcholesky_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_complex_cholesky_solve</b><i> (const gsl_matrix_complex * <var>cholesky</var>, const gsl_vector_complex * <var>b</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions solve the system <em>A x = b</em> using the Cholesky
+decomposition of <em>A</em> held in the matrix <var>cholesky</var> which must
+have been previously computed by <code>gsl_linalg_cholesky_decomp</code> or
+<code>gsl_linalg_complex_cholesky_decomp</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fcholesky_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_cholesky_svx</b><i> (const gsl_matrix * <var>cholesky</var>, gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fcholesky_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_complex_cholesky_svx</b><i> (const gsl_matrix_complex * <var>cholesky</var>, gsl_vector_complex * <var>x</var>)</i></dt>
+<dd><p>These functions solve the system <em>A x = b</em> in-place using the
+Cholesky decomposition of <em>A</em> held in the matrix <var>cholesky</var>
+which must have been previously computed by
+<code>gsl_linalg_cholesky_decomp</code> or
+<code>gsl_linalg_complex_cholesky_decomp</code>. On input <var>x</var> should
+contain the right-hand side <em>b</em>, which is replaced by the
+solution on output.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fcholesky_005finvert"></a><u>Function:</u> int <b>gsl_linalg_cholesky_invert</b><i> (gsl_matrix * <var>cholesky</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fcholesky_005finvert"></a><u>Function:</u> int <b>gsl_linalg_complex_cholesky_invert</b><i> (gsl_matrix_complex * <var>cholesky</var>)</i></dt>
+<dd><p>These functions compute the inverse of a matrix from its Cholesky
+decomposition <var>cholesky</var>, which must have been previously computed
+by <code>gsl_linalg_cholesky_decomp</code> or
+<code>gsl_linalg_complex_cholesky_decomp</code>.  On output, the inverse is
+stored in-place in <var>cholesky</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Tridiagonal-Decomposition-of-Real-Symmetric-Matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Cholesky-Decomposition" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Hermitian-Matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Cholesky-Decomposition" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Hermitian-Matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Tridiagonal-Decomposition-of-Real-Symmetric-Matrices-1"></a>
+<h2 class="section">6. Tridiagonal Decomposition of Real Symmetric Matrices</h2>
+<a name="index-tridiagonal-decomposition"></a>
+
+<p>A symmetric matrix <em>A</em> can be factorized by similarity
+transformations into the form,
+where <em>Q</em> is an orthogonal matrix and <em>T</em> is a symmetric
+tridiagonal matrix.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsymmtd_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_symmtd_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau</var>)</i></dt>
+<dd><p>This function factorizes the symmetric square matrix <var>A</var> into the
+symmetric tridiagonal decomposition <em>Q T Q^T</em>.  On output the
+diagonal and subdiagonal part of the input matrix <var>A</var> contain the
+tridiagonal matrix <em>T</em>.  The remaining lower triangular part of the
+input matrix contains the Householder vectors which, together with the
+Householder coefficients <var>tau</var>, encode the orthogonal matrix
+<em>Q</em>. This storage scheme is the same as used by <small>LAPACK</small>.  The
+upper triangular part of <var>A</var> is not referenced.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsymmtd_005funpack"></a><u>Function:</u> int <b>gsl_linalg_symmtd_unpack</b><i> (const gsl_matrix * <var>A</var>, const gsl_vector * <var>tau</var>, gsl_matrix * <var>Q</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>subdiag</var>)</i></dt>
+<dd><p>This function unpacks the encoded symmetric tridiagonal decomposition
+(<var>A</var>, <var>tau</var>) obtained from <code>gsl_linalg_symmtd_decomp</code> into
+the orthogonal matrix <var>Q</var>, the vector of diagonal elements <var>diag</var>
+and the vector of subdiagonal elements <var>subdiag</var>.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsymmtd_005funpack_005fT"></a><u>Function:</u> int <b>gsl_linalg_symmtd_unpack_T</b><i> (const gsl_matrix * <var>A</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>subdiag</var>)</i></dt>
+<dd><p>This function unpacks the diagonal and subdiagonal of the encoded
+symmetric tridiagonal decomposition (<var>A</var>, <var>tau</var>) obtained from
+<code>gsl_linalg_symmtd_decomp</code> into the vectors <var>diag</var> and <var>subdiag</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Tridiagonal-Decomposition-of-Hermitian-Matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Real-Symmetric-Matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hessenberg-Decomposition-of-Real-Matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Real-Symmetric-Matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Hessenberg-Decomposition-of-Real-Matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Tridiagonal-Decomposition-of-Hermitian-Matrices-1"></a>
+<h2 class="section">7. Tridiagonal Decomposition of Hermitian Matrices</h2>
+<a name="index-tridiagonal-decomposition-1"></a>
+
+<p>A hermitian matrix <em>A</em> can be factorized by similarity
+transformations into the form,
+where <em>U</em> is a unitary matrix and <em>T</em> is a real symmetric
+tridiagonal matrix.
+</p>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhermtd_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_hermtd_decomp</b><i> (gsl_matrix_complex * <var>A</var>, gsl_vector_complex * <var>tau</var>)</i></dt>
+<dd><p>This function factorizes the hermitian matrix <var>A</var> into the symmetric
+tridiagonal decomposition <em>U T U^T</em>.  On output the real parts of
+the diagonal and subdiagonal part of the input matrix <var>A</var> contain
+the tridiagonal matrix <em>T</em>.  The remaining lower triangular part of
+the input matrix contains the Householder vectors which, together with
+the Householder coefficients <var>tau</var>, encode the unitary matrix
+<em>U</em>. This storage scheme is the same as used by <small>LAPACK</small>.  The
+upper triangular part of <var>A</var> and imaginary parts of the diagonal are
+not referenced.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhermtd_005funpack"></a><u>Function:</u> int <b>gsl_linalg_hermtd_unpack</b><i> (const gsl_matrix_complex * <var>A</var>, const gsl_vector_complex * <var>tau</var>, gsl_matrix_complex * <var>U</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>subdiag</var>)</i></dt>
+<dd><p>This function unpacks the encoded tridiagonal decomposition (<var>A</var>,
+<var>tau</var>) obtained from <code>gsl_linalg_hermtd_decomp</code> into the
+unitary matrix <var>U</var>, the real vector of diagonal elements <var>diag</var> and
+the real vector of subdiagonal elements <var>subdiag</var>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhermtd_005funpack_005fT"></a><u>Function:</u> int <b>gsl_linalg_hermtd_unpack_T</b><i> (const gsl_matrix_complex * <var>A</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>subdiag</var>)</i></dt>
+<dd><p>This function unpacks the diagonal and subdiagonal of the encoded
+tridiagonal decomposition (<var>A</var>, <var>tau</var>) obtained from the
+<code>gsl_linalg_hermtd_decomp</code> into the real vectors
+<var>diag</var> and <var>subdiag</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Hessenberg-Decomposition-of-Real-Matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Hermitian-Matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hessenberg_002dTriangular-Decomposition-of-Real-Matrices" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Decomposition-of-Hermitian-Matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Hessenberg_002dTriangular-Decomposition-of-Real-Matrices" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Hessenberg-Decomposition-of-Real-Matrices-1"></a>
+<h2 class="section">8. Hessenberg Decomposition of Real Matrices</h2>
+<a name="index-Hessenberg-decomposition"></a>
+
+<p>A general real matrix <em>A</em> can be decomposed by orthogonal
+similarity transformations into the form
+where <em>U</em> is orthogonal and <em>H</em> is an upper Hessenberg matrix,
+meaning that it has zeros below the first subdiagonal. The
+Hessenberg reduction is the first step in the Schur decomposition
+for the nonsymmetric eigenvalue problem, but has applications in
+other areas as well.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhessenberg_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_hessenberg_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau</var>)</i></dt>
+<dd><p>This function computes the Hessenberg decomposition of the matrix
+<var>A</var> by applying the similarity transformation <em>H = U^T A U</em>.
+On output, <em>H</em> is stored in the upper portion of <var>A</var>. The
+information required to construct the matrix <em>U</em> is stored in
+the lower triangular portion of <var>A</var>. <em>U</em> is a product
+of <em>N - 2</em> Householder matrices. The Householder vectors
+are stored in the lower portion of <var>A</var> (below the subdiagonal)
+and the Householder coefficients are stored in the vector <var>tau</var>.
+<var>tau</var> must be of length <var>N</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhessenberg_005funpack"></a><u>Function:</u> int <b>gsl_linalg_hessenberg_unpack</b><i> (gsl_matrix * <var>H</var>, gsl_vector * <var>tau</var>, gsl_matrix * <var>U</var>)</i></dt>
+<dd><p>This function constructs the orthogonal matrix <em>U</em> from the
+information stored in the Hessenberg matrix <var>H</var> along with the
+vector <var>tau</var>. <var>H</var> and <var>tau</var> are outputs from
+<code>gsl_linalg_hessenberg_decomp</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhessenberg_005funpack_005faccum"></a><u>Function:</u> int <b>gsl_linalg_hessenberg_unpack_accum</b><i> (gsl_matrix * <var>H</var>, gsl_vector * <var>tau</var>, gsl_matrix * <var>V</var>)</i></dt>
+<dd><p>This function is similar to <code>gsl_linalg_hessenberg_unpack</code>, except
+it accumulates the matrix <var>U</var> into <var>V</var>, so that <em>V&rsquo; = VU</em>.
+The matrix <var>V</var> must be initialized prior to calling this function.
+Setting <var>V</var> to the identity matrix provides the same result as
+<code>gsl_linalg_hessenberg_unpack</code>. If <var>H</var> is order <var>N</var>, then
+<var>V</var> must have <var>N</var> columns but may have any number of rows.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhessenberg_005fset_005fzero"></a><u>Function:</u> int <b>gsl_linalg_hessenberg_set_zero</b><i> (gsl_matrix * <var>H</var>)</i></dt>
+<dd><p>This function sets the lower triangular portion of <var>H</var>, below
+the subdiagonal, to zero. It is useful for clearing out the
+Householder vectors after calling <code>gsl_linalg_hessenberg_decomp</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Hessenberg_002dTriangular-Decomposition-of-Real-Matrices"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hessenberg-Decomposition-of-Real-Matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Bidiagonalization" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Hessenberg-Decomposition-of-Real-Matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Bidiagonalization" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Hessenberg_002dTriangular-Decomposition-of-Real-Matrices-1"></a>
+<h2 class="section">9. Hessenberg-Triangular Decomposition of Real Matrices</h2>
+<a name="index-Hessenberg-triangular-decomposition"></a>
+
+<p>A general real matrix pair (<em>A</em>, <em>B</em>) can be decomposed by
+orthogonal similarity transformations into the form
+where <em>U</em> and <em>V</em> are orthogonal, <em>H</em> is an upper
+Hessenberg matrix, and <em>R</em> is upper triangular. The
+Hessenberg-Triangular reduction is the first step in the generalized
+Schur decomposition for the generalized eigenvalue problem.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhesstri_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_hesstri_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_matrix * <var>B</var>, gsl_matrix * <var>U</var>, gsl_matrix * <var>V</var>, gsl_vector * <var>work</var>)</i></dt>
+<dd><p>This function computes the Hessenberg-Triangular decomposition of the
+matrix pair (<var>A</var>, <var>B</var>). On output, <em>H</em> is stored in <var>A</var>,
+and <em>R</em> is stored in <var>B</var>. If <var>U</var> and <var>V</var> are provided
+(they may be null), the similarity transformations are stored in them.
+Additional workspace of length <em>N</em> is needed in <var>work</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Bidiagonalization"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hessenberg_002dTriangular-Decomposition-of-Real-Matrices" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Givens-Rotations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Hessenberg_002dTriangular-Decomposition-of-Real-Matrices" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Givens-Rotations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Bidiagonalization-1"></a>
+<h2 class="section">10. Bidiagonalization</h2>
+<a name="index-bidiagonalization-of-real-matrices"></a>
+
+<p>A general matrix <em>A</em> can be factorized by similarity
+transformations into the form,
+where <em>U</em> and <em>V</em> are orthogonal matrices and <em>B</em> is a
+<em>N</em>-by-<em>N</em> bidiagonal matrix with non-zero entries only on the
+diagonal and superdiagonal.  The size of <var>U</var> is <em>M</em>-by-<em>N</em>
+and the size of <var>V</var> is <em>N</em>-by-<em>N</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fbidiag_005fdecomp"></a><u>Function:</u> int <b>gsl_linalg_bidiag_decomp</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau_U</var>, gsl_vector * <var>tau_V</var>)</i></dt>
+<dd><p>This function factorizes the <em>M</em>-by-<em>N</em> matrix <var>A</var> into
+bidiagonal form <em>U B V^T</em>.  The diagonal and superdiagonal of the
+matrix <em>B</em> are stored in the diagonal and superdiagonal of <var>A</var>.
+The orthogonal matrices <em>U</em> and <var>V</var> are stored as compressed
+Householder vectors in the remaining elements of <var>A</var>.  The
+Householder coefficients are stored in the vectors <var>tau_U</var> and
+<var>tau_V</var>.  The length of <var>tau_U</var> must equal the number of
+elements in the diagonal of <var>A</var> and the length of <var>tau_V</var> should
+be one element shorter.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fbidiag_005funpack"></a><u>Function:</u> int <b>gsl_linalg_bidiag_unpack</b><i> (const gsl_matrix * <var>A</var>, const gsl_vector * <var>tau_U</var>, gsl_matrix * <var>U</var>, const gsl_vector * <var>tau_V</var>, gsl_matrix * <var>V</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>superdiag</var>)</i></dt>
+<dd><p>This function unpacks the bidiagonal decomposition of <var>A</var> produced by
+<code>gsl_linalg_bidiag_decomp</code>, (<var>A</var>, <var>tau_U</var>, <var>tau_V</var>)
+into the separate orthogonal matrices <var>U</var>, <var>V</var> and the diagonal
+vector <var>diag</var> and superdiagonal <var>superdiag</var>.  Note that <var>U</var>
+is stored as a compact <em>M</em>-by-<em>N</em> orthogonal matrix satisfying
+<em>U^T U = I</em> for efficiency.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fbidiag_005funpack2"></a><u>Function:</u> int <b>gsl_linalg_bidiag_unpack2</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>tau_U</var>, gsl_vector * <var>tau_V</var>, gsl_matrix * <var>V</var>)</i></dt>
+<dd><p>This function unpacks the bidiagonal decomposition of <var>A</var> produced by
+<code>gsl_linalg_bidiag_decomp</code>, (<var>A</var>, <var>tau_U</var>, <var>tau_V</var>)
+into the separate orthogonal matrices <var>U</var>, <var>V</var> and the diagonal
+vector <var>diag</var> and superdiagonal <var>superdiag</var>.  The matrix <var>U</var>
+is stored in-place in <var>A</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fbidiag_005funpack_005fB"></a><u>Function:</u> int <b>gsl_linalg_bidiag_unpack_B</b><i> (const gsl_matrix * <var>A</var>, gsl_vector * <var>diag</var>, gsl_vector * <var>superdiag</var>)</i></dt>
+<dd><p>This function unpacks the diagonal and superdiagonal of the bidiagonal
+decomposition of <var>A</var> from <code>gsl_linalg_bidiag_decomp</code>, into
+the diagonal vector <var>diag</var> and superdiagonal vector <var>superdiag</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Givens-Rotations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Bidiagonalization" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Householder-Transformations" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Bidiagonalization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Householder-Transformations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Givens-Rotations-1"></a>
+<h2 class="section">11. Givens Rotations</h2>
+<a name="index-Givens-rotation"></a>
+
+<p>A Givens rotation is a rotation in the plane acting on two elements
+of a given vector. It can be represented in matrix form as
+where the <em>\cos\theta</em> and <em>\sin\theta</em> appear at
+the intersection of the <em>i</em>th and <em>j</em>th rows and columns.
+When acting on a vector <em>x</em>, <em>G(i,j,\theta) x</em> performs
+a rotation of the <em>(i,j)</em> elements of <em>x</em>. Givens
+rotations are typically used to introduce zeros in
+vectors, such as during the QR decomposition of a matrix. In this
+case, it is typically desired to find <em>c</em> and <em>s</em> such that
+with <em>r = \sqrta^2 + b^2</em>.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fgivens"></a><u>Function:</u> void <b>gsl_linalg_givens</b><i> (const double <var>a</var>, const double <var>b</var>, double * <var>c</var>, double * <var>s</var>)</i></dt>
+<dd><p>This function computes <em>c = \cos\theta</em> and <em>s = \sin\theta</em>
+so that the Givens matrix <em>G(\theta)</em> acting on the
+vector <em>(a,b)</em> produces <em>(r, 0)</em>, with <em>r = \sqrta^2 + b^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fgivens_005fgv"></a><u>Function:</u> void <b>gsl_linalg_givens_gv</b><i> (gsl_vector * <var>v</var>, const size_t <var>i</var>, const size_t <var>j</var>, const double <var>c</var>, const double <var>s</var>)</i></dt>
+<dd><p>This function applies the Givens rotation defined by
+<em>c = \cos\theta</em> and <em>s = \sin\theta</em> to the <var>i</var>
+and <var>j</var> elements of <var>v</var>. On output,
+<em>(v(i),v(j)) \leftarrow G(\theta) (v(i),v(j))</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Householder-Transformations"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Givens-Rotations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Householder-solver-for-linear-systems" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Givens-Rotations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Householder-solver-for-linear-systems" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Householder-Transformations-1"></a>
+<h2 class="section">12. Householder Transformations</h2>
+<a name="index-Householder-matrix"></a>
+<a name="index-Householder-transformation"></a>
+<a name="index-transformation_002c-Householder"></a>
+
+<p>A Householder transformation is a rank-1 modification of the identity
+matrix which can be used to zero out selected elements of a vector.  A
+Householder matrix <em>P</em> takes the form,
+where <em>v</em> is a vector (called the <em>Householder vector</em>) and
+<em>\tau = 2/(v^T v)</em>. The functions described in this section use the
+rank-1 structure of the Householder matrix to create and apply
+Householder transformations efficiently.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhouseholder_005ftransform"></a><u>Function:</u> double <b>gsl_linalg_householder_transform</b><i> (gsl_vector * <var>w</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fhouseholder_005ftransform"></a><u>Function:</u> gsl_complex <b>gsl_linalg_complex_householder_transform</b><i> (gsl_vector_complex * <var>w</var>)</i></dt>
+<dd><p>This function prepares a Householder transformation <em>P = I - \tau v
+v^T</em> which can be used to zero all the elements of the input vector <var>w</var>
+except the first. On output the Householder vector <var>v</var> is stored in
+<var>w</var> and the scalar <em>\tau</em> is returned. The householder vector
+<var>v</var> is normalized so that <var>v</var>[0] = 1, however this 1 is not
+stored in the output vector. Instead, <var>w</var>[0] is set to
+the first element of the transformed vector, so that if
+<em>u = P w</em>, <var>w</var>[0] = <em>u</em>[0] on output and the remainder
+of <em>u</em> is zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhouseholder_005fhm"></a><u>Function:</u> int <b>gsl_linalg_householder_hm</b><i> (double <var>tau</var>, const gsl_vector * <var>v</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fhouseholder_005fhm"></a><u>Function:</u> int <b>gsl_linalg_complex_householder_hm</b><i> (gsl_complex <var>tau</var>, const gsl_vector_complex * <var>v</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><p>This function applies the Householder matrix <em>P</em> defined by the
+scalar <var>tau</var> and the vector <var>v</var> to the left-hand side of the
+matrix <var>A</var>. On output the result <em>P A</em> is stored in <var>A</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhouseholder_005fmh"></a><u>Function:</u> int <b>gsl_linalg_householder_mh</b><i> (double <var>tau</var>, const gsl_vector * <var>v</var>, gsl_matrix * <var>A</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fhouseholder_005fmh"></a><u>Function:</u> int <b>gsl_linalg_complex_householder_mh</b><i> (gsl_complex <var>tau</var>, const gsl_vector_complex * <var>v</var>, gsl_matrix_complex * <var>A</var>)</i></dt>
+<dd><p>This function applies the Householder matrix <em>P</em> defined by the
+scalar <var>tau</var> and the vector <var>v</var> to the right-hand side of the
+matrix <var>A</var>. On output the result <em>A P</em> is stored in <var>A</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fhouseholder_005fhv"></a><u>Function:</u> int <b>gsl_linalg_householder_hv</b><i> (double <var>tau</var>, const gsl_vector * <var>v</var>, gsl_vector * <var>w</var>)</i></dt>
+<dt><a name="index-gsl_005flinalg_005fcomplex_005fhouseholder_005fhv"></a><u>Function:</u> int <b>gsl_linalg_complex_householder_hv</b><i> (gsl_complex <var>tau</var>, const gsl_vector_complex * <var>v</var>, gsl_vector_complex * <var>w</var>)</i></dt>
+<dd><p>This function applies the Householder transformation <em>P</em> defined by
+the scalar <var>tau</var> and the vector <var>v</var> to the vector <var>w</var>.  On
+output the result <em>P w</em> is stored in <var>w</var>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Householder-solver-for-linear-systems"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Householder-Transformations" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Systems" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Householder-Transformations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Systems" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Householder-solver-for-linear-systems-1"></a>
+<h2 class="section">13. Householder solver for linear systems</h2>
+<a name="index-solution-of-linear-system-by-Householder-transformations"></a>
+<a name="index-Householder-linear-solver"></a>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fHH_005fsolve"></a><u>Function:</u> int <b>gsl_linalg_HH_solve</b><i> (gsl_matrix * <var>A</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the system <em>A x = b</em> directly using
+Householder transformations. On output the solution is stored in <var>x</var>
+and <var>b</var> is not modified. The matrix <var>A</var> is destroyed by the
+Householder transformations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fHH_005fsvx"></a><u>Function:</u> int <b>gsl_linalg_HH_svx</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the system <em>A x = b</em> in-place using
+Householder transformations.  On input <var>x</var> should contain the
+right-hand side <em>b</em>, which is replaced by the solution on output.  The
+matrix <var>A</var> is destroyed by the Householder transformations.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Tridiagonal-Systems"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Householder-solver-for-linear-systems" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Balancing" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Householder-solver-for-linear-systems" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Balancing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Tridiagonal-Systems-1"></a>
+<h2 class="section">14. Tridiagonal Systems</h2>
+<a name="index-tridiagonal-systems"></a>
+
+<p>The functions described in this section efficiently solve symmetric,
+non-symmetric and cyclic tridiagonal systems with minimal storage.
+Note that the current implementations of these functions use a variant
+of Cholesky decomposition, so the tridiagonal matrix must be positive
+definite.  For non-positive definite matrices, the functions return
+the error code <code>GSL_ESING</code>.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsolve_005ftridiag"></a><u>Function:</u> int <b>gsl_linalg_solve_tridiag</b><i> (const gsl_vector * <var>diag</var>, const gsl_vector * <var>e</var>, const gsl_vector * <var>f</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the general <em>N</em>-by-<em>N</em> system <em>A x =
+b</em> where <var>A</var> is tridiagonal (<em>N &gt;= 2</em>). The super-diagonal and
+sub-diagonal vectors <var>e</var> and <var>f</var> must be one element shorter
+than the diagonal vector <var>diag</var>.  The form of <var>A</var> for the 4-by-4
+case is shown below,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsolve_005fsymm_005ftridiag"></a><u>Function:</u> int <b>gsl_linalg_solve_symm_tridiag</b><i> (const gsl_vector * <var>diag</var>, const gsl_vector * <var>e</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the general <em>N</em>-by-<em>N</em> system <em>A x =
+b</em> where <var>A</var> is symmetric tridiagonal (<em>N &gt;= 2</em>).  The off-diagonal vector
+<var>e</var> must be one element shorter than the diagonal vector <var>diag</var>.
+The form of <var>A</var> for the 4-by-4 case is shown below,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsolve_005fcyc_005ftridiag"></a><u>Function:</u> int <b>gsl_linalg_solve_cyc_tridiag</b><i> (const gsl_vector * <var>diag</var>, const gsl_vector * <var>e</var>, const gsl_vector * <var>f</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the general <em>N</em>-by-<em>N</em> system <em>A x =
+b</em> where <var>A</var> is cyclic tridiagonal (<em>N &gt;= 3</em>).  The cyclic super-diagonal and
+sub-diagonal vectors <var>e</var> and <var>f</var> must have the same number of
+elements as the diagonal vector <var>diag</var>.  The form of <var>A</var> for the
+4-by-4 case is shown below,
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005flinalg_005fsolve_005fsymm_005fcyc_005ftridiag"></a><u>Function:</u> int <b>gsl_linalg_solve_symm_cyc_tridiag</b><i> (const gsl_vector * <var>diag</var>, const gsl_vector * <var>e</var>, const gsl_vector * <var>b</var>, gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function solves the general <em>N</em>-by-<em>N</em> system <em>A x =
+b</em> where <var>A</var> is symmetric cyclic tridiagonal (<em>N &gt;= 3</em>).  The cyclic
+off-diagonal vector <var>e</var> must have the same number of elements as the
+diagonal vector <var>diag</var>.  The form of <var>A</var> for the 4-by-4 case is
+shown below,
+</p></dd></dl>
+
+<hr size="6">
+<a name="Balancing"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Tridiagonal-Systems" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-Algebra-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Tridiagonal-Systems" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-Algebra-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Balancing-1"></a>
+<h2 class="section">15. Balancing</h2>
+<a name="index-balancing-matrices"></a>
+
+<p>The process of balancing a matrix applies similarity transformations
+to make the rows and columns have comparable norms. This is
+useful, for example, to reduce roundoff errors in the solution
+of eigenvalue problems. Balancing a matrix <em>A</em> consists
+of replacing <em>A</em> with a similar matrix
+where <em>D</em> is a diagonal matrix whose entries are powers
+of the floating point radix.
+</p>
+<dl>
+<dt><a name="index-gsl_005flinalg_005fbalance_005fmatrix"></a><u>Function:</u> int <b>gsl_linalg_balance_matrix</b><i> (gsl_matrix * <var>A</var>, gsl_vector * <var>D</var>)</i></dt>
+<dd><p>This function replaces the matrix <var>A</var> with its balanced counterpart
+and stores the diagonal elements of the similarity transformation
+into the vector <var>D</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Linear-Algebra-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Balancing" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-Algebra-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Balancing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Linear-Algebra-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">16. Examples</h2>
+
+<p>The following program solves the linear system <em>A x = b</em>. The
+system to be solved is,
+and the solution is found using LU decomposition of the matrix <em>A</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_linalg.h&gt;
+
+int
+main (void)
+{
+  double a_data[] = { 0.18, 0.60, 0.57, 0.96,
+                      0.41, 0.24, 0.99, 0.58,
+                      0.14, 0.30, 0.97, 0.66,
+                      0.51, 0.13, 0.19, 0.85 };
+
+  double b_data[] = { 1.0, 2.0, 3.0, 4.0 };
+
+  gsl_matrix_view m 
+    = gsl_matrix_view_array (a_data, 4, 4);
+
+  gsl_vector_view b
+    = gsl_vector_view_array (b_data, 4);
+
+  gsl_vector *x = gsl_vector_alloc (4);
+  
+  int s;
+
+  gsl_permutation * p = gsl_permutation_alloc (4);
+
+  gsl_linalg_LU_decomp (&amp;m.matrix, p, &amp;s);
+
+  gsl_linalg_LU_solve (&amp;m.matrix, p, &amp;b.vector, x);
+
+  printf (&quot;x = \n&quot;);
+  gsl_vector_fprintf (stdout, x, &quot;%g&quot;);
+
+  gsl_permutation_free (p);
+  gsl_vector_free (x);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here is the output from the program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">x = -4.05205
+-12.6056
+1.66091
+8.69377
+</pre></pre></td></tr></table>
+
+<p>This can be verified by multiplying the solution <em>x</em> by the
+original matrix <em>A</em> using <small>GNU OCTAVE</small>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">octave&gt; A = [ 0.18, 0.60, 0.57, 0.96;
+              0.41, 0.24, 0.99, 0.58; 
+              0.14, 0.30, 0.97, 0.66; 
+              0.51, 0.13, 0.19, 0.85 ];
+
+octave&gt; x = [ -4.05205; -12.6056; 1.66091; 8.69377];
+
+octave&gt; A * x
+ans =
+  1.0000
+  2.0000
+  3.0000
+  4.0000
+</pre></td></tr></table>
+
+<p>This reproduces the original right-hand side vector, <em>b</em>, in
+accordance with the equation <em>A x = b</em>.
+</p>
+<hr size="6">
+<a name="Linear-Algebra-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Linear-Algebra-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Linear-Algebra-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">17. References and Further Reading</h2>
+
+<p>Further information on the algorithms described in this section can be
+found in the following book,
+</p>
+<ul class="toc">
+<li>
+G. H. Golub, C. F. Van Loan, <cite>Matrix Computations</cite> (3rd Ed, 1996),
+Johns Hopkins University Press, ISBN 0-8018-5414-8.
+</li></ul>
+
+<p>The <small>LAPACK</small> library is described in the following manual,
+</p>
+<ul class="toc">
+<li>
+<cite>LAPACK Users&rsquo; Guide</cite> (Third Edition, 1999), Published by SIAM,
+ISBN 0-89871-447-8.
+
+<p><a href="http://www.netlib.org/lapack">http://www.netlib.org/lapack</a> 
+</p></li></ul>
+
+<p>The <small>LAPACK</small> source code can be found at the website above, along
+with an online copy of the users guide.
+</p>
+<p>The Modified Golub-Reinsch algorithm is described in the following paper,
+</p>
+<ul class="toc">
+<li>
+T.F. Chan, &ldquo;An Improved Algorithm for Computing the Singular Value
+Decomposition&rdquo;, <cite>ACM Transactions on Mathematical Software</cite>, 8
+(1982), pp 72&ndash;83.
+</li></ul>
+
+<p>The Jacobi algorithm for singular value decomposition is described in
+the following papers,
+</p>
+<ul class="toc">
+<li>
+J.C. Nash, &ldquo;A one-sided transformation method for the singular value
+decomposition and algebraic eigenproblem&rdquo;, <cite>Computer Journal</cite>,
+Volume 18, Number 1 (1975), p 74&ndash;76
+
+</li><li>
+J.C. Nash and S. Shlien &ldquo;Simple algorithms for the partial singular
+value decomposition&rdquo;, <cite>Computer Journal</cite>, Volume 30 (1987), p
+268&ndash;275.
+
+</li><li>
+James Demmel, Kres&lt;imir Veseli&#263;, &ldquo;Jacobi&rsquo;s Method is more accurate than
+QR&rdquo;, <cite>Lapack Working Note 15</cite> (LAWN-15), October 1989. Available
+from netlib, <a href="http://www.netlib.org/lapack/">http://www.netlib.org/lapack/</a> in the <code>lawns</code> or
+<code>lawnspdf</code> directories.
+</li></ul>
+
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#LU-Decomposition" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

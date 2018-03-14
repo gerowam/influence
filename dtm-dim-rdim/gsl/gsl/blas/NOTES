@@ -1,0 +1,35 @@
+This directory defines a GSL interface to BLAS functionality. GSL
+exports an interface with functions of the form gsl_blas_sdsdot(...),
+etc, defined in gsl_blas.h.  This act as a wrapper around a BLAS
+library conforming to the C-language BLAS interface standard, "CBLAS".
+
+Because some users will have a third party implementation of CBLAS and
+some will not GSL provides a CBLAS library.
+
+Users wanting to use the GSL CBLAS implementation will link as
+  ld ... -lgsl -lgslcblas
+
+Users wanting to use another conformant CBLAS implementation,
+libcblasfoo, will link as
+
+  ld ... -lgsl -lcblasfoo
+
+This allows the choice of blas implementation to be deferred to
+link time and obviously implies that no source code changes need
+be made.
+
+The gsl_blas interface is implemented in terms of the cblas_ interface
+of the CBLAS standard.  Users who need access to BLAS functionality
+but do not want to use higher-level GSL data types can write to the
+cblas_ interface and still retain the ability to swap BLAS
+implmentations at link time.
+
+---
+
+BLAS References
+
+BLAS, ACM TOMS Vol 24, No 3
+
+GEMM Based Level 3 BLAS, Kagstrom, Ling, Van Loan, p 268-302,
+Algorithm 784 p 303-316
+

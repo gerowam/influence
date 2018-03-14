@@ -1,0 +1,1293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-interpolation"></a>
+<a name="index-spline"></a>
+
+<p>This chapter describes functions for performing interpolation.  The
+library provides a variety of interpolation methods, including Cubic,
+Akima, and Steffen splines.  The interpolation types are interchangeable,
+allowing different methods to be used without recompiling.
+Interpolations can be defined for both normal and periodic boundary
+conditions.  Additional functions are available for computing
+derivatives and integrals of interpolating functions. Routines
+are provided for interpolating both one and two dimensional datasets.
+</p>
+<p>These interpolation methods produce curves that pass through each
+datapoint.  To interpolate noisy data with a smoothing curve see
+@ref{Basis Splines}.
+</p>
+<p>The functions described in this section are declared in the header files
+&lsquo;<tt>gsl_interp.h</tt>&rsquo; and &lsquo;<tt>gsl_spline.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#g_t1D-Introduction-to-Interpolation">1. Introduction to 1D Interpolation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Interpolation-Functions">2. 1D Interpolation Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Interpolation-Types">3. 1D Interpolation Types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Index-Look_002dup-and-Acceleration">4. 1D Index Look-up and Acceleration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Evaluation-of-Interpolating-Functions">5. 1D Evaluation of Interpolating Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Higher_002dlevel-Interface">6. 1D Higher-level Interface</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Interpolation-Example-programs">7. Examples of 1D Interpolation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t1D-Interpolation-References-and-Further-Reading">8. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Introduction-to-Interpolation">9. Introduction to 2D Interpolation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Interpolation-Functions">10. 2D Interpolation Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Interpolation-Grids">11. 2D Interpolation Grids</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Interpolation-Types">12. 2D Interpolation Types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Evaluation-of-Interpolating-Functions">13. 2D Evaluation of Interpolating Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Higher_002dlevel-Interface">14. 2D Higher-level Interface</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#g_t2D-Interpolation-Example-programs">15. 2D Interpolation Example programs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="g_t1D-Introduction-to-Interpolation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Introduction-to-1D-Interpolation"></a>
+<h2 class="section">1. Introduction to 1D Interpolation</h2>
+
+<p>Given a set of data points <em>(x_1, y_1) \dots (x_n, y_n)</em> the
+routines described in this section compute a continuous interpolating
+function <em>y(x)</em> such that <em>y(x_i) = y_i</em>.  The interpolation
+is piecewise smooth, and its behavior at the end-points is determined by
+the type of interpolation used.
+</p>
+<hr size="6">
+<a name="g_t1D-Interpolation-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Types" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t1D-Interpolation-Functions-1"></a>
+<h2 class="section">2. 1D Interpolation Functions</h2>
+
+<p>The interpolation function for a given dataset is stored in a
+<code>gsl_interp</code> object.  These are created by the following functions.
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp_005falloc"></a><u>Function:</u> gsl_interp * <b>gsl_interp_alloc</b><i> (const gsl_interp_type * <var>T</var>, size_t <var>size</var>)</i></dt>
+<dd><a name="index-gsl_005finterp"></a>
+<p>This function returns a pointer to a newly allocated interpolation
+object of type <var>T</var> for <var>size</var> data-points.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005finit"></a><u>Function:</u> int <b>gsl_interp_init</b><i> (gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], size_t <var>size</var>)</i></dt>
+<dd><p>This function initializes the interpolation object <var>interp</var> for the
+data (<var>xa</var>,<var>ya</var>) where <var>xa</var> and <var>ya</var> are arrays of size
+<var>size</var>.  The interpolation object (<code>gsl_interp</code>) does not save
+the data arrays <var>xa</var> and <var>ya</var> and only stores the static state
+computed from the data.  The <var>xa</var> data array is always assumed to be
+strictly ordered, with increasing <em>x</em> values; 
+the behavior for other arrangements is not defined.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005ffree"></a><u>Function:</u> void <b>gsl_interp_free</b><i> (gsl_interp * <var>interp</var>)</i></dt>
+<dd><p>This function frees the interpolation object <var>interp</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t1D-Interpolation-Types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Index-Look_002dup-and-Acceleration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Index-Look_002dup-and-Acceleration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t1D-Interpolation-Types-1"></a>
+<h2 class="section">3. 1D Interpolation Types</h2>
+<a name="index-gsl_005finterp_005ftype"></a>
+<p>The interpolation library provides the following interpolation types:
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp_005flinear"></a><u>Interpolation Type:</u> <b>gsl_interp_linear</b></dt>
+<dd><a name="index-linear-interpolation"></a>
+<p>Linear interpolation.  This interpolation method does not require any
+additional memory.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fpolynomial"></a><u>Interpolation Type:</u> <b>gsl_interp_polynomial</b></dt>
+<dd><a name="index-polynomial-interpolation"></a>
+<p>Polynomial interpolation.  This method should only be used for
+interpolating small numbers of points because polynomial interpolation
+introduces large oscillations, even for well-behaved datasets.  The
+number of terms in the interpolating polynomial is equal to the number
+of points.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fcspline"></a><u>Interpolation Type:</u> <b>gsl_interp_cspline</b></dt>
+<dd><a name="index-cubic-splines"></a>
+<p>Cubic spline with natural boundary conditions.  The resulting curve is
+piecewise cubic on each interval, with matching first and second
+derivatives at the supplied data-points.  The second derivative is
+chosen to be zero at the first point and last point.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fcspline_005fperiodic"></a><u>Interpolation Type:</u> <b>gsl_interp_cspline_periodic</b></dt>
+<dd><p>Cubic spline with periodic boundary conditions.  The resulting curve
+is piecewise cubic on each interval, with matching first and second
+derivatives at the supplied data-points.  The derivatives at the first
+and last points are also matched.  Note that the last point in the
+data must have the same y-value as the first point, otherwise the
+resulting periodic interpolation will have a discontinuity at the
+boundary.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fakima"></a><u>Interpolation Type:</u> <b>gsl_interp_akima</b></dt>
+<dd><a name="index-Akima-splines"></a>
+<p>Non-rounded Akima spline with natural boundary conditions.  This method
+uses the non-rounded corner algorithm of Wodicka.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fakima_005fperiodic"></a><u>Interpolation Type:</u> <b>gsl_interp_akima_periodic</b></dt>
+<dd><p>Non-rounded Akima spline with periodic boundary conditions.  This method
+uses the non-rounded corner algorithm of Wodicka.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fsteffen"></a><u>Interpolation Type:</u> <b>gsl_interp_steffen</b></dt>
+<dd><p>Steffen&rsquo;s method guarantees the monotonicity of the interpolating function
+between the given data points. Therefore, minima and maxima can only occur
+exactly at the data points, and there can never be spurious oscillations
+between data points. The interpolated function is piecewise cubic
+in each interval. The resulting curve and its first derivative
+are guaranteed to be continuous, but the second derivative may be
+discontinuous.
+</p></dd></dl>
+
+<p>The following related functions are available:
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp_005fname"></a><u>Function:</u> const char * <b>gsl_interp_name</b><i> (const gsl_interp * <var>interp</var>)</i></dt>
+<dd><p>This function returns the name of the interpolation type used by <var>interp</var>.
+For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;interp uses '%s' interpolation.\n&quot;, 
+        gsl_interp_name (interp));
+</pre></td></tr></table>
+
+<p>would print something like,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">interp uses 'cspline' interpolation.
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_interp_min_size</b><i> (const gsl_interp * <var>interp</var>)</i></dt>
+<dt><a name="index-gsl_005finterp_005ftype_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_interp_type_min_size</b><i> (const gsl_interp_type * <var>T</var>)</i></dt>
+<dd><p>These functions return the minimum number of points required by the
+interpolation object <var>interp</var> or interpolation type <var>T</var>.  For
+example, Akima spline interpolation requires a minimum of 5 points.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="g_t1D-Index-Look_002dup-and-Acceleration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Evaluation-of-Interpolating-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Types" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Evaluation-of-Interpolating-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t1D-Index-Look_002dup-and-Acceleration-1"></a>
+<h2 class="section">4. 1D Index Look-up and Acceleration</h2>
+
+<p>The state of searches can be stored in a <code>gsl_interp_accel</code> object,
+which is a kind of iterator for interpolation lookups.  It caches the
+previous value of an index lookup.  When the subsequent interpolation
+point falls in the same interval its index value can be returned
+immediately.
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp_005fbsearch"></a><u>Function:</u> size_t <b>gsl_interp_bsearch</b><i> (const double <var>x_array</var>[], double <var>x</var>, size_t <var>index_lo</var>, size_t <var>index_hi</var>)</i></dt>
+<dd><p>This function returns the index <em>i</em> of the array <var>x_array</var> such
+that <code>x_array[i] &lt;= x &lt; x_array[i+1]</code>.  The index is searched for
+in the range [<var>index_lo</var>,<var>index_hi</var>].  @inlinefn{}
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005faccel_005falloc"></a><u>Function:</u> gsl_interp_accel * <b>gsl_interp_accel_alloc</b><i> (void)</i></dt>
+<dd><a name="index-gsl_005finterp_005faccel"></a>
+<p>This function returns a pointer to an accelerator object, which is a
+kind of iterator for interpolation lookups.  It tracks the state of
+lookups, thus allowing for application of various acceleration
+strategies.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005faccel_005ffind"></a><u>Function:</u> size_t <b>gsl_interp_accel_find</b><i> (gsl_interp_accel * <var>a</var>, const double <var>x_array</var>[], size_t <var>size</var>, double <var>x</var>)</i></dt>
+<dd><p>This function performs a lookup action on the data array <var>x_array</var>
+of size <var>size</var>, using the given accelerator <var>a</var>.  This is how
+lookups are performed during evaluation of an interpolation.  The
+function returns an index <em>i</em> such that <code>x_array[i] &lt;= x &lt;
+x_array[i+1]</code>.  @inlinefn{}
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005faccel_005freset"></a><u>Function:</u> int <b>gsl_interp_accel_reset</b><i> (gsl_interp_accel * <var>acc</var>);</i></dt>
+<dd><p>This function reinitializes the accelerator object <var>acc</var>.  It
+should be used when the cached information is no longer
+applicable&mdash;for example, when switching to a new dataset.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005faccel_005ffree"></a><u>Function:</u> void <b>gsl_interp_accel_free</b><i> (gsl_interp_accel* <var>acc</var>)</i></dt>
+<dd><p>This function frees the accelerator object <var>acc</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t1D-Evaluation-of-Interpolating-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Index-Look_002dup-and-Acceleration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Higher_002dlevel-Interface" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Index-Look_002dup-and-Acceleration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Higher_002dlevel-Interface" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t1D-Evaluation-of-Interpolating-Functions-1"></a>
+<h2 class="section">5. 1D Evaluation of Interpolating Functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005feval"></a><u>Function:</u> double <b>gsl_interp_eval</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp_005feval_005fe"></a><u>Function:</u> int <b>gsl_interp_eval_e</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>y</var>)</i></dt>
+<dd><p>These functions return the interpolated value of <var>y</var> for a given
+point <var>x</var>, using the interpolation object <var>interp</var>, data
+arrays <var>xa</var> and <var>ya</var> and the accelerator <var>acc</var>.  When
+<var>x</var> is outside the range of <var>xa</var>, the error code
+<code>GSL_EDOM</code> is returned with a value of <code>GSL_NAN</code> for
+<var>y</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005feval_005fderiv"></a><u>Function:</u> double <b>gsl_interp_eval_deriv</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp_005feval_005fderiv_005fe"></a><u>Function:</u> int <b>gsl_interp_eval_deriv_e</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the derivative <var>d</var> of an interpolated
+function for a given point <var>x</var>, using the interpolation object
+<var>interp</var>, data arrays <var>xa</var> and <var>ya</var> and the accelerator
+<var>acc</var>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005feval_005fderiv2"></a><u>Function:</u> double <b>gsl_interp_eval_deriv2</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp_005feval_005fderiv2_005fe"></a><u>Function:</u> int <b>gsl_interp_eval_deriv2_e</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>d2</var>)</i></dt>
+<dd><p>These functions return the second derivative <var>d2</var> of an interpolated
+function for a given point <var>x</var>, using the interpolation object
+<var>interp</var>, data arrays <var>xa</var> and <var>ya</var> and the accelerator
+<var>acc</var>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp_005feval_005finteg"></a><u>Function:</u> double <b>gsl_interp_eval_integ</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>a</var>, double <var>b</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp_005feval_005finteg_005fe"></a><u>Function:</u> int <b>gsl_interp_eval_integ_e</b><i> (const gsl_interp * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], double <var>a</var>, double <var>b</var>, gsl_interp_accel * <var>acc</var>, double * <var>result</var>)</i></dt>
+<dd><p>These functions return the numerical integral <var>result</var> of an
+interpolated function over the range [<var>a</var>, <var>b</var>], using the
+interpolation object <var>interp</var>, data arrays <var>xa</var> and <var>ya</var> and
+the accelerator <var>acc</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t1D-Higher_002dlevel-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Evaluation-of-Interpolating-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Example-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Evaluation-of-Interpolating-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Example-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t1D-Higher_002dlevel-Interface-1"></a>
+<h2 class="section">6. 1D Higher-level Interface</h2>
+
+<p>The functions described in the previous sections required the user to
+supply pointers to the <em>x</em> and <em>y</em> arrays on each call.  The
+following functions are equivalent to the corresponding
+<code>gsl_interp</code> functions but maintain a copy of this data in the
+<code>gsl_spline</code> object.  This removes the need to pass both <var>xa</var>
+and <var>ya</var> as arguments on each evaluation. These functions are
+defined in the header file &lsquo;<tt>gsl_spline.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspline_005falloc"></a><u>Function:</u> gsl_spline * <b>gsl_spline_alloc</b><i> (const gsl_interp_type * <var>T</var>, size_t <var>size</var>)</i></dt>
+<dd><a name="index-gsl_005fspline"></a>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005finit"></a><u>Function:</u> int <b>gsl_spline_init</b><i> (gsl_spline * <var>spline</var>, const double <var>xa</var>[], const double <var>ya</var>[], size_t <var>size</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005ffree"></a><u>Function:</u> void <b>gsl_spline_free</b><i> (gsl_spline * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005fname"></a><u>Function:</u> const char * <b>gsl_spline_name</b><i> (const gsl_spline * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_spline_min_size</b><i> (const gsl_spline * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005feval"></a><u>Function:</u> double <b>gsl_spline_eval</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline_005feval_005fe"></a><u>Function:</u> int <b>gsl_spline_eval_e</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>y</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005feval_005fderiv"></a><u>Function:</u> double <b>gsl_spline_eval_deriv</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline_005feval_005fderiv_005fe"></a><u>Function:</u> int <b>gsl_spline_eval_deriv_e</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005feval_005fderiv2"></a><u>Function:</u> double <b>gsl_spline_eval_deriv2</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline_005feval_005fderiv2_005fe"></a><u>Function:</u> int <b>gsl_spline_eval_deriv2_e</b><i> (const gsl_spline * <var>spline</var>, double <var>x</var>, gsl_interp_accel * <var>acc</var>, double * <var>d2</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline_005feval_005finteg"></a><u>Function:</u> double <b>gsl_spline_eval_integ</b><i> (const gsl_spline * <var>spline</var>, double <var>a</var>, double <var>b</var>, gsl_interp_accel * <var>acc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline_005feval_005finteg_005fe"></a><u>Function:</u> int <b>gsl_spline_eval_integ_e</b><i> (const gsl_spline * <var>spline</var>, double <var>a</var>, double <var>b</var>, gsl_interp_accel * <var>acc</var>, double * <var>result</var>)</i></dt>
+</dl>
+
+<hr size="6">
+<a name="g_t1D-Interpolation-Example-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Higher_002dlevel-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Higher_002dlevel-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples-of-1D-Interpolation"></a>
+<h2 class="section">7. Examples of 1D Interpolation</h2>
+
+<p>The following program demonstrates the use of the interpolation and
+spline functions.  It computes a cubic spline interpolation of the
+10-point dataset <em>(x_i, y_i)</em> where <em>x_i = i + \sin(i)/2</em> and
+<em>y_i = i + \cos(i^2)</em> for <em>i = 0 \dots 9</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_spline.h&gt;
+
+int
+main (void)
+{
+  int i;
+  double xi, yi, x[10], y[10];
+
+  printf (&quot;#m=0,S=2\n&quot;);
+
+  for (i = 0; i &lt; 10; i++)
+    {
+      x[i] = i + 0.5 * sin (i);
+      y[i] = i + cos (i * i);
+      printf (&quot;%g %g\n&quot;, x[i], y[i]);
+    }
+
+  printf (&quot;#m=1,S=0\n&quot;);
+
+  {
+    gsl_interp_accel *acc 
+      = gsl_interp_accel_alloc ();
+    gsl_spline *spline 
+      = gsl_spline_alloc (gsl_interp_cspline, 10);
+
+    gsl_spline_init (spline, x, y, 10);
+
+    for (xi = x[0]; xi &lt; x[9]; xi += 0.01)
+      {
+        yi = gsl_spline_eval (spline, xi, acc);
+        printf (&quot;%g %g\n&quot;, xi, yi);
+      }
+    gsl_spline_free (spline);
+    gsl_interp_accel_free (acc);
+  }
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The output is designed to be used with the <small>GNU</small> plotutils
+<code>graph</code> program,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out &gt; interp.dat
+$ graph -T ps &lt; interp.dat &gt; interp.ps
+</pre></td></tr></table>
+
+
+<p>The result shows a smooth interpolation of the original points.  The
+interpolation method can be changed simply by varying the first argument of
+<code>gsl_spline_alloc</code>.
+</p>
+<p>The next program demonstrates a periodic cubic spline with 4 data
+points.  Note that the first and last points must be supplied with 
+the same y-value for a periodic spline.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_spline.h&gt;
+
+int
+main (void)
+{
+  int N = 4;
+  double x[4] = {0.00, 0.10,  0.27,  0.30};
+  double y[4] = {0.15, 0.70, -0.10,  0.15}; 
+             /* Note: y[0] == y[3] for periodic data */
+
+  gsl_interp_accel *acc = gsl_interp_accel_alloc ();
+  const gsl_interp_type *t = gsl_interp_cspline_periodic; 
+  gsl_spline *spline = gsl_spline_alloc (t, N);
+
+  int i; double xi, yi;
+
+  printf (&quot;#m=0,S=5\n&quot;);
+  for (i = 0; i &lt; N; i++)
+    {
+      printf (&quot;%g %g\n&quot;, x[i], y[i]);
+    }
+
+  printf (&quot;#m=1,S=0\n&quot;);
+  gsl_spline_init (spline, x, y, N);
+
+  for (i = 0; i &lt;= 100; i++)
+    {
+      xi = (1 - i / 100.0) * x[0] + (i / 100.0) * x[N-1];
+      yi = gsl_spline_eval (spline, xi, acc);
+      printf (&quot;%g %g\n&quot;, xi, yi);
+    }
+  
+  gsl_spline_free (spline);
+  gsl_interp_accel_free (acc);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+
+<p>The output can be plotted with <small>GNU</small> <code>graph</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out &gt; interp.dat
+$ graph -T ps &lt; interp.dat &gt; interp.ps
+</pre></td></tr></table>
+
+
+<p>The result shows a periodic interpolation of the original points. The
+slope of the fitted curve is the same at the beginning and end of the
+data, and the second derivative is also.
+</p>
+<p>The next program illustrates the difference between the cubic spline,
+Akima, and Steffen interpolation types on a difficult dataset.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
+
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_spline.h&gt;
+
+int
+main(void)
+{
+  size_t i;
+  const size_t N = 9;
+
+  /* this dataset is taken from
+   * J. M. Hyman, Accurate Monotonicity preserving cubic interpolation,
+   * SIAM J. Sci. Stat. Comput. 4, 4, 1983. */
+  const double x[] = { 7.99, 8.09, 8.19, 8.7, 9.2,
+                       10.0, 12.0, 15.0, 20.0 };
+  const double y[] = { 0.0, 2.76429e-5, 4.37498e-2,
+                       0.169183, 0.469428, 0.943740,
+                       0.998636, 0.999919, 0.999994 };
+
+  gsl_interp_accel *acc = gsl_interp_accel_alloc();
+  gsl_spline *spline_cubic = gsl_spline_alloc(gsl_interp_cspline, N);
+  gsl_spline *spline_akima = gsl_spline_alloc(gsl_interp_akima, N);
+  gsl_spline *spline_steffen = gsl_spline_alloc(gsl_interp_steffen, N);
+
+  gsl_spline_init(spline_cubic, x, y, N);
+  gsl_spline_init(spline_akima, x, y, N);
+  gsl_spline_init(spline_steffen, x, y, N);
+
+  for (i = 0; i &lt; N; ++i)
+    printf(&quot;%g %g\n&quot;, x[i], y[i]);
+
+  printf(&quot;\n\n&quot;);
+
+  for (i = 0; i &lt;= 100; ++i)
+    {
+      double xi = (1 - i / 100.0) * x[0] + (i / 100.0) * x[N-1];
+      double yi_cubic = gsl_spline_eval(spline_cubic, xi, acc);
+      double yi_akima = gsl_spline_eval(spline_akima, xi, acc);
+      double yi_steffen = gsl_spline_eval(spline_steffen, xi, acc);
+
+      printf(&quot;%g %g %g %g\n&quot;, xi, yi_cubic, yi_akima, yi_steffen);
+    }
+
+  gsl_spline_free(spline_cubic);
+  gsl_spline_free(spline_akima);
+  gsl_spline_free(spline_steffen);
+  gsl_interp_accel_free(acc);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+
+<p>The cubic method exhibits a local maxima between the 6th and 7th data points
+and continues oscillating for the rest of the data. Akima also shows a
+local maxima but recovers and follows the data well after the 7th grid point.
+Steffen preserves monotonicity in all intervals and does not exhibit oscillations,
+at the expense of having a discontinuous second derivative.
+</p>
+<hr size="6">
+<a name="g_t1D-Interpolation-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Example-programs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Introduction-to-Interpolation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-Example-programs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Introduction-to-Interpolation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">8. References and Further Reading</h2>
+
+<p>Descriptions of the interpolation algorithms and further references can
+be found in the following publications:
+</p>
+<ul class="toc">
+<li> C.W. Ueberhuber,
+<cite>Numerical Computation (Volume 1), Chapter 9 &ldquo;Interpolation&rdquo;</cite>,
+Springer (1997), ISBN 3-540-62058-3.
+
+</li><li> D.M. Young, R.T. Gregory,
+<cite>A Survey of Numerical Mathematics (Volume 1), Chapter 6.8</cite>,
+Dover (1988), ISBN 0-486-65691-8.
+
+</li><li> M. Steffen,
+<cite>A simple method for monotonic interpolation in one dimension</cite>,
+Astron. Astrophys. 239, 443-450, 1990.
+</li></ul>
+
+<hr size="6">
+<a name="g_t2D-Introduction-to-Interpolation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Interpolation-References-and-Further-Reading" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Interpolation-References-and-Further-Reading" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Introduction-to-2D-Interpolation"></a>
+<h2 class="section">9. Introduction to 2D Interpolation</h2>
+
+<p>Given two sets of equally spaced grid points: <em>x_1,...,x_m</em> with
+spacing <em>\delta x</em>, and <em>y_1,...,y_n</em> with spacing <em>\delta y</em>,
+plus a set of function values <em>z_ij</em>
+for each grid point <em>(x_i,y_j)</em>, the routines described in this
+section compute a continuous interpolation function <em>z(x,y)</em> such
+that <em>z(x_i,y_j) = z_ij</em>.
+</p>
+<hr size="6">
+<a name="g_t2D-Interpolation-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Introduction-to-Interpolation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Grids" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Introduction-to-Interpolation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Grids" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Interpolation-Functions-1"></a>
+<h2 class="section">10. 2D Interpolation Functions</h2>
+
+<p>The interpolation function for a given dataset is stored in a
+<code>gsl_interp2d</code> object. These are created by the following functions.
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp2d_005falloc"></a><u>Function:</u> gsl_interp2d * <b>gsl_interp2d_alloc</b><i> (const gsl_interp2d_type * <var>T</var>, const size_t <var>xsize</var>, const size_t <var>ysize</var>)</i></dt>
+<dd><a name="index-gsl_005finterp-1"></a>
+<p>This function returns a pointer to a newly allocated interpolation
+object of type <var>T</var> for <var>xsize</var> grid points in the <em>x</em>
+direction and <var>ysize</var> grid points in the <em>y</em> direction.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005finit"></a><u>Function:</u> int <b>gsl_interp2d_init</b><i> (gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const size_t <var>xsize</var>, const size_t <var>ysize</var>)</i></dt>
+<dd><p>This function initializes the interpolation object <var>interp</var> for the
+data (<var>xa</var>,<var>ya</var>,<var>za</var>) where <var>xa</var> and <var>ya</var> are arrays of
+the <em>x</em> and <em>y</em> grid points of size <var>xsize</var> and <var>ysize</var>
+respectively, and <var>za</var> is an array of function values of size
+<var>xsize</var>*<var>ysize</var>.  The interpolation object (<code>gsl_interp2d</code>) does
+not save the data arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and only stores the
+static state computed from the data. The <var>xa</var> and <var>ya</var> data arrays
+are always assumed to be strictly ordered, with increasing <em>x,y</em> values; 
+the behavior for other arrangements is not defined.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005ffree"></a><u>Function:</u> void <b>gsl_interp2d_free</b><i> (gsl_interp2d * <var>interp</var>)</i></dt>
+<dd><p>This function frees the interpolation object <var>interp</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t2D-Interpolation-Grids"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Types" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Types" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Interpolation-Grids-1"></a>
+<h2 class="section">11. 2D Interpolation Grids</h2>
+
+<p>The 2D interpolation routines access the function values <em>z_ij</em>
+with the following ordering:
+with <em>i = 0,...,xsize-1</em> and <em>j = 0,...,ysize-1</em>. However,
+for ease of use, the following functions are provided to add and retrieve
+elements from the function grid without requiring knowledge of the
+internal ordering.
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fset"></a><u>Function:</u> int <b>gsl_interp2d_set</b><i> (const gsl_interp2d * <var>interp</var>, double <var>za</var>[], const size_t <var>i</var>, const size_t <var>j</var>, const double <var>z</var>)</i></dt>
+<dd><p>This function sets the value <em>z_ij</em> for grid point
+(<var>i</var>,<var>j</var>) of the array <var>za</var> to <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fget"></a><u>Function:</u> double <b>gsl_interp2d_get</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>za</var>[], const size_t <var>i</var>, const size_t <var>j</var>)</i></dt>
+<dd><p>This function returns the value <em>z_ij</em> for grid point
+(<var>i</var>,<var>j</var>) stored in the array <var>za</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fidx"></a><u>Function:</u> size_t <b>gsl_interp2d_idx</b><i> (const gsl_interp2d * <var>interp</var>, const size_t <var>i</var>, const size_t <var>j</var>)</i></dt>
+<dd><p>This function returns the index corresponding to the grid point
+(<var>i</var>,<var>j</var>). The index is given by <em>j*xsize + i</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t2D-Interpolation-Types"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Grids" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Evaluation-of-Interpolating-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Grids" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Evaluation-of-Interpolating-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Interpolation-Types-1"></a>
+<h2 class="section">12. 2D Interpolation Types</h2>
+<a name="index-gsl_005finterp2d_005ftype"></a>
+<p>The interpolation library provides the following 2D interpolation types:
+</p>
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fbilinear"></a><u>Interpolation Type:</u> <b>gsl_interp2d_bilinear</b></dt>
+<dd><a name="index-bilinear-interpolation"></a>
+<p>Bilinear interpolation.  This interpolation method does not require any
+additional memory.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fbicubic"></a><u>Interpolation Type:</u> <b>gsl_interp2d_bicubic</b></dt>
+<dd><a name="index-bicubic-interpolation"></a>
+<p>Bicubic interpolation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fname"></a><u>Function:</u> const char * <b>gsl_interp2d_name</b><i> (const gsl_interp2d * <var>interp</var>)</i></dt>
+<dd><p>This function returns the name of the interpolation type used by <var>interp</var>.
+For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;interp uses '%s' interpolation.\n&quot;, 
+        gsl_interp2d_name (interp));
+</pre></td></tr></table>
+
+<p>would print something like,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">interp uses 'bilinear' interpolation.
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_interp2d_min_size</b><i> (const gsl_interp2d * <var>interp</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005ftype_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_interp2d_type_min_size</b><i> (const gsl_interp2d_type * <var>T</var>)</i></dt>
+<dd><p>These functions return the minimum number of points required by the
+interpolation object <var>interp</var> or interpolation type <var>T</var>.  For
+example, bicubic interpolation requires a minimum of 4 points.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t2D-Evaluation-of-Interpolating-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Types" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Higher_002dlevel-Interface" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Types" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Higher_002dlevel-Interface" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Evaluation-of-Interpolating-Functions-1"></a>
+<h2 class="section">13. 2D Evaluation of Interpolating Functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval"></a><u>Function:</u> double <b>gsl_interp2d_eval</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>z</var>)</i></dt>
+<dd><p>These functions return the interpolated value of <var>z</var> for a given
+point (<var>x</var>,<var>y</var>), using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fextrap"></a><u>Function:</u> double <b>gsl_interp2d_eval_extrap</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fextrap_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_extrap_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>z</var>)</i></dt>
+<dd><p>These functions return the interpolated value of <var>z</var> for a given
+point (<var>x</var>,<var>y</var>), using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>. The functions perform no bounds checking, so
+when <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, extrapolation is performed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fx"></a><u>Function:</u> double <b>gsl_interp2d_eval_deriv_x</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fx_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_deriv_x_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the interpolated value <var>d</var>
+<em>= \partial z / \partial x</em> for a given point (<var>x</var>,<var>y</var>),
+using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fy"></a><u>Function:</u> double <b>gsl_interp2d_eval_deriv_y</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fy_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_deriv_y_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the interpolated value <var>d</var>
+<em>= \partial z / \partial y</em> for a given point (<var>x</var>,<var>y</var>),
+using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fxx"></a><u>Function:</u> double <b>gsl_interp2d_eval_deriv_xx</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fxx_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_deriv_xx_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the interpolated value <var>d</var>
+<em>= \partial^2 z / \partial x^2</em> for a given point (<var>x</var>,<var>y</var>),
+using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fyy"></a><u>Function:</u> double <b>gsl_interp2d_eval_deriv_yy</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fyy_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_deriv_yy_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the interpolated value <var>d</var>
+<em>= \partial^2 z / \partial y^2</em> for a given point (<var>x</var>,<var>y</var>),
+using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fxy"></a><u>Function:</u> double <b>gsl_interp2d_eval_deriv_xy</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005finterp2d_005feval_005fderiv_005fxy_005fe"></a><u>Function:</u> int <b>gsl_interp2d_eval_deriv_xy_e</b><i> (const gsl_interp2d * <var>interp</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+<dd><p>These functions return the interpolated value <var>d</var>
+<em>= \partial^2 z / \partial x \partial y</em> for a given point (<var>x</var>,<var>y</var>),
+using the interpolation object <var>interp</var>, data
+arrays <var>xa</var>, <var>ya</var>, and <var>za</var> and the accelerators <var>xacc</var>
+and <var>yacc</var>.  When <var>x</var> is outside the range of <var>xa</var> or <var>y</var>
+is outside the range of <var>ya</var>, the error code
+<code>GSL_EDOM</code> is returned.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t2D-Higher_002dlevel-Interface"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Evaluation-of-Interpolating-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Example-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Evaluation-of-Interpolating-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t2D-Interpolation-Example-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Higher_002dlevel-Interface-1"></a>
+<h2 class="section">14. 2D Higher-level Interface</h2>
+
+<p>The functions described in the previous sections required the user to
+supply pointers to the <em>x</em>, <em>y</em>, and <em>z</em> arrays on each call.
+The following functions are equivalent to the corresponding
+<code>gsl_interp2d</code> functions but maintain a copy of this data in the
+<code>gsl_spline2d</code> object.  This removes the need to pass <var>xa</var>,
+<var>ya</var>, and <var>za</var> as arguments on each evaluation. These functions are
+defined in the header file &lsquo;<tt>gsl_spline2d.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005fspline2d_005falloc"></a><u>Function:</u> gsl_spline2d * <b>gsl_spline2d_alloc</b><i> (const gsl_interp2d_type * <var>T</var>, size_t <var>xsize</var>, size_t <var>ysize</var>)</i></dt>
+<dd><a name="index-gsl_005fspline2d"></a>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005finit"></a><u>Function:</u> int <b>gsl_spline2d_init</b><i> (gsl_spline2d * <var>spline</var>, const double <var>xa</var>[], const double <var>ya</var>[], const double <var>za</var>[], size_t <var>xsize</var>, size_t <var>ysize</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005ffree"></a><u>Function:</u> void <b>gsl_spline2d_free</b><i> (gsl_spline2d * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005fname"></a><u>Function:</u> const char * <b>gsl_spline2d_name</b><i> (const gsl_spline2d * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005fmin_005fsize"></a><u>Function:</u> unsigned int <b>gsl_spline2d_min_size</b><i> (const gsl_spline2d * <var>spline</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval"></a><u>Function:</u> double <b>gsl_spline2d_eval</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>z</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fx"></a><u>Function:</u> double <b>gsl_spline2d_eval_deriv_x</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fx_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_deriv_x_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fy"></a><u>Function:</u> double <b>gsl_spline2d_eval_deriv_y</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fy_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_deriv_y_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fxx"></a><u>Function:</u> double <b>gsl_spline2d_eval_deriv_xx</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fxx_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_deriv_xx_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fyy"></a><u>Function:</u> double <b>gsl_spline2d_eval_deriv_yy</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fyy_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_deriv_yy_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fxy"></a><u>Function:</u> double <b>gsl_spline2d_eval_deriv_xy</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>)</i></dt>
+<dt><a name="index-gsl_005fspline2d_005feval_005fderiv_005fxy_005fe"></a><u>Function:</u> int <b>gsl_spline2d_eval_deriv_xy_e</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>x</var>, const double <var>y</var>, gsl_interp_accel * <var>xacc</var>, gsl_interp_accel * <var>yacc</var>, double * <var>d</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005fset"></a><u>Function:</u> int <b>gsl_spline2d_set</b><i> (const gsl_spline2d * <var>spline</var>, double <var>za</var>[], const size_t <var>i</var>, const size_t <var>j</var>, const double <var>z</var>)</i></dt>
+</dl>
+
+<dl>
+<dt><a name="index-gsl_005fspline2d_005fget"></a><u>Function:</u> double <b>gsl_spline2d_get</b><i> (const gsl_spline2d * <var>spline</var>, const double <var>za</var>[], const size_t <var>i</var>, const size_t <var>j</var>)</i></dt>
+<dd><p>This function returns the value <em>z_ij</em> for grid point
+(<var>i</var>,<var>j</var>) stored in the array <var>za</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="g_t2D-Interpolation-Example-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t2D-Higher_002dlevel-Interface" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t2D-Higher_002dlevel-Interface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="g_t2D-Interpolation-Example-programs-1"></a>
+<h2 class="section">15. 2D Interpolation Example programs</h2>
+
+<p>The following example performs bilinear interpolation on the unit
+square, using <em>z</em> values of <em>(0,1,0.5,1)</em> going clockwise
+around the square.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_interp2d.h&gt;
+#include &lt;gsl/gsl_spline2d.h&gt;
+
+int
+main()
+{
+  const gsl_interp2d_type *T = gsl_interp2d_bilinear;
+  const size_t N = 100;             /* number of points to interpolate */
+  const double xa[] = { 0.0, 1.0 }; /* define unit square */
+  const double ya[] = { 0.0, 1.0 };
+  const size_t nx = sizeof(xa) / sizeof(double); /* x grid points */
+  const size_t ny = sizeof(ya) / sizeof(double); /* y grid points */
+  double *za = malloc(nx * ny * sizeof(double));
+  gsl_spline2d *spline = gsl_spline2d_alloc(T, nx, ny);
+  gsl_interp_accel *xacc = gsl_interp_accel_alloc();
+  gsl_interp_accel *yacc = gsl_interp_accel_alloc();
+  size_t i, j;
+
+  /* set z grid values */
+  gsl_spline2d_set(spline, za, 0, 0, 0.0);
+  gsl_spline2d_set(spline, za, 0, 1, 1.0);
+  gsl_spline2d_set(spline, za, 1, 1, 0.5);
+  gsl_spline2d_set(spline, za, 1, 0, 1.0);
+
+  /* initialize interpolation */
+  gsl_spline2d_init(spline, xa, ya, za, nx, ny);
+
+  /* interpolate N values in x and y and print out grid for plotting */
+  for (i = 0; i &lt; N; ++i)
+    {
+      double xi = i / (N - 1.0);
+
+      for (j = 0; j &lt; N; ++j)
+        {
+          double yj = j / (N - 1.0);
+          double zij = gsl_spline2d_eval(spline, xi, yj, xacc, yacc);
+
+          printf(&quot;%f %f %f\n&quot;, xi, yj, zij);
+        }
+      printf(&quot;\n&quot;);
+    }
+
+  gsl_spline2d_free(spline);
+  gsl_interp_accel_free(xacc);
+  gsl_interp_accel_free(yacc);
+  free(za);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The results of the interpolation are shown in the following plot,
+where the corners are labeled with their fixed <em>z</em> values.
+</p>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#g_t1D-Introduction-to-Interpolation" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

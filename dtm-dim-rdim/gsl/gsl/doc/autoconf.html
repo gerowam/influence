@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-autoconf_002c-using-with-GSL"></a>
+
+<p>For applications using <code>autoconf</code> the standard macro
+<code>AC_CHECK_LIB</code> can be used to link with GSL automatically
+from a <code>configure</code> script.  The library itself depends on the
+presence of a <small>CBLAS</small> and math library as well, so these must also be
+located before linking with the main <code>libgsl</code> file.  The following
+commands should be placed in the &lsquo;<tt>configure.ac</tt>&rsquo; file to perform
+these tests,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">AC_CHECK_LIB([m],[cos])
+AC_CHECK_LIB([gslcblas],[cblas_dgemm])
+AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+</pre></td></tr></table>
+
+<p>It is important to check for <code>libm</code> and <code>libgslcblas</code> before
+<code>libgsl</code>, otherwise the tests will fail.  Assuming the libraries
+are found the output during the configure stage looks like this,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">checking for cos in -lm... yes
+checking for cblas_dgemm in -lgslcblas... yes
+checking for gsl_blas_dgemm in -lgsl... yes
+</pre></td></tr></table>
+
+<p>If the library is found then the tests will define the macros
+<code>HAVE_LIBGSL</code>, <code>HAVE_LIBGSLCBLAS</code>, <code>HAVE_LIBM</code> and add
+the options <code>-lgsl -lgslcblas -lm</code> to the variable <code>LIBS</code>.
+</p>
+<p>The tests above will find any version of the library.  They are suitable
+for general use, where the versions of the functions are not important.
+An alternative macro is available in the file &lsquo;<tt>gsl.m4</tt>&rsquo; to test for
+a specific version of the library.  To use this macro simply add the
+following line to your &lsquo;<tt>configure.in</tt>&rsquo; file instead of the tests
+above:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">AX_PATH_GSL(GSL_VERSION,
+           [action-if-found],
+           [action-if-not-found])
+</pre></td></tr></table>
+
+<p>The argument <code>GSL_VERSION</code> should be the two or three digit
+<small>MAJOR.MINOR</small> or <small>MAJOR.MINOR.MICRO</small> version number of the release
+you require. A suitable choice for <code>action-if-not-found</code> is,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">AC_MSG_ERROR(could not find required version of GSL)
+</pre></td></tr></table>
+
+<p>Then you can add the variables <code>GSL_LIBS</code> and <code>GSL_CFLAGS</code> to
+your Makefile.am files to obtain the correct compiler flags.
+<code>GSL_LIBS</code> is equal to the output of the <code>gsl-config --libs</code>
+command and <code>GSL_CFLAGS</code> is equal to <code>gsl-config --cflags</code>
+command. For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">libfoo_la_LDFLAGS = -lfoo $(GSL_LIBS) -lgslcblas
+</pre></td></tr></table>
+
+<p>Note that the macro <code>AX_PATH_GSL</code> needs to use the C compiler so it
+should appear in the &lsquo;<tt>configure.in</tt>&rsquo; file before the macro
+<code>AC_LANG_CPLUSPLUS</code> for programs that use C++.
+</p>
+<p>To test for <code>inline</code> the following test should be placed in your
+&lsquo;<tt>configure.in</tt>&rsquo; file,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">AC_C_INLINE
+
+if test &quot;$ac_cv_c_inline&quot; != no ; then
+  AC_DEFINE(HAVE_INLINE,1)
+  AC_SUBST(HAVE_INLINE)
+fi
+</pre></td></tr></table>
+
+<p>and the macro will then be defined in the compilation flags or by
+including the file &lsquo;<tt>config.h</tt>&rsquo; before any library headers.  
+</p>
+<p>The following autoconf test will check for <code>extern inline</code>,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">dnl Check for &quot;extern inline&quot;, using a modified version
+dnl of the test for AC_C_INLINE from acspecific.mt
+dnl
+AC_CACHE_CHECK([for extern inline], ac_cv_c_extern_inline,
+[ac_cv_c_extern_inline=no
+AC_TRY_COMPILE([extern $ac_cv_c_inline double foo(double x);
+extern $ac_cv_c_inline double foo(double x) { return x+1.0; };
+double foo (double x) { return x + 1.0; };], 
+[  foo(1.0)  ],
+[ac_cv_c_extern_inline=&quot;yes&quot;])
+])
+
+if test &quot;$ac_cv_c_extern_inline&quot; != no ; then
+  AC_DEFINE(HAVE_INLINE,1)
+  AC_SUBST(HAVE_INLINE)
+fi
+</pre></td></tr></table>
+
+<p>The substitution of portability functions can be made automatically if
+you use <code>autoconf</code>. For example, to test whether the BSD function
+<code>hypot</code> is available you can include the following line in the
+configure file &lsquo;<tt>configure.in</tt>&rsquo; for your application,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">AC_CHECK_FUNCS(hypot)
+</pre></td></tr></table>
+
+<p>and place the following macro definitions in the file
+&lsquo;<tt>config.h.in</tt>&rsquo;,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">/* Substitute gsl_hypot for missing system hypot */
+
+#ifndef HAVE_HYPOT
+#define hypot gsl_hypot
+#endif
+</pre></td></tr></table>
+
+<p>The application source files can then use the include command
+<code>#include &lt;config.h&gt;</code> to substitute <code>gsl_hypot</code> for each
+occurrence of <code>hypot</code> when <code>hypot</code> is not available.
+</p><hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

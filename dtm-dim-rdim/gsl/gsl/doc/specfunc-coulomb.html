@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-Coulomb-wave-functions"></a>
+<a name="index-hydrogen-atom"></a>
+
+<p>The prototypes of the Coulomb functions are declared in the header file
+&lsquo;<tt>gsl_sf_coulomb.h</tt>&rsquo;.  Both bound state and scattering solutions are
+available.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Normalized-Hydrogenic-Bound-States">1. Normalized Hydrogenic Bound States</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Coulomb-Wave-Functions">2. Coulomb Wave Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Coulomb-Wave-Function-Normalization-Constant">3. Coulomb Wave Function Normalization Constant</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Normalized-Hydrogenic-Bound-States"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Coulomb-Wave-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Coulomb-Wave-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Normalized-Hydrogenic-Bound-States-1"></a>
+<h3 class="subsection">1. Normalized Hydrogenic Bound States</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhydrogenicR_005f1"></a><u>Function:</u> double <b>gsl_sf_hydrogenicR_1</b><i> (double <var>Z</var>, double <var>r</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhydrogenicR_005f1_005fe"></a><u>Function:</u> int <b>gsl_sf_hydrogenicR_1_e</b><i> (double <var>Z</var>, double <var>r</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the lowest-order normalized hydrogenic bound
+state radial wavefunction <em>R_1 := 2Z \sqrtZ \exp(-Z r)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhydrogenicR"></a><u>Function:</u> double <b>gsl_sf_hydrogenicR</b><i> (int <var>n</var>, int <var>l</var>, double <var>Z</var>, double <var>r</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhydrogenicR_005fe"></a><u>Function:</u> int <b>gsl_sf_hydrogenicR_e</b><i> (int <var>n</var>, int <var>l</var>, double <var>Z</var>, double <var>r</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the <var>n</var>-th normalized hydrogenic bound state
+radial wavefunction,
+where <em>L^a_b(x)</em> is the generalized Laguerre polynomial (@pxref{Laguerre Functions}).
+The normalization is chosen such that the wavefunction <em>\psi</em> is
+given by 
+<em>\psi(n,l,r) = R_n Y_lm</em>.   
+</p></dd></dl>
+
+<hr size="6">
+<a name="Coulomb-Wave-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Coulomb-Wave-Function-Normalization-Constant" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Coulomb-Wave-Function-Normalization-Constant" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Coulomb-Wave-Functions-1"></a>
+<h3 class="subsection">2. Coulomb Wave Functions</h3>
+
+<p>The Coulomb wave functions <em>F_L(\eta,x)</em>, <em>G_L(\eta,x)</em> are
+described in Abramowitz &amp; Stegun, Chapter 14.  Because there can be a
+large dynamic range of values for these functions, overflows are handled
+gracefully.  If an overflow occurs, <code>GSL_EOVRFLW</code> is signalled and
+exponent(s) are returned through the modifiable parameters <var>exp_F</var>,
+<var>exp_G</var>. The full solution can be reconstructed from the following
+relations,
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fwave_005fFG_005fe"></a><u>Function:</u> int <b>gsl_sf_coulomb_wave_FG_e</b><i> (double <var>eta</var>, double <var>x</var>, double <var>L_F</var>, int <var>k</var>, gsl_sf_result * <var>F</var>, gsl_sf_result * <var>Fp</var>, gsl_sf_result * <var>G</var>, gsl_sf_result * <var>Gp</var>, double * <var>exp_F</var>, double * <var>exp_G</var>)</i></dt>
+<dd><p>This function computes the Coulomb wave functions <em>F_L(\eta,x)</em>,
+<em>G_L-k(\eta,x)</em> and their derivatives 
+<em>F&rsquo;_L(\eta,x)</em>, 
+<em>G&rsquo;_L-k(\eta,x)</em>
+with respect to <em>x</em>.  The parameters are restricted to <em>L,
+L-k &gt; -1/2</em>, <em>x &gt; 0</em> and integer <em>k</em>.  Note that <em>L</em>
+itself is not restricted to being an integer. The results are stored in
+the parameters <var>F</var>, <var>G</var> for the function values and <var>Fp</var>,
+<var>Gp</var> for the derivative values.  If an overflow occurs,
+<code>GSL_EOVRFLW</code> is returned and scaling exponents are stored in
+the modifiable parameters <var>exp_F</var>, <var>exp_G</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fwave_005fF_005farray"></a><u>Function:</u> int <b>gsl_sf_coulomb_wave_F_array</b><i> (double <var>L_min</var>, int <var>kmax</var>, double <var>eta</var>, double <var>x</var>, double <var>fc_array</var>[], double * <var>F_exponent</var>)</i></dt>
+<dd><p>This function computes the Coulomb wave function <em>F_L(\eta,x)</em> for
+<em>L = Lmin \dots Lmin + kmax</em>, storing the results in <var>fc_array</var>.
+In the case of overflow the exponent is stored in <var>F_exponent</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fwave_005fFG_005farray"></a><u>Function:</u> int <b>gsl_sf_coulomb_wave_FG_array</b><i> (double <var>L_min</var>, int <var>kmax</var>, double <var>eta</var>, double <var>x</var>, double <var>fc_array</var>[], double <var>gc_array</var>[], double * <var>F_exponent</var>, double * <var>G_exponent</var>)</i></dt>
+<dd><p>This function computes the functions <em>F_L(\eta,x)</em>,
+<em>G_L(\eta,x)</em> for <em>L = Lmin \dots Lmin + kmax</em> storing the
+results in <var>fc_array</var> and <var>gc_array</var>.  In the case of overflow the
+exponents are stored in <var>F_exponent</var> and <var>G_exponent</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fwave_005fFGp_005farray"></a><u>Function:</u> int <b>gsl_sf_coulomb_wave_FGp_array</b><i> (double <var>L_min</var>, int <var>kmax</var>, double <var>eta</var>, double <var>x</var>, double <var>fc_array</var>[], double <var>fcp_array</var>[], double <var>gc_array</var>[], double <var>gcp_array</var>[], double * <var>F_exponent</var>, double * <var>G_exponent</var>)</i></dt>
+<dd><p>This function computes the functions <em>F_L(\eta,x)</em>,
+<em>G_L(\eta,x)</em> and their derivatives <em>F&rsquo;_L(\eta,x)</em>,
+<em>G&rsquo;_L(\eta,x)</em> for <em>L = Lmin \dots Lmin + kmax</em> storing the
+results in <var>fc_array</var>, <var>gc_array</var>, <var>fcp_array</var> and <var>gcp_array</var>.
+In the case of overflow the exponents are stored in <var>F_exponent</var> 
+and <var>G_exponent</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fwave_005fsphF_005farray"></a><u>Function:</u> int <b>gsl_sf_coulomb_wave_sphF_array</b><i> (double <var>L_min</var>, int <var>kmax</var>, double <var>eta</var>, double <var>x</var>, double <var>fc_array</var>[], double <var>F_exponent</var>[])</i></dt>
+<dd><p>This function computes the Coulomb wave function divided by the argument
+<em>F_L(\eta, x)/x</em> for <em>L = Lmin \dots Lmin + kmax</em>, storing the
+results in <var>fc_array</var>.  In the case of overflow the exponent is
+stored in <var>F_exponent</var>. This function reduces to spherical Bessel
+functions in the limit <em>\eta \to 0</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Coulomb-Wave-Function-Normalization-Constant"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Coulomb-Wave-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Coulomb-Wave-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Coulomb-Wave-Function-Normalization-Constant-1"></a>
+<h3 class="subsection">3. Coulomb Wave Function Normalization Constant</h3>
+
+<p>The Coulomb wave function normalization constant is defined in
+Abramowitz 14.1.7.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fCL_005fe"></a><u>Function:</u> int <b>gsl_sf_coulomb_CL_e</b><i> (double <var>L</var>, double <var>eta</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>This function computes the Coulomb wave function normalization constant
+<em>C_L(\eta)</em> for <em>L &gt; -1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcoulomb_005fCL_005farray"></a><u>Function:</u> int <b>gsl_sf_coulomb_CL_array</b><i> (double <var>Lmin</var>, int <var>kmax</var>, double <var>eta</var>, double <var>cl</var>[])</i></dt>
+<dd><p>This function computes the Coulomb wave function normalization constant
+<em>C_L(\eta)</em> for <em>L = Lmin \dots Lmin + kmax</em>, <em>Lmin &gt; -1</em>.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Normalized-Hydrogenic-Bound-States" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

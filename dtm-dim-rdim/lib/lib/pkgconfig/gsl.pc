@@ -1,0 +1,11 @@
+prefix=/home/gerow/files/influence_models/influence/dtm-dim/lib
+exec_prefix=/home/gerow/files/influence_models/influence/dtm-dim/lib
+libdir=/home/gerow/files/influence_models/influence/dtm-dim/lib/lib
+includedir=/home/gerow/files/influence_models/influence/dtm-dim/lib/include
+GSL_CBLAS_LIB=-lgslcblas
+
+Name: GSL
+Description: GNU Scientific Library
+Version: 2.1
+Libs: -L/home/gerow/files/influence_models/influence/dtm-dim/lib/lib -lgsl ${GSL_CBLAS_LIB} -lm -lm 
+Cflags: -I/home/gerow/files/influence_models/influence/dtm-dim/lib/include

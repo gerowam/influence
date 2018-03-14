@@ -1,0 +1,1082 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-minimization_002c-multidimensional"></a>
+
+<p>This chapter describes routines for finding minima of arbitrary
+multidimensional functions.  The library provides low level components
+for a variety of iterative minimizers and convergence tests.  These can
+be combined by the user to achieve the desired solution, while providing
+full access to the intermediate steps of the algorithms.  Each class of
+methods uses the same framework, so that you can switch between
+minimizers at runtime without needing to recompile your program.  Each
+instance of a minimizer keeps track of its own state, allowing the
+minimizers to be used in multi-threaded programs. The minimization
+algorithms can be used to maximize a function by inverting its sign.
+</p>
+<p>The header file &lsquo;<tt>gsl_multimin.h</tt>&rsquo; contains prototypes for the
+minimization functions and related declarations.  
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Multimin-Overview">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Caveats">2. Caveats</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-Multidimensional-Minimizer">3. Initializing the Multidimensional Minimizer</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Providing-a-function-to-minimize">4. Providing a function to minimize</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Iteration">5. Iteration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Stopping-Criteria">6. Stopping Criteria</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Algorithms-with-Derivatives">7. Algorithms with Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Algorithms-without-Derivatives">8. Algorithms without Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-Examples">9. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multimin-References-and-Further-Reading">10. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Multimin-Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Caveats" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Caveats" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+
+<p>The problem of multidimensional minimization requires finding a point
+<em>x</em> such that the scalar function,
+takes a value which is lower than at any neighboring point. For smooth
+functions the gradient <em>g = \nabla f</em> vanishes at the minimum. In
+general there are no bracketing methods available for the
+minimization of <em>n</em>-dimensional functions.  The algorithms
+proceed from an initial guess using a search algorithm which attempts
+to move in a downhill direction. 
+</p>
+<p>Algorithms making use of the gradient of the function perform a
+one-dimensional line minimisation along this direction until the lowest
+point is found to a suitable tolerance.  The search direction is then
+updated with local information from the function and its derivatives,
+and the whole process repeated until the true <em>n</em>-dimensional
+minimum is found.
+</p>
+<p>Algorithms which do not require the gradient of the function use
+different strategies.  For example, the Nelder-Mead Simplex algorithm
+maintains <em>n+1</em> trial parameter vectors as the vertices of a
+<em>n</em>-dimensional simplex.  On each iteration it tries to improve
+the worst vertex of the simplex by geometrical transformations.  The
+iterations are continued until the overall size of the simplex has
+decreased sufficiently.
+</p>
+<p>Both types of algorithms use a standard framework. The user provides a
+high-level driver for the algorithms, and the library provides the
+individual functions necessary for each of the steps.  There are three
+main phases of the iteration.  The steps are,
+</p>
+<ul>
+<li>
+initialize minimizer state, <var>s</var>, for algorithm <var>T</var>
+
+</li><li>
+update <var>s</var> using the iteration <var>T</var>
+
+</li><li>
+test <var>s</var> for convergence, and repeat iteration if necessary
+</li></ul>
+
+<p>Each iteration step consists either of an improvement to the
+line-minimisation in the current direction or an update to the search
+direction itself.  The state for the minimizers is held in a
+<code>gsl_multimin_fdfminimizer</code> struct or a
+<code>gsl_multimin_fminimizer</code> struct.
+</p>
+<hr size="6">
+<a name="Multimin-Caveats"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Minimizer" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Minimizer" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Caveats"></a>
+<h2 class="section">2. Caveats</h2>
+<a name="index-Multimin_002c-caveats"></a>
+
+<p>Note that the minimization algorithms can only search for one local
+minimum at a time.  When there are several local minima in the search
+area, the first minimum to be found will be returned; however it is
+difficult to predict which of the minima this will be.  In most cases,
+no error will be reported if you try to find a local minimum in an area
+where there is more than one.
+</p>
+<p>It is also important to note that the minimization algorithms find local
+minima; there is no way to determine whether a minimum is a global
+minimum of the function in question.
+</p>
+<hr size="6">
+<a name="Initializing-the-Multidimensional-Minimizer"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Caveats" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-a-function-to-minimize" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Caveats" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-a-function-to-minimize" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-Multidimensional-Minimizer-1"></a>
+<h2 class="section">3. Initializing the Multidimensional Minimizer</h2>
+<p>The following function initializes a multidimensional minimizer.  The
+minimizer itself depends only on the dimension of the problem and the
+algorithm and can be reused for different problems.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005falloc"></a><u>Function:</u> gsl_multimin_fdfminimizer * <b>gsl_multimin_fdfminimizer_alloc</b><i> (const gsl_multimin_fdfminimizer_type * <var>T</var>, size_t <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005falloc"></a><u>Function:</u> gsl_multimin_fminimizer * <b>gsl_multimin_fminimizer_alloc</b><i> (const gsl_multimin_fminimizer_type * <var>T</var>, size_t <var>n</var>)</i></dt>
+<dd><a name="index-gsl_005fmultimin_005ffdfminimizer"></a>
+<a name="index-gsl_005fmultimin_005ffminimizer"></a>
+<a name="index-gsl_005fmultimin_005ffdfminimizer_005ftype"></a>
+<a name="index-gsl_005fmultimin_005ffminimizer_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+minimizer of type <var>T</var> for an <var>n</var>-dimension function.  If there
+is insufficient memory to create the minimizer then the function returns
+a null pointer and the error handler is invoked with an error code of
+<code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fset"></a><u>Function:</u> int <b>gsl_multimin_fdfminimizer_set</b><i> (gsl_multimin_fdfminimizer * <var>s</var>, gsl_multimin_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, double <var>step_size</var>, double <var>tol</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fset"></a><u>Function:</u> int <b>gsl_multimin_fminimizer_set</b><i> (gsl_multimin_fminimizer * <var>s</var>, gsl_multimin_function * <var>f</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>step_size</var>)</i></dt>
+<dd><p>The function <code>gsl_multimin_fdfminimizer_set</code> initializes the minimizer <var>s</var> to minimize the function
+<var>fdf</var> starting from the initial point <var>x</var>.  The size of the
+first trial step is given by <var>step_size</var>.  The accuracy of the line
+minimization is specified by <var>tol</var>.  The precise meaning of this
+parameter depends on the method used.  Typically the line minimization
+is considered successful if the gradient of the function <em>g</em> is
+orthogonal to the current search direction <em>p</em> to a relative
+accuracy of <var>tol</var>, where <em>dot(p,g) &lt; tol |p| |g|</em>.  A <var>tol</var> value of 0.1 is 
+suitable for most purposes, since line minimization only needs to
+be carried out approximately.    Note that setting <var>tol</var> to zero will
+force the use of &ldquo;exact&rdquo; line-searches, which are extremely expensive.
+</p>
+<p>The function <code>gsl_multimin_fminimizer_set</code> initializes the minimizer <var>s</var> to minimize the function
+<var>f</var>, starting from the initial point
+<var>x</var>. The size of the initial trial steps is given in vector
+<var>step_size</var>. The precise meaning of this parameter depends on the
+method used. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005ffree"></a><u>Function:</u> void <b>gsl_multimin_fdfminimizer_free</b><i> (gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005ffree"></a><u>Function:</u> void <b>gsl_multimin_fminimizer_free</b><i> (gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the minimizer
+<var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fname"></a><u>Function:</u> const char * <b>gsl_multimin_fdfminimizer_name</b><i> (const gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fname"></a><u>Function:</u> const char * <b>gsl_multimin_fminimizer_name</b><i> (const gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the minimizer.  For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;s is a '%s' minimizer\n&quot;, 
+        gsl_multimin_fdfminimizer_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>s is a 'conjugate_pr' minimizer</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Providing-a-function-to-minimize"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Minimizer" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Iteration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Multidimensional-Minimizer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Iteration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Providing-a-function-to-minimize-1"></a>
+<h2 class="section">4. Providing a function to minimize</h2>
+
+<p>You must provide a parametric function of <em>n</em> variables for the
+minimizers to operate on.  You may also need to provide a routine which
+calculates the gradient of the function and a third routine which
+calculates both the function value and the gradient together.  In order
+to allow for general parameters the functions are defined by the
+following data types:
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffunction_005ffdf"></a><u>Data Type:</u> <b>gsl_multimin_function_fdf</b></dt>
+<dd><p>This data type defines a general function of <em>n</em> variables with
+parameters and the corresponding gradient vector of derivatives,
+</p>
+<dl compact="compact">
+<dt> <code>double (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the result
+<em>f(x,params)</em> for argument <var>x</var> and parameters <var>params</var>.
+If the function cannot be computed, an error value of <code>GSL_NAN</code>
+should be returned.
+</p>
+</dd>
+<dt> <code>void (* df) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>g</var>)</code></dt>
+<dd><p>this function should store the <var>n</var>-dimensional gradient
+<em>g_i = d f(x,params) / d x_i</em> in the vector <var>g</var> for argument <var>x</var> 
+and parameters <var>params</var>, returning an appropriate error code if the
+function cannot be computed.
+</p>
+</dd>
+<dt> <code>void (* fdf) (const gsl_vector * <var>x</var>, void * <var>params</var>, double * f, gsl_vector * <var>g</var>)</code></dt>
+<dd><p>This function should set the values of the <var>f</var> and <var>g</var> as above,
+for arguments <var>x</var> and parameters <var>params</var>.  This function
+provides an optimization of the separate functions for <em>f(x)</em> and
+<em>g(x)</em>&mdash;it is always faster to compute the function and its
+derivative at the same time.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the dimension of the system, i.e. the number of components of the
+vectors <var>x</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffunction"></a><u>Data Type:</u> <b>gsl_multimin_function</b></dt>
+<dd><p>This data type defines a general function of <em>n</em> variables with
+parameters,
+</p>
+<dl compact="compact">
+<dt> <code>double (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the result
+<em>f(x,params)</em> for argument <var>x</var> and parameters <var>params</var>.
+If the function cannot be computed, an error value of <code>GSL_NAN</code>
+should be returned.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the dimension of the system, i.e. the number of components of the
+vectors <var>x</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>The following example function defines a simple two-dimensional
+paraboloid with five parameters,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">/* Paraboloid centered on (p[0],p[1]), with  
+   scale factors (p[2],p[3]) and minimum p[4] */
+
+double
+my_f (const gsl_vector *v, void *params)
+{
+  double x, y;
+  double *p = (double *)params;
+  
+  x = gsl_vector_get(v, 0);
+  y = gsl_vector_get(v, 1);
+ 
+  return p[2] * (x - p[0]) * (x - p[0]) +
+           p[3] * (y - p[1]) * (y - p[1]) + p[4]; 
+}
+
+/* The gradient of f, df = (df/dx, df/dy). */
+void 
+my_df (const gsl_vector *v, void *params, 
+       gsl_vector *df)
+{
+  double x, y;
+  double *p = (double *)params;
+  
+  x = gsl_vector_get(v, 0);
+  y = gsl_vector_get(v, 1);
+ 
+  gsl_vector_set(df, 0, 2.0 * p[2] * (x - p[0]));
+  gsl_vector_set(df, 1, 2.0 * p[3] * (y - p[1]));
+}
+
+/* Compute both f and df together. */
+void 
+my_fdf (const gsl_vector *x, void *params, 
+        double *f, gsl_vector *df) 
+{
+  *f = my_f(x, params); 
+  my_df(x, params, df);
+}
+</pre></pre></td></tr></table>
+
+<p>The function can be initialized using the following code,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">gsl_multimin_function_fdf my_func;
+
+/* Paraboloid center at (1,2), scale factors (10, 20), 
+   minimum value 30 */
+double p[5] = { 1.0, 2.0, 10.0, 20.0, 30.0 }; 
+
+my_func.n = 2;  /* number of function components */
+my_func.f = &amp;my_f;
+my_func.df = &amp;my_df;
+my_func.fdf = &amp;my_fdf;
+my_func.params = (void *)p;
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Multimin-Iteration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Providing-a-function-to-minimize" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Stopping-Criteria" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Providing-a-function-to-minimize" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Stopping-Criteria" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iteration"></a>
+<h2 class="section">5. Iteration</h2>
+
+<p>The following function drives the iteration of each algorithm.  The
+function performs one iteration to update the state of the minimizer.
+The same function works for all minimizers so that different methods can
+be substituted at runtime without modifications to the code.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fiterate"></a><u>Function:</u> int <b>gsl_multimin_fdfminimizer_iterate</b><i> (gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fiterate"></a><u>Function:</u> int <b>gsl_multimin_fminimizer_iterate</b><i> (gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dd><p>These functions perform a single iteration of the minimizer <var>s</var>.
+If the iteration encounters an unexpected problem then an error code
+will be returned.  The error code <code>GSL_ENOPROG</code> signifies that
+the minimizer is unable to improve on its current estimate, either due
+to numerical difficulty or because a genuine local minimum has been
+reached.
+</p></dd></dl>
+
+<p>The minimizer maintains a current best estimate of the minimum at all
+times.  This information can be accessed with the following auxiliary
+functions,
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fx"></a><u>Function:</u> gsl_vector * <b>gsl_multimin_fdfminimizer_x</b><i> (const gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fx"></a><u>Function:</u> gsl_vector * <b>gsl_multimin_fminimizer_x</b><i> (const gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fminimum"></a><u>Function:</u> double <b>gsl_multimin_fdfminimizer_minimum</b><i> (const gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fminimum"></a><u>Function:</u> double <b>gsl_multimin_fminimizer_minimum</b><i> (const gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fgradient"></a><u>Function:</u> gsl_vector * <b>gsl_multimin_fdfminimizer_gradient</b><i> (const gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fsize"></a><u>Function:</u> double <b>gsl_multimin_fminimizer_size</b><i> (const gsl_multimin_fminimizer * <var>s</var>)</i></dt>
+<dd><p>These functions return the current best estimate of the location of the
+minimum, the value of the function at that point, its gradient, 
+and minimizer specific characteristic size for the minimizer <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005frestart"></a><u>Function:</u> int <b>gsl_multimin_fdfminimizer_restart</b><i> (gsl_multimin_fdfminimizer * <var>s</var>)</i></dt>
+<dd><p>This function resets the minimizer <var>s</var> to use the current point as a
+new starting point.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multimin-Stopping-Criteria"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Iteration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-with-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Iteration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-with-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Stopping-Criteria"></a>
+<h2 class="section">6. Stopping Criteria</h2>
+
+<p>A minimization procedure should stop when one of the following
+conditions is true:
+</p>
+<ul>
+<li>
+A minimum has been found to within the user-specified precision.
+
+</li><li>
+A user-specified maximum number of iterations has been reached.
+
+</li><li>
+An error has occurred.
+</li></ul>
+
+<p>The handling of these conditions is under user control.  The functions
+below allow the user to test the precision of the current result.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ftest_005fgradient"></a><u>Function:</u> int <b>gsl_multimin_test_gradient</b><i> (const gsl_vector * <var>g</var>, double <var>epsabs</var>)</i></dt>
+<dd><p>This function tests the norm of the gradient <var>g</var> against the
+absolute tolerance <var>epsabs</var>. The gradient of a multidimensional
+function goes to zero at a minimum. The test returns <code>GSL_SUCCESS</code>
+if the following condition is achieved,
+and returns <code>GSL_CONTINUE</code> otherwise.  A suitable choice of
+<var>epsabs</var> can be made from the desired accuracy in the function for
+small variations in <em>x</em>.  The relationship between these quantities
+is given by <em>\delta f = g \delta x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ftest_005fsize"></a><u>Function:</u> int <b>gsl_multimin_test_size</b><i> (const double <var>size</var>, double <var>epsabs</var>)</i></dt>
+<dd><p>This function tests the minimizer specific characteristic
+size (if applicable to the used minimizer) against absolute tolerance <var>epsabs</var>. 
+The test returns <code>GSL_SUCCESS</code> if the size is smaller than tolerance,
+otherwise <code>GSL_CONTINUE</code> is returned.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multimin-Algorithms-with-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Stopping-Criteria" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-without-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Stopping-Criteria" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-without-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Algorithms-with-Derivatives"></a>
+<h2 class="section">7. Algorithms with Derivatives</h2>
+
+<p>There are several minimization methods available. The best choice of
+algorithm depends on the problem.  The algorithms described in this
+section use the value of the function and its gradient at each
+evaluation point.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fconjugate_005ffr"></a><u>Minimizer:</u> <b>gsl_multimin_fdfminimizer_conjugate_fr</b></dt>
+<dd><a name="index-Fletcher_002dReeves-conjugate-gradient-algorithm_002c-minimization"></a>
+<a name="index-Conjugate-gradient-algorithm_002c-minimization"></a>
+<a name="index-minimization_002c-conjugate-gradient-algorithm"></a>
+<p>This is the Fletcher-Reeves conjugate gradient algorithm. The conjugate
+gradient algorithm proceeds as a succession of line minimizations. The
+sequence of search directions is used to build up an approximation to the
+curvature of the function in the neighborhood of the minimum.  
+</p>
+<p>An initial search direction <var>p</var> is chosen using the gradient, and line
+minimization is carried out in that direction.  The accuracy of the line
+minimization is specified by the parameter <var>tol</var>.  The minimum
+along this line occurs when the function gradient <var>g</var> and the search direction
+<var>p</var> are orthogonal.  The line minimization terminates when
+<em>dot(p,g) &lt; tol |p| |g|</em>.  The
+search direction is updated  using the Fletcher-Reeves formula
+<em>p&rsquo; = g&rsquo; - \beta g</em> where <em>\beta=-|g&rsquo;|^2/|g|^2</em>, and
+the line minimization is then repeated for the new search
+direction.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fconjugate_005fpr"></a><u>Minimizer:</u> <b>gsl_multimin_fdfminimizer_conjugate_pr</b></dt>
+<dd><a name="index-Polak_002dRibiere-algorithm_002c-minimization"></a>
+<a name="index-minimization_002c-Polak_002dRibiere-algorithm"></a>
+<p>This is the Polak-Ribiere conjugate gradient algorithm.  It is similar
+to the Fletcher-Reeves method, differing only in the choice of the
+coefficient <em>\beta</em>. Both methods work well when the evaluation
+point is close enough to the minimum of the objective function that it
+is well approximated by a quadratic hypersurface.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fvector_005fbfgs2"></a><u>Minimizer:</u> <b>gsl_multimin_fdfminimizer_vector_bfgs2</b></dt>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fvector_005fbfgs"></a><u>Minimizer:</u> <b>gsl_multimin_fdfminimizer_vector_bfgs</b></dt>
+<dd><a name="index-BFGS-algorithm_002c-minimization"></a>
+<a name="index-minimization_002c-BFGS-algorithm"></a>
+<p>These methods use the vector Broyden-Fletcher-Goldfarb-Shanno (BFGS)
+algorithm.  This is a quasi-Newton method which builds up an approximation
+to the second derivatives of the function <em>f</em> using the difference
+between successive gradient vectors.  By combining the first and second
+derivatives the algorithm is able to take Newton-type steps towards the
+function minimum, assuming quadratic behavior in that region.
+</p>
+<p>The <code>bfgs2</code> version of this minimizer is the most efficient
+version available, and is a faithful implementation of the line
+minimization scheme described in Fletcher&rsquo;s <cite>Practical Methods of
+Optimization</cite>, Algorithms 2.6.2 and 2.6.4.  It supersedes the original
+<code>bfgs</code> routine and requires substantially fewer function and
+gradient evaluations.  The user-supplied tolerance <var>tol</var>
+corresponds to the parameter <em>\sigma</em> used by Fletcher.  A value
+of 0.1 is recommended for typical use (larger values correspond to
+less accurate line searches).
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffdfminimizer_005fsteepest_005fdescent"></a><u>Minimizer:</u> <b>gsl_multimin_fdfminimizer_steepest_descent</b></dt>
+<dd><a name="index-steepest-descent-algorithm_002c-minimization"></a>
+<a name="index-minimization_002c-steepest-descent-algorithm"></a>
+<p>The steepest descent algorithm follows the downhill gradient of the
+function at each step. When a downhill step is successful the step-size
+is increased by a factor of two.  If the downhill step leads to a higher
+function value then the algorithm backtracks and the step size is
+decreased using the parameter <var>tol</var>.  A suitable value of <var>tol</var>
+for most applications is 0.1.  The steepest descent method is
+inefficient and is included only for demonstration purposes.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multimin-Algorithms-without-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Algorithms-with-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-with-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Algorithms-without-Derivatives"></a>
+<h2 class="section">8. Algorithms without Derivatives</h2>
+
+<p>The algorithms described in this section use only the value of the function
+at each evaluation point.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fnmsimplex2"></a><u>Minimizer:</u> <b>gsl_multimin_fminimizer_nmsimplex2</b></dt>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fnmsimplex"></a><u>Minimizer:</u> <b>gsl_multimin_fminimizer_nmsimplex</b></dt>
+<dd><a name="index-Nelder_002dMead-simplex-algorithm-for-minimization"></a>
+<a name="index-simplex-algorithm_002c-minimization"></a>
+<a name="index-minimization_002c-simplex-algorithm"></a>
+<p>These methods use the Simplex algorithm of Nelder and Mead. 
+Starting from the initial vector <em><var>x</var> = p_0</em>, the algorithm
+constructs an additional <em>n</em> vectors <em>p_i</em>
+using the step size vector <em>s = <var>step_size</var></em> as follows:
+These vectors form the <em>n+1</em> vertices of a simplex in <em>n</em>
+dimensions.  On each iteration the algorithm uses simple geometrical
+transformations to update the vector corresponding to the highest
+function value.  The geometric transformations are reflection,
+reflection followed by expansion, contraction and multiple
+contraction.  Using these transformations the simplex moves through
+the space towards the minimum, where it contracts itself.
+</p>
+<p>After each iteration, the best vertex is returned.  Note, that due to
+the nature of the algorithm not every step improves the current
+best parameter vector.  Usually several iterations are required.
+</p>
+<p>The minimizer-specific characteristic size is calculated as the
+average distance from the geometrical center of the simplex to all its
+vertices.  This size can be used as a stopping criteria, as the
+simplex contracts itself near the minimum. The size is returned by the
+function <code>gsl_multimin_fminimizer_size</code>.
+</p>
+<p>The <code>nmsimplex2</code> version of this minimiser is a new <em>O(N)</em> operations
+implementation of the earlier <em>O(N^2)</em> operations <code>nmsimplex</code>
+minimiser.  It uses the same underlying algorithm, but the simplex
+updates are computed more efficiently for high-dimensional problems.
+In addition, the size of simplex is calculated as the <small>RMS</small>
+distance of each vertex from the center rather than the mean distance,
+allowing a linear update of this quantity on each step.  The memory usage is
+<em>O(N^2)</em> for both algorithms.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultimin_005ffminimizer_005fnmsimplex2rand"></a><u>Minimizer:</u> <b>gsl_multimin_fminimizer_nmsimplex2rand</b></dt>
+<dd><p>This method is a variant of <code>nmsimplex2</code> which initialises the
+simplex around the starting point <var>x</var> using a randomly-oriented
+set of basis vectors instead of the fixed coordinate axes. The
+final dimensions of the simplex are scaled along the coordinate axes by the
+vector <var>step_size</var>.  The randomisation uses a simple deterministic
+generator so that repeated calls to <code>gsl_multimin_fminimizer_set</code> for
+a given solver object will vary the orientation in a well-defined way.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Multimin-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Algorithms-without-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Algorithms-without-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">9. Examples</h2>
+
+<p>This example program finds the minimum of the paraboloid function
+defined earlier.  The location of the minimum is offset from the origin
+in <em>x</em> and <em>y</em>, and the function value at the minimum is
+non-zero. The main program is given below, it requires the example
+function given earlier in this chapter.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"><pre class="verbatim">int
+main (void)
+{
+  size_t iter = 0;
+  int status;
+
+  const gsl_multimin_fdfminimizer_type *T;
+  gsl_multimin_fdfminimizer *s;
+
+  /* Position of the minimum (1,2), scale factors 
+     10,20, height 30. */
+  double par[5] = { 1.0, 2.0, 10.0, 20.0, 30.0 };
+
+  gsl_vector *x;
+  gsl_multimin_function_fdf my_func;
+
+  my_func.n = 2;
+  my_func.f = my_f;
+  my_func.df = my_df;
+  my_func.fdf = my_fdf;
+  my_func.params = par;
+
+  /* Starting point, x = (5,7) */
+  x = gsl_vector_alloc (2);
+  gsl_vector_set (x, 0, 5.0);
+  gsl_vector_set (x, 1, 7.0);
+
+  T = gsl_multimin_fdfminimizer_conjugate_fr;
+  s = gsl_multimin_fdfminimizer_alloc (T, 2);
+
+  gsl_multimin_fdfminimizer_set (s, &amp;my_func, x, 0.01, 1e-4);
+
+  do
+    {
+      iter++;
+      status = gsl_multimin_fdfminimizer_iterate (s);
+
+      if (status)
+        break;
+
+      status = gsl_multimin_test_gradient (s-&gt;gradient, 1e-3);
+
+      if (status == GSL_SUCCESS)
+        printf (&quot;Minimum found at:\n&quot;);
+
+      printf (&quot;%5d %.5f %.5f %10.5f\n&quot;, iter,
+              gsl_vector_get (s-&gt;x, 0), 
+              gsl_vector_get (s-&gt;x, 1), 
+              s-&gt;f);
+
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; 100);
+
+  gsl_multimin_fdfminimizer_free (s);
+  gsl_vector_free (x);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+ 
+
+<p>The initial step-size is chosen as 0.01, a conservative estimate in this
+case, and the line minimization parameter is set at 0.0001.  The program
+terminates when the norm of the gradient has been reduced below
+0.001. The output of the program is shown below,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">         x       y         f
+    1 4.99629 6.99072  687.84780
+    2 4.98886 6.97215  683.55456
+    3 4.97400 6.93501  675.01278
+    4 4.94429 6.86073  658.10798
+    5 4.88487 6.71217  625.01340
+    6 4.76602 6.41506  561.68440
+    7 4.52833 5.82083  446.46694
+    8 4.05295 4.63238  261.79422
+    9 3.10219 2.25548   75.49762
+   10 2.85185 1.62963   67.03704
+   11 2.19088 1.76182   45.31640
+   12 0.86892 2.02622   30.18555
+Minimum found at:
+   13 1.00000 2.00000   30.00000
+</pre></pre></td></tr></table>
+
+<p>Note that the algorithm gradually increases the step size as it
+successfully moves downhill, as can be seen by plotting the successive
+points.
+</p>
+
+<p>The conjugate gradient algorithm finds the minimum on its second
+direction because the function is purely quadratic. Additional
+iterations would be needed for a more complicated function.
+</p>
+<p>Here is another example using the Nelder-Mead Simplex algorithm to
+minimize the same example object function, as above.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"><pre class="verbatim">int 
+main(void)
+{
+  double par[5] = {1.0, 2.0, 10.0, 20.0, 30.0};
+
+  const gsl_multimin_fminimizer_type *T = 
+    gsl_multimin_fminimizer_nmsimplex2;
+  gsl_multimin_fminimizer *s = NULL;
+  gsl_vector *ss, *x;
+  gsl_multimin_function minex_func;
+
+  size_t iter = 0;
+  int status;
+  double size;
+
+  /* Starting point */
+  x = gsl_vector_alloc (2);
+  gsl_vector_set (x, 0, 5.0);
+  gsl_vector_set (x, 1, 7.0);
+
+  /* Set initial step sizes to 1 */
+  ss = gsl_vector_alloc (2);
+  gsl_vector_set_all (ss, 1.0);
+
+  /* Initialize method and iterate */
+  minex_func.n = 2;
+  minex_func.f = my_f;
+  minex_func.params = par;
+
+  s = gsl_multimin_fminimizer_alloc (T, 2);
+  gsl_multimin_fminimizer_set (s, &amp;minex_func, x, ss);
+
+  do
+    {
+      iter++;
+      status = gsl_multimin_fminimizer_iterate(s);
+      
+      if (status) 
+        break;
+
+      size = gsl_multimin_fminimizer_size (s);
+      status = gsl_multimin_test_size (size, 1e-2);
+
+      if (status == GSL_SUCCESS)
+        {
+          printf (&quot;converged to minimum at\n&quot;);
+        }
+
+      printf (&quot;%5d %10.3e %10.3e f() = %7.3f size = %.3f\n&quot;, 
+              iter,
+              gsl_vector_get (s-&gt;x, 0), 
+              gsl_vector_get (s-&gt;x, 1), 
+              s-&gt;fval, size);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; 100);
+  
+  gsl_vector_free(x);
+  gsl_vector_free(ss);
+  gsl_multimin_fminimizer_free (s);
+
+  return status;
+}
+</pre></pre></td></tr></table>
+
+<p>The minimum search stops when the Simplex size drops to 0.01. The output is
+shown below.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">    1  6.500e+00  5.000e+00 f() = 512.500 size = 1.130
+    2  5.250e+00  4.000e+00 f() = 290.625 size = 1.409
+    3  5.250e+00  4.000e+00 f() = 290.625 size = 1.409
+    4  5.500e+00  1.000e+00 f() = 252.500 size = 1.409
+    5  2.625e+00  3.500e+00 f() = 101.406 size = 1.847
+    6  2.625e+00  3.500e+00 f() = 101.406 size = 1.847
+    7  0.000e+00  3.000e+00 f() =  60.000 size = 1.847
+    8  2.094e+00  1.875e+00 f() =  42.275 size = 1.321
+    9  2.578e-01  1.906e+00 f() =  35.684 size = 1.069
+   10  5.879e-01  2.445e+00 f() =  35.664 size = 0.841
+   11  1.258e+00  2.025e+00 f() =  30.680 size = 0.476
+   12  1.258e+00  2.025e+00 f() =  30.680 size = 0.367
+   13  1.093e+00  1.849e+00 f() =  30.539 size = 0.300
+   14  8.830e-01  2.004e+00 f() =  30.137 size = 0.172
+   15  8.830e-01  2.004e+00 f() =  30.137 size = 0.126
+   16  9.582e-01  2.060e+00 f() =  30.090 size = 0.106
+   17  1.022e+00  2.004e+00 f() =  30.005 size = 0.063
+   18  1.022e+00  2.004e+00 f() =  30.005 size = 0.043
+   19  1.022e+00  2.004e+00 f() =  30.005 size = 0.043
+   20  1.022e+00  2.004e+00 f() =  30.005 size = 0.027
+   21  1.022e+00  2.004e+00 f() =  30.005 size = 0.022
+   22  9.920e-01  1.997e+00 f() =  30.001 size = 0.016
+   23  9.920e-01  1.997e+00 f() =  30.001 size = 0.013
+converged to minimum at
+   24  9.920e-01  1.997e+00 f() =  30.001 size = 0.008
+</pre></pre></td></tr></table>
+
+<p>The simplex size first increases, while the simplex moves towards the
+minimum. After a while the size begins to decrease as the simplex
+contracts around the minimum.
+</p>
+<hr size="6">
+<a name="Multimin-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">10. References and Further Reading</h2>
+
+<p>The conjugate gradient and BFGS methods are described in detail in the
+following book,
+</p>
+<ul class="toc">
+<li> R. Fletcher,
+<cite>Practical Methods of Optimization (Second Edition)</cite> Wiley
+(1987), ISBN 0471915475.
+</li></ul>
+
+<p>A brief description of multidimensional minimization algorithms and
+more recent references can be found in,
+</p>
+<ul class="toc">
+<li> C.W. Ueberhuber,
+<cite>Numerical Computation (Volume 2)</cite>, Chapter 14, Section 4.4
+&ldquo;Minimization Methods&rdquo;, p. 325&ndash;335, Springer (1997), ISBN
+3-540-62057-5.
+</li></ul>
+
+<p>The simplex algorithm is described in the following paper, 
+</p>
+<ul class="toc">
+<li> J.A. Nelder and R. Mead,
+<cite>A simplex method for function minimization</cite>, Computer Journal
+vol. 7 (1965), 308&ndash;313.
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multimin-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

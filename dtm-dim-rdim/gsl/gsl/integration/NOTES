@@ -1,0 +1,132 @@
+This is a reimplementation of the double precision version of QUADPACK.
+The original fortran QUADPACK is in the public domain as it was
+released as part of SLATEC, which is public domain.
+
+Brian Gough
+bjg@network-theory.co.uk
+
+Bugs in the original quadpack
+=============================
+
+Notation: The use of DEFABS, RESABS and RESASC is inconsistent in DQAGSE and
+DQAGPE, in the function calls to the Gauss-Kronrod integrators. I have
+used the following definitions throughout,
+
+	RESABS=integrate(|f(x)|,x,a,b) 
+	RESASC=integrate(|f(x)-<f>|,x,a,b) 
+
+
+DQAGPE: In the original DQAGPE the variable DEFABS is used in the loop
+for in the first integral approximation. At the end of the subroutine
+it is used in a divergence test. Since its value at that stage comes
+from the final partition only, the test is not meaningful. The value that
+should be used in the test is RESABS.
+
+DQC25S: Around line 197 there is a summation loop which is slightly
+incorrect due to a typo.
+
+      RES12 = 0.0D+00
+      RES24 = 0.0D+00
+      DO 50 I=1,13
+        RES12 = RES12+CHEB12(I)*RG(I)
+        RES24 = RES12+CHEB24(I)*RG(I)
+   50 CONTINUE
+
+The line RES24 = RES12+CHEB24(I)*RG(I) should be RES24 = RES24+CHEB24(I)*RG(I)
+to make the summation correct.
+
+DQC25F: Around line 349 there is a summation loop which is slightly
+incorrect
+
+      RESABS = ABS(CHEB24(25))
+      K = 23
+      DO 150 J = 1,12
+        RESC24 = RESC24+CHEB24(K)*CHEBMO(M,K)
+        RESS24 = RESS24+CHEB24(K+1)*CHEBMO(M,K+1)
+        RESABS = ABS(CHEB24(K))+ABS(CHEB24(K+1))
+        K = K-2
+  150 CONTINUE
+
+The line RESABS = ABS(CHEB24(K))+ABS(CHEB24(K+1)) should be RESABS =
+RESABS + ABS(CHEB24(K))+ABS(CHEB24(K+1)) for the sum to make sense.
+
+DQAWFE: The accumulation of partial sums is incorrect. The current
+term is added to the extrapolated value PSUM. This extrapolated value
+includes an estimate of the effect of the current term, so the result
+is biased. I follow the proceedure of computing the raw partial sums
+and extrapolating them without any "feedback" from the extrapolation
+procedure into the sum.
+
+DQAWCE: The sign of the result should also be swapped if a > b in the
+case where the integration succeeds on the initial attempt.
+
+Testing
+=======
+
+The results of these functions should agree almost exactly with the
+results from the original QUADPACK versions. I have been able to get
+agreement up to the last bit (i.e. the last digit differs but the
+other are ok) when small numbers of evaluations are involved.
+
+If you want to compile the fortran versions to compare them with the
+GSL versions you need to bear in mind the following points to get full
+agreement:
+
+-- The original QUADPACK does not use a consistent number of digits for
+   the Gauss-Kronrod weights and abscissae. For example, the routine DQK15I
+   uses only 16 digits, while DQK15 uses 33 digits. The 16 digit version 
+   is rounded in decimal which leads to some discrepancies in the binary
+   representations in double precision.
+
+   I have used the full 33 digit values throughout the code. This causes 
+   some differences in the results compared with the original QUADPACK, but
+   the differences should be an improvement.
+
+-- Make sure you compile everything in double precision.  i.e. use -r8,
+   otherwise some float values may enter the calculation and wipe out
+   your full double precision accuracy
+
+-- If you are using an Intel chip remember that it works in extended
+   precision by default. Consequently some of the tests for round-off
+   produce different results than would be obtained if you were working
+   to double-precision accuracy. This leads to different branches
+   being taken in the code. You can use GSL_IEEE_MODE="double-precision"
+   at runtime to restrict all rounding to pure double-precision accuracy
+
+-- Make sure the machine parameters D1MACH(1)..D1MACH(4), EPMACH and UFLOW
+   are set correctly. EPMACH and UFLOW need to be the same as the
+   parameters DBL_EPSILON and DBL_MIN. In d1mach.f you need something like
+
+      DATA DMACH(1) / 2.2250738585072014D-308 /
+      DATA DMACH(2) / 1.7976931348623157D+308 /
+      DATA DMACH(4) / 2.2204460492503131D-16  /
+
+-- Make sure you enter double precision numbers as 1.0d-23 and not 1.0e-23 
+   if you are using f2c.
+
+   If you type 1.0e-23 as an argument then f2c may cast it from (float *)
+   to (double *) which gives a completely bogus result.  Since there are
+   no header files in f2c's Fortran you can't catch this error.
+
+This problem caused me to waste a lot of time, here is an example:
+
+bjg|zeke> cat main.f
+
+    program main
+    call foo(1.23e0)
+    end
+
+bjg|zeke> cat foo.f 
+    subroutine foo(x)
+    double precision x
+    print *,"x = ",x
+    return
+    end 
+
+bjg|zeke> fort77 main.f foo.f       (fort77 is an f2c front end)
+    MAIN main:
+    foo:
+
+bjg|zeke> ./a.out 
+ x =   1.96252698E-313        (Doh! We have to use 1.23d0 to make it work)
+

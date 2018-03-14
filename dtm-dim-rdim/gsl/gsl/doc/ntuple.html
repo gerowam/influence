@@ -1,0 +1,637 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-ntuples"></a>
+
+<p>This chapter describes functions for creating and manipulating
+<em>ntuples</em>, sets of values associated with events.  The ntuples
+are stored in files. Their values can be extracted in any combination
+and <em>booked</em> in a histogram using a selection function.
+</p>
+<p>The values to be stored are held in a user-defined data structure, and
+an ntuple is created associating this data structure with a file.  The
+values are then written to the file (normally inside a loop) using
+the ntuple functions described below.
+</p>
+<p>A histogram can be created from ntuple data by providing a selection
+function and a value function.  The selection function specifies whether
+an event should be included in the subset to be analyzed or not. The value
+function computes the entry to be added to the histogram for each
+event.
+</p>
+<p>All the ntuple functions are defined in the header file
+&lsquo;<tt>gsl_ntuple.h</tt>&rsquo;
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#The-ntuple-struct">1. The ntuple struct</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Creating-ntuples">2. Creating ntuples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Opening-an-existing-ntuple-file">3. Opening an existing ntuple file</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Writing-ntuples">4. Writing ntuples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reading-ntuples">5. Reading ntuples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Closing-an-ntuple-file">6. Closing an ntuple file</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Histogramming-ntuple-values">7. Histogramming ntuple values</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Example-ntuple-programs">8. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Ntuple-References-and-Further-Reading">9. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="The-ntuple-struct"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Creating-ntuples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Creating-ntuples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="The-ntuple-struct-1"></a>
+<h2 class="section">1. The ntuple struct</h2>
+<a name="index-gsl_005fntuple"></a>
+<p>Ntuples are manipulated using the <code>gsl_ntuple</code> struct. This struct
+contains information on the file where the ntuple data is stored, a
+pointer to the current ntuple data row and the size of the user-defined
+ntuple data struct.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct {
+    FILE * file;
+    void * ntuple_data;
+    size_t size;
+} gsl_ntuple;
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Creating-ntuples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Opening-an-existing-ntuple-file" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Opening-an-existing-ntuple-file" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Creating-ntuples-1"></a>
+<h2 class="section">2. Creating ntuples</h2>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fcreate"></a><u>Function:</u> gsl_ntuple * <b>gsl_ntuple_create</b><i> (char * <var>filename</var>, void * <var>ntuple_data</var>, size_t <var>size</var>)</i></dt>
+<dd><p>This function creates a new write-only ntuple file <var>filename</var> for
+ntuples of size <var>size</var> and returns a pointer to the newly created
+ntuple struct.  Any existing file with the same name is truncated to
+zero length and overwritten.  A pointer to memory for the current ntuple
+row <var>ntuple_data</var> must be supplied&mdash;this is used to copy ntuples
+in and out of the file.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Opening-an-existing-ntuple-file"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Creating-ntuples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Writing-ntuples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Creating-ntuples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Writing-ntuples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Opening-an-existing-ntuple-file-1"></a>
+<h2 class="section">3. Opening an existing ntuple file</h2>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fopen"></a><u>Function:</u> gsl_ntuple * <b>gsl_ntuple_open</b><i> (char * <var>filename</var>, void * <var>ntuple_data</var>, size_t <var>size</var>)</i></dt>
+<dd><p>This function opens an existing ntuple file <var>filename</var> for reading
+and returns a pointer to a corresponding ntuple struct. The ntuples in
+the file must have size <var>size</var>.  A pointer to memory for the current
+ntuple row <var>ntuple_data</var> must be supplied&mdash;this is used to copy
+ntuples in and out of the file.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Writing-ntuples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Opening-an-existing-ntuple-file" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-ntuples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Opening-an-existing-ntuple-file" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reading-ntuples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Writing-ntuples-1"></a>
+<h2 class="section">4. Writing ntuples</h2>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fwrite"></a><u>Function:</u> int <b>gsl_ntuple_write</b><i> (gsl_ntuple * <var>ntuple</var>)</i></dt>
+<dd><p>This function writes the current ntuple <var>ntuple-&gt;ntuple_data</var> of
+size <var>ntuple-&gt;size</var> to the corresponding file.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fbookdata"></a><u>Function:</u> int <b>gsl_ntuple_bookdata</b><i> (gsl_ntuple * <var>ntuple</var>)</i></dt>
+<dd><p>This function is a synonym for <code>gsl_ntuple_write</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Reading-ntuples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Writing-ntuples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Closing-an-ntuple-file" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Writing-ntuples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Closing-an-ntuple-file" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reading-ntuples-1"></a>
+<h2 class="section">5. Reading ntuples</h2>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fread"></a><u>Function:</u> int <b>gsl_ntuple_read</b><i> (gsl_ntuple * <var>ntuple</var>)</i></dt>
+<dd><p>This function reads the current row of the ntuple file for <var>ntuple</var>
+and stores the values in <var>ntuple-&gt;data</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Closing-an-ntuple-file"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reading-ntuples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Histogramming-ntuple-values" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reading-ntuples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Histogramming-ntuple-values" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Closing-an-ntuple-file-1"></a>
+<h2 class="section">6. Closing an ntuple file</h2>
+
+<dl>
+<dt><a name="index-gsl_005fntuple_005fclose"></a><u>Function:</u> int <b>gsl_ntuple_close</b><i> (gsl_ntuple * <var>ntuple</var>)</i></dt>
+<dd><p>This function closes the ntuple file <var>ntuple</var> and frees its
+associated allocated memory.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Histogramming-ntuple-values"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Closing-an-ntuple-file" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-ntuple-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Closing-an-ntuple-file" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-ntuple-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Histogramming-ntuple-values-1"></a>
+<h2 class="section">7. Histogramming ntuple values</h2>
+
+<p>Once an ntuple has been created its contents can be histogrammed in
+various ways using the function <code>gsl_ntuple_project</code>.  Two
+user-defined functions must be provided, a function to select events and
+a function to compute scalar values. The selection function and the
+value function both accept the ntuple row as a first argument and other
+parameters as a second argument.
+</p>
+<a name="index-selection-function_002c-ntuples"></a>
+<a name="index-gsl_005fntuple_005fselect_005ffn"></a>
+<p>The <em>selection function</em> determines which ntuple rows are selected
+for histogramming.  It is defined by the following struct,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">typedef struct {
+  int (* function) (void * ntuple_data, void * params);
+  void * params;
+} gsl_ntuple_select_fn;
+</pre></td></tr></table>
+
+<p>The struct component <var>function</var> should return a non-zero value for
+each ntuple row that is to be included in the histogram.
+</p>
+<a name="index-value-function_002c-ntuples"></a>
+<a name="index-gsl_005fntuple_005fvalue_005ffn"></a>
+<p>The <em>value function</em> computes scalar values for those ntuple rows
+selected by the selection function,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">typedef struct {
+  double (* function) (void * ntuple_data, void * params);
+  void * params;
+} gsl_ntuple_value_fn;
+</pre></td></tr></table>
+
+<p>In this case the struct component <var>function</var> should return the value
+to be added to the histogram for the ntuple row.  
+</p>
+<a name="index-histogram_002c-from-ntuple"></a>
+<a name="index-projection-of-ntuples"></a>
+<dl>
+<dt><a name="index-gsl_005fntuple_005fproject"></a><u>Function:</u> int <b>gsl_ntuple_project</b><i> (gsl_histogram * <var>h</var>, gsl_ntuple * <var>ntuple</var>, gsl_ntuple_value_fn * <var>value_func</var>, gsl_ntuple_select_fn * <var>select_func</var>)</i></dt>
+<dd><p>This function updates the histogram <var>h</var> from the ntuple <var>ntuple</var>
+using the functions <var>value_func</var> and <var>select_func</var>. For each
+ntuple row where the selection function <var>select_func</var> is non-zero the
+corresponding value of that row is computed using the function
+<var>value_func</var> and added to the histogram.  Those ntuple rows where
+<var>select_func</var> returns zero are ignored.  New entries are added to
+the histogram, so subsequent calls can be used to accumulate further
+data in the same histogram.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Example-ntuple-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Histogramming-ntuple-values" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Ntuple-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Histogramming-ntuple-values" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Ntuple-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">8. Examples</h2>
+
+<p>The following example programs demonstrate the use of ntuples in
+managing a large dataset.  The first program creates a set of 10,000
+simulated &ldquo;events&rdquo;, each with 3 associated values <em>(x,y,z)</em>.  These
+are generated from a Gaussian distribution with unit variance, for
+demonstration purposes, and written to the ntuple file &lsquo;<tt>test.dat</tt>&rsquo;.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;gsl/gsl_ntuple.h&gt;
+#include &lt;gsl/gsl_rng.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+
+struct data
+{
+  double x;
+  double y;
+  double z;
+};
+
+int
+main (void)
+{
+  const gsl_rng_type * T;
+  gsl_rng * r;
+
+  struct data ntuple_row;
+  int i;
+
+  gsl_ntuple *ntuple 
+    = gsl_ntuple_create (&quot;test.dat&quot;, &amp;ntuple_row, 
+                         sizeof (ntuple_row));
+
+  gsl_rng_env_setup ();
+
+  T = gsl_rng_default; 
+  r = gsl_rng_alloc (T);
+
+  for (i = 0; i &lt; 10000; i++)
+    {
+      ntuple_row.x = gsl_ran_ugaussian (r);
+      ntuple_row.y = gsl_ran_ugaussian (r);
+      ntuple_row.z = gsl_ran_ugaussian (r);
+      
+      gsl_ntuple_write (ntuple);
+    }
+  
+  gsl_ntuple_close (ntuple);
+  gsl_rng_free (r);
+
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The next program analyses the ntuple data in the file &lsquo;<tt>test.dat</tt>&rsquo;.
+The analysis procedure is to compute the squared-magnitude of each
+event, <em>E^2=x^2+y^2+z^2</em>, and select only those which exceed a
+lower limit of 1.5.  The selected events are then histogrammed using
+their <em>E^2</em> values.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;math.h&gt;
+#include &lt;gsl/gsl_ntuple.h&gt;
+#include &lt;gsl/gsl_histogram.h&gt;
+
+struct data
+{
+  double x;
+  double y;
+  double z;
+};
+
+int sel_func (void *ntuple_data, void *params);
+double val_func (void *ntuple_data, void *params);
+
+int
+main (void)
+{
+  struct data ntuple_row;
+
+  gsl_ntuple *ntuple 
+    = gsl_ntuple_open (&quot;test.dat&quot;, &amp;ntuple_row,
+                       sizeof (ntuple_row));
+  double lower = 1.5;
+
+  gsl_ntuple_select_fn S;
+  gsl_ntuple_value_fn V;
+
+  gsl_histogram *h = gsl_histogram_alloc (100);
+  gsl_histogram_set_ranges_uniform(h, 0.0, 10.0);
+
+  S.function = &amp;sel_func;
+  S.params = &amp;lower;
+
+  V.function = &amp;val_func;
+  V.params = 0;
+
+  gsl_ntuple_project (h, ntuple, &amp;V, &amp;S);
+  gsl_histogram_fprintf (stdout, h, &quot;%f&quot;, &quot;%f&quot;);
+  gsl_histogram_free (h);
+  gsl_ntuple_close (ntuple);
+
+  return 0;
+}
+
+int
+sel_func (void *ntuple_data, void *params)
+{
+  struct data * data = (struct data *) ntuple_data;  
+  double x, y, z, E2, scale;
+  scale = *(double *) params;
+  
+  x = data-&gt;x;
+  y = data-&gt;y;
+  z = data-&gt;z;
+
+  E2 = x * x + y * y + z * z;
+
+  return E2 &gt; scale;
+}
+
+double
+val_func (void *ntuple_data, void *params)
+{
+  struct data * data = (struct data *) ntuple_data;  
+  double x, y, z;
+
+  x = data-&gt;x;
+  y = data-&gt;y;
+  z = data-&gt;z;
+
+  return x * x + y * y + z * z;
+}
+</pre></pre></td></tr></table>
+
+<p>The following plot shows the distribution of the selected events.
+Note the cut-off at the lower bound.
+</p>
+
+<hr size="6">
+<a name="Ntuple-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Example-ntuple-programs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Example-ntuple-programs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">9. References and Further Reading</h2>
+<a name="index-PAW"></a>
+<a name="index-HBOOK"></a>
+
+<p>Further information on the use of ntuples can be found in the
+documentation for the <small>CERN</small> packages <small>PAW</small> and <small>HBOOK</small>
+(available online).
+</p>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-ntuple-struct" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

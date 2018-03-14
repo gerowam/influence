@@ -1,0 +1,888 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-complex-numbers"></a>
+
+<p>The functions described in this chapter provide support for complex
+numbers.  The algorithms take care to avoid unnecessary intermediate
+underflows and overflows, allowing the functions to be evaluated over 
+as much of the complex plane as possible. 
+</p>
+
+<p>For multiple-valued functions the branch cuts have been chosen to follow
+the conventions of Abramowitz and Stegun in the <cite>Handbook of
+Mathematical Functions</cite>. The functions return principal values which are
+the same as those in GNU Calc, which in turn are the same as those in
+<cite>Common Lisp, The Language (Second Edition)</cite><a name="DOCF1" href="#FOOT1">(1)</a> and the HP-28/48 series of
+calculators.
+</p>
+<p>The complex types are defined in the header file &lsquo;<tt>gsl_complex.h</tt>&rsquo;,
+while the corresponding complex functions and arithmetic operations are
+defined in &lsquo;<tt>gsl_complex_math.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Representation-of-complex-numbers">1. Representation of complex numbers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Properties-of-complex-numbers">2. Properties of complex numbers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Complex-arithmetic-operators">3. Complex arithmetic operators</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Elementary-Complex-Functions">4. Elementary Complex Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Complex-Trigonometric-Functions">5. Complex Trigonometric Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Inverse-Complex-Trigonometric-Functions">6. Inverse Complex Trigonometric Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Complex-Hyperbolic-Functions">7. Complex Hyperbolic Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Inverse-Complex-Hyperbolic-Functions">8. Inverse Complex Hyperbolic Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Complex-Number-References-and-Further-Reading">9. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Representation-of-complex-numbers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Properties-of-complex-numbers" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Properties-of-complex-numbers" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Representation-of-complex-numbers-1"></a>
+<h2 class="section">1. Representation of complex numbers</h2>
+<a name="index-representations-of-complex-numbers"></a>
+<a name="index-polar-form-of-complex-numbers"></a>
+<a name="index-gsl_005fcomplex"></a>
+
+<p>Complex numbers are represented using the type <code>gsl_complex</code>. The
+internal representation of this type may vary across platforms and
+should not be accessed directly. The functions and macros described
+below allow complex numbers to be manipulated in a portable way.
+</p>
+<p>For reference, the default form of the <code>gsl_complex</code> type is
+given by the following struct,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">typedef struct
+{
+  double dat[2];
+} gsl_complex;
+</pre></td></tr></table>
+
+<p>The real and imaginary part are stored in contiguous elements of a two
+element array. This eliminates any padding between the real and
+imaginary parts, <code>dat[0]</code> and <code>dat[1]</code>, allowing the struct to
+be mapped correctly onto packed complex arrays.
+</p>
+<dl>
+<dt><a name="index-gsl_005fcomplex_005frect"></a><u>Function:</u> gsl_complex <b>gsl_complex_rect</b><i> (double <var>x</var>, double <var>y</var>)</i></dt>
+<dd><p>This function uses the rectangular Cartesian components
+(<var>x</var>,<var>y</var>) to return the complex number <em>z = x + i y</em>.  @inlinefn{}
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fpolar"></a><u>Function:</u> gsl_complex <b>gsl_complex_polar</b><i> (double <var>r</var>, double <var>theta</var>)</i></dt>
+<dd><p>This function returns the complex number <em>z = r \exp(i \theta) = r
+(\cos(\theta) + i \sin(\theta))</em> from the polar representation
+(<var>r</var>,<var>theta</var>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-GSL_005fREAL"></a><u>Macro:</u> <b>GSL_REAL</b><i> (<var>z</var>)</i></dt>
+<dt><a name="index-GSL_005fIMAG"></a><u>Macro:</u> <b>GSL_IMAG</b><i> (<var>z</var>)</i></dt>
+<dd><p>These macros return the real and imaginary parts of the complex number
+<var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-GSL_005fSET_005fCOMPLEX"></a><u>Macro:</u> <b>GSL_SET_COMPLEX</b><i> (<var>zp</var>, <var>x</var>, <var>y</var>)</i></dt>
+<dd><p>This macro uses the Cartesian components (<var>x</var>,<var>y</var>) to set the
+real and imaginary parts of the complex number pointed to by <var>zp</var>.
+For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">GSL_SET_COMPLEX(&amp;z, 3, 4)
+</pre></td></tr></table>
+
+<p>sets <var>z</var> to be <em>3 + 4i</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-GSL_005fSET_005fREAL"></a><u>Macro:</u> <b>GSL_SET_REAL</b><i> (<var>zp</var>,<var>x</var>)</i></dt>
+<dt><a name="index-GSL_005fSET_005fIMAG"></a><u>Macro:</u> <b>GSL_SET_IMAG</b><i> (<var>zp</var>,<var>y</var>)</i></dt>
+<dd><p>These macros allow the real and imaginary parts of the complex number
+pointed to by <var>zp</var> to be set independently.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Properties-of-complex-numbers"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-arithmetic-operators" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-arithmetic-operators" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Properties-of-complex-numbers-1"></a>
+<h2 class="section">2. Properties of complex numbers</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farg"></a><u>Function:</u> double <b>gsl_complex_arg</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-argument-of-complex-number"></a>
+<p>This function returns the argument of the complex number <var>z</var>,
+<em>\arg(z)</em>, where <em>-\pi &lt; \arg(z) &lt;= \pi</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fabs"></a><u>Function:</u> double <b>gsl_complex_abs</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-magnitude-of-complex-number"></a>
+<p>This function returns the magnitude of the complex number <var>z</var>, <em>|z|</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fabs2"></a><u>Function:</u> double <b>gsl_complex_abs2</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the squared magnitude of the complex number
+<var>z</var>, <em>|z|^2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005flogabs"></a><u>Function:</u> double <b>gsl_complex_logabs</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the natural logarithm of the magnitude of the
+complex number <var>z</var>, <em>\log|z|</em>.  It allows an accurate
+evaluation of <em>\log|z|</em> when <em>|z|</em> is close to one. The direct
+evaluation of <code>log(gsl_complex_abs(z))</code> would lead to a loss of
+precision in this case.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Complex-arithmetic-operators"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Properties-of-complex-numbers" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Elementary-Complex-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Properties-of-complex-numbers" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Elementary-Complex-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Complex-arithmetic-operators-1"></a>
+<h2 class="section">3. Complex arithmetic operators</h2>
+<a name="index-complex-arithmetic"></a>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fadd"></a><u>Function:</u> gsl_complex <b>gsl_complex_add</b><i> (gsl_complex <var>a</var>, gsl_complex <var>b</var>)</i></dt>
+<dd><p>This function returns the sum of the complex numbers <var>a</var> and
+<var>b</var>, <em>z=a+b</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsub"></a><u>Function:</u> gsl_complex <b>gsl_complex_sub</b><i> (gsl_complex <var>a</var>, gsl_complex <var>b</var>)</i></dt>
+<dd><p>This function returns the difference of the complex numbers <var>a</var> and
+<var>b</var>, <em>z=a-b</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fmul"></a><u>Function:</u> gsl_complex <b>gsl_complex_mul</b><i> (gsl_complex <var>a</var>, gsl_complex <var>b</var>)</i></dt>
+<dd><p>This function returns the product of the complex numbers <var>a</var> and
+<var>b</var>, <em>z=ab</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fdiv"></a><u>Function:</u> gsl_complex <b>gsl_complex_div</b><i> (gsl_complex <var>a</var>, gsl_complex <var>b</var>)</i></dt>
+<dd><p>This function returns the quotient of the complex numbers <var>a</var> and
+<var>b</var>, <em>z=a/b</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fadd_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_add_real</b><i> (gsl_complex <var>a</var>, double <var>x</var>)</i></dt>
+<dd><p>This function returns the sum of the complex number <var>a</var> and the
+real number <var>x</var>, <em>z=a+x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsub_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_sub_real</b><i> (gsl_complex <var>a</var>, double <var>x</var>)</i></dt>
+<dd><p>This function returns the difference of the complex number <var>a</var> and the
+real number <var>x</var>, <em>z=a-x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fmul_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_mul_real</b><i> (gsl_complex <var>a</var>, double <var>x</var>)</i></dt>
+<dd><p>This function returns the product of the complex number <var>a</var> and the
+real number <var>x</var>, <em>z=ax</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fdiv_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_div_real</b><i> (gsl_complex <var>a</var>, double <var>x</var>)</i></dt>
+<dd><p>This function returns the quotient of the complex number <var>a</var> and the
+real number <var>x</var>, <em>z=a/x</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fadd_005fimag"></a><u>Function:</u> gsl_complex <b>gsl_complex_add_imag</b><i> (gsl_complex <var>a</var>, double <var>y</var>)</i></dt>
+<dd><p>This function returns the sum of the complex number <var>a</var> and the
+imaginary number <em>i</em><var>y</var>, <em>z=a+iy</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsub_005fimag"></a><u>Function:</u> gsl_complex <b>gsl_complex_sub_imag</b><i> (gsl_complex <var>a</var>, double <var>y</var>)</i></dt>
+<dd><p>This function returns the difference of the complex number <var>a</var> and the
+imaginary number <em>i</em><var>y</var>, <em>z=a-iy</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fmul_005fimag"></a><u>Function:</u> gsl_complex <b>gsl_complex_mul_imag</b><i> (gsl_complex <var>a</var>, double <var>y</var>)</i></dt>
+<dd><p>This function returns the product of the complex number <var>a</var> and the
+imaginary number <em>i</em><var>y</var>, <em>z=a*(iy)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fdiv_005fimag"></a><u>Function:</u> gsl_complex <b>gsl_complex_div_imag</b><i> (gsl_complex <var>a</var>, double <var>y</var>)</i></dt>
+<dd><p>This function returns the quotient of the complex number <var>a</var> and the
+imaginary number <em>i</em><var>y</var>, <em>z=a/(iy)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fconjugate"></a><u>Function:</u> gsl_complex <b>gsl_complex_conjugate</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-conjugate-of-complex-number"></a>
+<p>This function returns the complex conjugate of the complex number
+<var>z</var>, <em>z^* = x - i y</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005finverse"></a><u>Function:</u> gsl_complex <b>gsl_complex_inverse</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the inverse, or reciprocal, of the complex number
+<var>z</var>, <em>1/z = (x - i y)/(x^2 + y^2)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fnegative"></a><u>Function:</u> gsl_complex <b>gsl_complex_negative</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the negative of the complex number
+<var>z</var>, <em>-z = (-x) + i(-y)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Elementary-Complex-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Complex-arithmetic-operators" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Trigonometric-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Complex-arithmetic-operators" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Trigonometric-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Elementary-Complex-Functions-1"></a>
+<h2 class="section">4. Elementary Complex Functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsqrt"></a><u>Function:</u> gsl_complex <b>gsl_complex_sqrt</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-square-root-of-complex-number"></a>
+<p>This function returns the square root of the complex number <var>z</var>,
+<em>\sqrt z</em>. The branch cut is the negative real axis. The result
+always lies in the right half of the complex plane.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsqrt_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_sqrt_real</b><i> (double <var>x</var>)</i></dt>
+<dd><p>This function returns the complex square root of the real number
+<var>x</var>, where <var>x</var> may be negative.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fpow"></a><u>Function:</u> gsl_complex <b>gsl_complex_pow</b><i> (gsl_complex <var>z</var>, gsl_complex <var>a</var>)</i></dt>
+<dd><a name="index-power-of-complex-number"></a>
+<a name="index-exponentiation-of-complex-number"></a>
+<p>The function returns the complex number <var>z</var> raised to the complex
+power <var>a</var>, <em>z^a</em>. This is computed as <em>\exp(\log(z)*a)</em>
+using complex logarithms and complex exponentials.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fpow_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_pow_real</b><i> (gsl_complex <var>z</var>, double <var>x</var>)</i></dt>
+<dd><p>This function returns the complex number <var>z</var> raised to the real
+power <var>x</var>, <em>z^x</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fexp"></a><u>Function:</u> gsl_complex <b>gsl_complex_exp</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex exponential of the complex number
+<var>z</var>, <em>\exp(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005flog"></a><u>Function:</u> gsl_complex <b>gsl_complex_log</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-logarithm-of-complex-number"></a>
+<p>This function returns the complex natural logarithm (base <em>e</em>) of
+the complex number <var>z</var>, <em>\log(z)</em>.  The branch cut is the
+negative real axis. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005flog10"></a><u>Function:</u> gsl_complex <b>gsl_complex_log10</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex base-10 logarithm of
+the complex number <var>z</var>, <em>\log_10 (z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005flog_005fb"></a><u>Function:</u> gsl_complex <b>gsl_complex_log_b</b><i> (gsl_complex <var>z</var>, gsl_complex <var>b</var>)</i></dt>
+<dd><p>This function returns the complex base-<var>b</var> logarithm of the complex
+number <var>z</var>, <em>\log_b(z)</em>. This quantity is computed as the ratio
+<em>\log(z)/\log(b)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Complex-Trigonometric-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Elementary-Complex-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Trigonometric-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Elementary-Complex-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Trigonometric-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Complex-Trigonometric-Functions-1"></a>
+<h2 class="section">5. Complex Trigonometric Functions</h2>
+<a name="index-trigonometric-functions-of-complex-numbers"></a>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsin"></a><u>Function:</u> gsl_complex <b>gsl_complex_sin</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-sin_002c-of-complex-number"></a>
+<p>This function returns the complex sine of the complex number <var>z</var>,
+<em>\sin(z) = (\exp(iz) - \exp(-iz))/(2i)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcos"></a><u>Function:</u> gsl_complex <b>gsl_complex_cos</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-cosine-of-complex-number"></a>
+<p>This function returns the complex cosine of the complex number <var>z</var>,
+<em>\cos(z) = (\exp(iz) + \exp(-iz))/2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005ftan"></a><u>Function:</u> gsl_complex <b>gsl_complex_tan</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><a name="index-tangent-of-complex-number"></a>
+<p>This function returns the complex tangent of the complex number <var>z</var>,
+<em>\tan(z) = \sin(z)/\cos(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsec"></a><u>Function:</u> gsl_complex <b>gsl_complex_sec</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex secant of the complex number <var>z</var>,
+<em>\sec(z) = 1/\cos(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcsc"></a><u>Function:</u> gsl_complex <b>gsl_complex_csc</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex cosecant of the complex number <var>z</var>,
+<em>\csc(z) = 1/\sin(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcot"></a><u>Function:</u> gsl_complex <b>gsl_complex_cot</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex cotangent of the complex number <var>z</var>,
+<em>\cot(z) = 1/\tan(z)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Inverse-Complex-Trigonometric-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Complex-Trigonometric-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Hyperbolic-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Complex-Trigonometric-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Hyperbolic-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Inverse-Complex-Trigonometric-Functions-1"></a>
+<h2 class="section">6. Inverse Complex Trigonometric Functions</h2>
+<a name="index-inverse-complex-trigonometric-functions"></a>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsin"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsin</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arcsine of the complex number <var>z</var>,
+<em>\arcsin(z)</em>. The branch cuts are on the real axis, less than <em>-1</em>
+and greater than <em>1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsin_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsin_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arcsine of the real number <var>z</var>,
+<em>\arcsin(z)</em>. For <em>z</em> between <em>-1</em> and <em>1</em>, the
+function returns a real value in the range <em>[-\pi/2,\pi/2]</em>. For
+<em>z</em> less than <em>-1</em> the result has a real part of <em>-\pi/2</em>
+and a positive imaginary part.  For <em>z</em> greater than <em>1</em> the
+result has a real part of <em>\pi/2</em> and a negative imaginary part.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccos"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccos</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arccosine of the complex number <var>z</var>,
+<em>\arccos(z)</em>. The branch cuts are on the real axis, less than <em>-1</em>
+and greater than <em>1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccos_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccos_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arccosine of the real number <var>z</var>,
+<em>\arccos(z)</em>. For <em>z</em> between <em>-1</em> and <em>1</em>, the
+function returns a real value in the range <em>[0,\pi]</em>. For <em>z</em>
+less than <em>-1</em> the result has a real part of <em>\pi</em> and a
+negative imaginary part.  For <em>z</em> greater than <em>1</em> the result
+is purely imaginary and positive.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farctan"></a><u>Function:</u> gsl_complex <b>gsl_complex_arctan</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arctangent of the complex number
+<var>z</var>, <em>\arctan(z)</em>. The branch cuts are on the imaginary axis,
+below <em>-i</em> and above <em>i</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsec"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsec</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arcsecant of the complex number <var>z</var>,
+<em>\arcsec(z) = \arccos(1/z)</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsec_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsec_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arcsecant of the real number <var>z</var>,
+<em>\arcsec(z) = \arccos(1/z)</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccsc"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccsc</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arccosecant of the complex number <var>z</var>,
+<em>\arccsc(z) = \arcsin(1/z)</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccsc_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccsc_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arccosecant of the real number <var>z</var>,
+<em>\arccsc(z) = \arcsin(1/z)</em>. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccot"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccot</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex arccotangent of the complex number <var>z</var>,
+<em>\arccot(z) = \arctan(1/z)</em>. 
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Complex-Hyperbolic-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Inverse-Complex-Trigonometric-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Hyperbolic-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Trigonometric-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Hyperbolic-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Complex-Hyperbolic-Functions-1"></a>
+<h2 class="section">7. Complex Hyperbolic Functions</h2>
+<a name="index-hyperbolic-functions_002c-complex-numbers"></a>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsinh"></a><u>Function:</u> gsl_complex <b>gsl_complex_sinh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic sine of the complex number
+<var>z</var>, <em>\sinh(z) = (\exp(z) - \exp(-z))/2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcosh"></a><u>Function:</u> gsl_complex <b>gsl_complex_cosh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic cosine of the complex number
+<var>z</var>, <em>\cosh(z) = (\exp(z) + \exp(-z))/2</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005ftanh"></a><u>Function:</u> gsl_complex <b>gsl_complex_tanh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic tangent of the complex number
+<var>z</var>, <em>\tanh(z) = \sinh(z)/\cosh(z)</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fsech"></a><u>Function:</u> gsl_complex <b>gsl_complex_sech</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic secant of the complex
+number <var>z</var>, <em>\sech(z) = 1/\cosh(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcsch"></a><u>Function:</u> gsl_complex <b>gsl_complex_csch</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic cosecant of the complex
+number <var>z</var>, <em>\csch(z) = 1/\sinh(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005fcoth"></a><u>Function:</u> gsl_complex <b>gsl_complex_coth</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic cotangent of the complex
+number <var>z</var>, <em>\coth(z) = 1/\tanh(z)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Inverse-Complex-Hyperbolic-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Complex-Hyperbolic-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Number-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Complex-Hyperbolic-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Complex-Number-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Inverse-Complex-Hyperbolic-Functions-1"></a>
+<h2 class="section">8. Inverse Complex Hyperbolic Functions</h2>
+<a name="index-inverse-hyperbolic-functions_002c-complex-numbers"></a>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsinh"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsinh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arcsine of the
+complex number <var>z</var>, <em>\arcsinh(z)</em>.  The branch cuts are on the
+imaginary axis, below <em>-i</em> and above <em>i</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccosh"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccosh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arccosine of the complex
+number <var>z</var>, <em>\arccosh(z)</em>.  The branch cut is on the real
+axis, less than <em>1</em>.  Note that in this case we use the negative
+square root in formula 4.6.21 of Abramowitz &amp; Stegun giving
+<em>\arccosh(z)=\log(z-\sqrtz^2-1)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccosh_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccosh_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arccosine of
+the real number <var>z</var>, <em>\arccosh(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farctanh"></a><u>Function:</u> gsl_complex <b>gsl_complex_arctanh</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arctangent of the complex
+number <var>z</var>, <em>\arctanh(z)</em>.  The branch cuts are on the real
+axis, less than <em>-1</em> and greater than <em>1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farctanh_005freal"></a><u>Function:</u> gsl_complex <b>gsl_complex_arctanh_real</b><i> (double <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arctangent of the real
+number <var>z</var>, <em>\arctanh(z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farcsech"></a><u>Function:</u> gsl_complex <b>gsl_complex_arcsech</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arcsecant of the complex
+number <var>z</var>, <em>\arcsech(z) = \arccosh(1/z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccsch"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccsch</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arccosecant of the complex
+number <var>z</var>, <em>\arccsch(z) = \arcsin(1/z)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fcomplex_005farccoth"></a><u>Function:</u> gsl_complex <b>gsl_complex_arccoth</b><i> (gsl_complex <var>z</var>)</i></dt>
+<dd><p>This function returns the complex hyperbolic arccotangent of the complex
+number <var>z</var>, <em>\arccoth(z) = \arctanh(1/z)</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Complex-Number-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Inverse-Complex-Hyperbolic-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Inverse-Complex-Hyperbolic-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">9. References and Further Reading</h2>
+
+<p>The implementations of the elementary and trigonometric functions are
+based on the following papers,
+</p>
+<ul class="toc">
+<li>
+T. E. Hull, Thomas F. Fairgrieve, Ping Tak Peter Tang,
+&ldquo;Implementing Complex Elementary Functions Using Exception
+Handling&rdquo;, <cite>ACM Transactions on Mathematical Software</cite>, Volume 20
+(1994), pp 215&ndash;244, Corrigenda, p553
+
+</li><li>
+T. E. Hull, Thomas F. Fairgrieve, Ping Tak Peter Tang,
+&ldquo;Implementing the complex arcsin and arccosine functions using exception
+handling&rdquo;, <cite>ACM Transactions on Mathematical Software</cite>, Volume 23
+(1997) pp 299&ndash;335
+</li></ul>
+
+<p>The general formulas and details of branch cuts can be found in the
+following books,
+</p>
+<ul class="toc">
+<li>
+Abramowitz and Stegun, <cite>Handbook of Mathematical Functions</cite>,
+&ldquo;Circular Functions in Terms of Real and Imaginary Parts&rdquo;, Formulas
+4.3.55&ndash;58,
+&ldquo;Inverse Circular Functions in Terms of Real and Imaginary Parts&rdquo;,
+Formulas 4.4.37&ndash;39,
+&ldquo;Hyperbolic Functions in Terms of Real and Imaginary Parts&rdquo;,
+Formulas 4.5.49&ndash;52,
+&ldquo;Inverse Hyperbolic Functions&mdash;relation to Inverse Circular Functions&rdquo;,
+Formulas 4.6.14&ndash;19.
+
+</li><li>
+Dave Gillespie, <cite>Calc Manual</cite>, Free Software Foundation, ISBN
+1-882114-18-3
+</li></ul>
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>Note that the
+first edition uses different definitions.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Representation-of-complex-numbers" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

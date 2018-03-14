@@ -1,0 +1,1469 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-nonlinear-least-squares-fitting"></a>
+<a name="index-least-squares-fitting_002c-nonlinear"></a>
+
+<p>This chapter describes functions for multidimensional nonlinear
+least-squares fitting.  The library provides low level components for a
+variety of iterative solvers and convergence tests.  These can be
+combined by the user to achieve the desired solution, with full access
+to the intermediate steps of the iteration.  Each class of methods uses
+the same framework, so that you can switch between solvers at runtime
+without needing to recompile your program.  Each instance of a solver
+keeps track of its own state, allowing the solvers to be used in
+multi-threaded programs.
+</p>
+<p>The header file &lsquo;<tt>gsl_multifit_nlin.h</tt>&rsquo; contains prototypes for the
+multidimensional nonlinear fitting functions and related declarations.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting">2. Weighted Nonlinear Least-Squares</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting">3. Regularized Nonlinear Least-Squares</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-Nonlinear-Least_002dSquares-Solver">4. Initializing the Solver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Providing-the-Function-to-be-Minimized">5. Providing the Function to be Minimized</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Finite-Difference-Jacobian">6. Finite Difference Jacobian</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Iteration-of-the-Minimization-Algorithm">7. Iteration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Search-Stopping-Parameters-for-Minimization-Algorithms">8. Search Stopping Parameters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#High-Level-Driver">9. High Level Driver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Algorithms-using-Derivatives">10. Minimization Algorithms using Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Algorithms-without-Derivatives">11. Minimization Algorithms without Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Computing-the-covariance-matrix-of-best-fit-parameters">12. Computing the covariance matrix of best fit parameters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Troubleshooting-Nonlinear-Least-Squares">13. Troubleshooting</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Example-programs-for-Nonlinear-Least_002dSquares-Fitting">14. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#References-and-Further-Reading-for-Nonlinear-Least_002dSquares-Fitting">15. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Overview-of-Nonlinear-Least_002dSquares-Fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-nonlinear-least-squares-fitting_002c-overview"></a>
+
+<p>The problem of multidimensional nonlinear least-squares fitting requires
+the minimization of the squared residuals of <em>n</em> functions,
+<em>f_i</em>, in <em>p</em> parameters, <em>x_i</em>,
+All algorithms proceed from an initial guess using the linearization,
+where <em>x</em> is the initial point, <em>\delta</em> is the proposed step
+and <em>J</em> is the
+Jacobian matrix <em>J_ij = d f_i / d x_j</em>.  
+Additional strategies are used to enlarge the region of convergence.
+These include requiring a decrease in the norm <em>||f||</em> on each
+step or using a trust region to avoid steps which fall outside the linear 
+regime.
+</p>
+<p>Note that the model parameters are denoted by <em>x</em> in this chapter
+since the non-linear least-squares algorithms are described
+geometrically (i.e. finding the minimum of a surface).  The
+independent variable of any data to be fitted is denoted by <em>t</em>.
+</p>
+<hr size="6">
+<a name="Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Weighted-Nonlinear-Least_002dSquares"></a>
+<h2 class="section">2. Weighted Nonlinear Least-Squares</h2>
+
+<p>Weighted nonlinear least-squares fitting minimizes the function
+where <em>W = diag(w_1,w_2,...,w_n)</em> is the weighting matrix,
+and the weights <em>w_i</em> are commonly defined as <em>w_i = 1/\sigma_i^2</em>,
+where <em>\sigma_i</em> is the error in the <em>i</em>th measurement.
+A simple change of variables <em>\tildef = \sqrtW f</em> yields
+<em>\Phi(x) = 1 \over 2 ||\tildef||^2</em>, which is in the
+same form as the unweighted case. The user can either perform this
+transform directly on their function residuals and Jacobian, or use
+the <code>gsl_multifit_fdfsolver_wset</code> interface which automatically
+performs the correct scaling. To manually perform this transformation,
+the residuals and Jacobian should be modified according to
+where <em>Y_i = Y(x,t_i)</em>.
+</p>
+<hr size="6">
+<a name="Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Nonlinear-Least_002dSquares-Solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Weighted-Nonlinear-Least_002dSquares-Fitting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Nonlinear-Least_002dSquares-Solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Regularized-Nonlinear-Least_002dSquares"></a>
+<h2 class="section">3. Regularized Nonlinear Least-Squares</h2>
+<p>In cases where the Jacobian <em>J</em> is rank-deficient or singular,
+standard nonlinear least squares can sometimes produce
+undesirable and unstable solutions. In these cases, it can
+help to regularize the problem using ridge or Tikhonov regularization.
+In this method, we introduce a term in our minimization function
+which is designed to damp the solution vector <em>x</em>, or give preference
+to solutions with smaller norms.
+Here, the regularization matrix <em>L</em> is often set
+as <em>L = \lambda I</em>, for a positive scalar <em>\lambda</em>, but can
+also be a general <em>m</em>-by-<em>p</em> (where <em>m</em> is any number
+of rows) matrix depending on the
+structure of the problem to be solved. If we define a new
+<em>(n+m)</em>-by-1 vector
+or, in the weighted case,
+then
+which is in the same form as the standard nonlinear least squares
+problem. The corresponding <em>(n+m)</em>-by-<em>p</em> Jacobian matrix is
+or for weighted systems
+While the user could explicitly form the <em>\tildef(x)</em> vector
+and <em>\tildeJ</em> matrix, the <code>fdfridge</code> interface
+described below allows the user to specify the original data vector
+<em>f(x)</em>, Jacobian <em>J</em>, regularization matrix
+<em>L</em>, and optional weighting matrix <em>W</em>, and automatically
+forms <em>\tildef(x)</em> and
+<em>\tildeJ</em> to solve the system. This allows switching
+between regularized and non-regularized solutions with minimal
+code changes.
+</p>
+<hr size="6">
+<a name="Initializing-the-Nonlinear-Least_002dSquares-Solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-Function-to-be-Minimized" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Regularized-Nonlinear-Least_002dSquares-Fitting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-Function-to-be-Minimized" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-Solver"></a>
+<h2 class="section">4. Initializing the Solver</h2>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005falloc"></a><u>Function:</u> gsl_multifit_fsolver * <b>gsl_multifit_fsolver_alloc</b><i> (const gsl_multifit_fsolver_type * <var>T</var>, size_t <var>n</var>, size_t <var>p</var>)</i></dt>
+<dd><a name="index-gsl_005fmultifit_005ffsolver"></a>
+<a name="index-gsl_005fmultifit_005ffsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+solver of type <var>T</var> for <var>n</var> observations and <var>p</var> parameters.
+The number of observations <var>n</var> must be greater than or equal to
+parameters <var>p</var>. 
+</p>
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005falloc"></a><u>Function:</u> gsl_multifit_fdfsolver * <b>gsl_multifit_fdfsolver_alloc</b><i> (const gsl_multifit_fdfsolver_type * <var>T</var>, size_t <var>n</var>, size_t <var>p</var>)</i></dt>
+<dd><a name="index-gsl_005fmultifit_005ffdfsolver"></a>
+<a name="index-gsl_005fmultifit_005ffdfsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+derivative solver of type <var>T</var> for <var>n</var> observations and <var>p</var>
+parameters.  For example, the following code creates an instance of a
+Levenberg-Marquardt solver for 100 data points and 3 parameters,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_multifit_fdfsolver_type * T 
+    = gsl_multifit_fdfsolver_lmder;
+gsl_multifit_fdfsolver * s 
+    = gsl_multifit_fdfsolver_alloc (T, 100, 3);
+</pre></td></tr></table>
+
+<p>The number of observations <var>n</var> must be greater than or equal to
+parameters <var>p</var>.
+</p>
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005falloc"></a><u>Function:</u> gsl_multifit_fdfridge * <b>gsl_multifit_fdfridge_alloc</b><i> (const gsl_multifit_fdfsolver_type * <var>T</var>, size_t <var>n</var>, size_t <var>p</var>)</i></dt>
+<dd><a name="index-gsl_005fmultifit_005ffdfridge"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+derivative solver of type <var>T</var> for <var>n</var> observations and <var>p</var>
+parameters. The solver will automatically form the augmented
+system <em>\tildef(x)</em> and <em>\tildeJ</em> for ridge (Tikhonov)
+regression.
+If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005fset"></a><u>Function:</u> int <b>gsl_multifit_fsolver_set</b><i> (gsl_multifit_fsolver * <var>s</var>, gsl_multifit_function * <var>f</var>, const gsl_vector * <var>x</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing solver <var>s</var>
+to use the function <var>f</var> and the initial guess <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fset"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_set</b><i> (gsl_multifit_fdfsolver * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fwset"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_wset</b><i> (gsl_multifit_fdfsolver * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>wts</var>)</i></dt>
+<dd><p>These functions initialize, or reinitialize, an existing solver <var>s</var>
+to use the function and derivative <var>fdf</var> and the initial guess
+<var>x</var>.
+</p>
+<p>Optionally, a weight vector <var>wts</var> can be given to perform
+a weighted nonlinear regression. Here, the weighting matrix is
+<em>W = diag(w_1,w_2,...,w_n)</em>. The <var>wts</var> vector is referenced
+throughout the iteration so it should not be freed by the caller until
+the iteration terminates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fset"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_set</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const double <var>lambda</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fwset"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_wset</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const double <var>lambda</var>, const gsl_vector * <var>wts</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing ridge solver
+<var>s</var> to use the function and derivative <var>fdf</var> and the initial guess
+<var>x</var>. Here, the regularization matrix is set to <em>L = \lambda I</em>,
+with <em>\lambda</em> specified in <var>lambda</var>.
+</p>
+<p>Optionally, a weight vector <var>wts</var> can be given to perform
+a weighted nonlinear regression. Here, the weighting matrix is
+<em>W = diag(w_1,w_2,...,w_n)</em>. The <var>wts</var> vector is referenced
+throughout the iteration so it should not be freed by the caller until
+the iteration terminates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fset2"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_set2</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>lambda</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fwset2"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_wset2</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const gsl_vector * <var>lambda</var>, const gsl_vector * <var>wts</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing ridge solver
+<var>s</var> to use the function and derivative <var>fdf</var> and the initial
+guess <var>x</var>. Here, the regularization matrix is set to
+<em>L = diag(\lambda_1,\lambda_2,...,\lambda_p)</em>, where
+the <em>\lambda_i</em> are given in <var>lambda</var>.
+</p>
+<p>Optionally, a weight vector <var>wts</var> can be given to perform
+a weighted nonlinear regression. Here, the weighting matrix is
+<em>W = diag(w_1,w_2,...,w_n)</em>. The <var>wts</var> vector is referenced
+throughout the iteration so it should not be freed by the caller until
+the iteration terminates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fset3"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_set3</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const gsl_matrix * <var>L</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fwset3"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_wset3</b><i> (gsl_multifit_fdfridge * <var>s</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>x</var>, const gsl_matrix * <var>L</var>, const gsl_vector * <var>wts</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing ridge solver
+<var>s</var> to use the function and derivative <var>fdf</var> and the initial
+guess <var>x</var>. Here, the regularization matrix is set to <var>L</var>,
+which must have <em>p</em> columns but may have any number of rows.
+</p>
+<p>Optionally, a weight vector <var>wts</var> can be given to perform
+a weighted nonlinear regression. Here, the weighting matrix is
+<em>W = diag(w_1,w_2,...,w_n)</em>. The <var>wts</var> vector is referenced
+throughout the iteration so it should not be freed by the caller until
+the iteration terminates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005ffree"></a><u>Function:</u> void <b>gsl_multifit_fsolver_free</b><i> (gsl_multifit_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005ffree"></a><u>Function:</u> void <b>gsl_multifit_fdfsolver_free</b><i> (gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005ffree"></a><u>Function:</u> void <b>gsl_multifit_fdfridge_free</b><i> (gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions free all the memory associated with the solver <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005fname"></a><u>Function:</u> const char * <b>gsl_multifit_fsolver_name</b><i> (const gsl_multifit_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fname"></a><u>Function:</u> const char * <b>gsl_multifit_fdfsolver_name</b><i> (const gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fname"></a><u>Function:</u> const char * <b>gsl_multifit_fdfridge_name</b><i> (const gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions return a pointer to the name of the solver.  For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;s is a '%s' solver\n&quot;, 
+        gsl_multifit_fdfsolver_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>s is a 'lmder' solver</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Providing-the-Function-to-be-Minimized"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-Nonlinear-Least_002dSquares-Solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Finite-Difference-Jacobian" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Nonlinear-Least_002dSquares-Solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Finite-Difference-Jacobian" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Providing-the-Function-to-be-Minimized-1"></a>
+<h2 class="section">5. Providing the Function to be Minimized</h2>
+
+<p>You must provide <em>n</em> functions of <em>p</em> variables for the
+minimization algorithms to operate on.  In order to allow for
+arbitrary parameters the functions are defined by the following data
+types:
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffunction"></a><u>Data Type:</u> <b>gsl_multifit_function</b></dt>
+<dd><p>This data type defines a general system of functions with arbitrary parameters.  
+</p>
+<dl compact="compact">
+<dt> <code>int (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>f</var>)</code></dt>
+<dd><p>this function should store the vector result
+<em>f(x,params)</em> in <var>f</var> for argument <var>x</var> and arbitrary parameters <var>params</var>,
+returning an appropriate error code if the function cannot be computed.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the number of functions, i.e. the number of components of the
+vector <var>f</var>.
+</p>
+</dd>
+<dt> <code>size_t p</code></dt>
+<dd><p>the number of independent variables, i.e. the number of components of
+the vector <var>x</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the arbitrary parameters of the function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffunction_005ffdf"></a><u>Data Type:</u> <b>gsl_multifit_function_fdf</b></dt>
+<dd><p>This data type defines a general system of functions with arbitrary parameters and
+the corresponding Jacobian matrix of derivatives,
+</p>
+<dl compact="compact">
+<dt> <code>int (* f) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_vector * <var>f</var>)</code></dt>
+<dd><p>this function should store the vector result
+<em>f(x,params)</em> in <var>f</var> for argument <var>x</var> and arbitrary parameters <var>params</var>,
+returning an appropriate error code if the function cannot be computed.
+</p>
+</dd>
+<dt> <code>int (* df) (const gsl_vector * <var>x</var>, void * <var>params</var>, gsl_matrix * <var>J</var>)</code></dt>
+<dd><p>this function should store the <var>n</var>-by-<var>p</var> matrix result
+<em>J_ij = d f_i(x,params) / d x_j</em> in <var>J</var> for argument <var>x</var> 
+and arbitrary parameters <var>params</var>, returning an appropriate error code if the
+function cannot be computed. If an analytic Jacobian is unavailable, or too expensive
+to compute, this function pointer may be set to NULL, in which
+case the Jacobian will be internally computed using finite difference approximations
+of the function <var>f</var>.
+</p>
+</dd>
+<dt> <code>size_t n</code></dt>
+<dd><p>the number of functions, i.e. the number of components of the
+vector <var>f</var>.
+</p>
+</dd>
+<dt> <code>size_t p</code></dt>
+<dd><p>the number of independent variables, i.e. the number of components of
+the vector <var>x</var>.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the arbitrary parameters of the function.
+</p>
+</dd>
+<dt> <code>size_t nevalf</code></dt>
+<dd><p>This does not need to be set by the user. It counts the number of
+function evaluations and is initialized by the <code>_set</code> function.
+</p>
+</dd>
+<dt> <code>size_t nevaldf</code></dt>
+<dd><p>This does not need to be set by the user. It counts the number of
+Jacobian evaluations and is initialized by the <code>_set</code> function.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>Note that when fitting a non-linear model against experimental data,
+the data is passed to the functions above using the
+<var>params</var> argument and the trial best-fit parameters through the
+<var>x</var> argument.
+</p>
+<hr size="6">
+<a name="Finite-Difference-Jacobian"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Providing-the-Function-to-be-Minimized" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-Minimization-Algorithm" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Providing-the-Function-to-be-Minimized" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-Minimization-Algorithm" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Finite-Difference-Jacobian-1"></a>
+<h2 class="section">6. Finite Difference Jacobian</h2>
+
+<p>For the algorithms which require a Jacobian matrix of derivatives of
+the fit functions, there are times when an analytic Jacobian may be
+unavailable or too expensive to compute. Therefore GSL supports
+approximating the Jacobian numerically using finite differences of the fit
+functions. This is typically done by setting the relevant function pointers
+of the <code>gsl_multifit_function_fdf</code> data type to NULL, however the
+following functions allow the user to access the approximate Jacobian
+directly if needed.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fdif_005fdf"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_dif_df</b><i> (const gsl_vector * <var>x</var>, const gsl_vector * <var>wts</var>, gsl_multifit_function_fdf * <var>fdf</var>, const gsl_vector * <var>f</var>, gsl_matrix * <var>J</var>)</i></dt>
+<dd><p>This function takes as input the current position <var>x</var>, weight
+vector <var>wts</var> and function values computed at the current position
+<var>f</var>, along with <var>fdf</var> which specifies the fit function and
+parameters and approximates the
+<var>n</var>-by-<var>p</var> Jacobian <var>J</var> using forward finite differences:
+<em>J_ij = sqrt(w_i) d f_i(x) / d x_j = sqrt(w_i) (f_i(x + h_j e_j) - f_i(x)) / h_j</em>.
+where <em>h_j = \epsilon |x_j|</em>, and <em>\epsilon</em> is the
+square root of the machine precision <code>GSL_DBL_EPSILON</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fdif_005ffdf"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_dif_fdf</b><i> (const gsl_vector * <var>x</var>, gsl_multifit_function_fdf * <var>fdf</var>, gsl_vector * <var>f</var>, gsl_matrix * <var>J</var>)</i></dt>
+<dd><p>This function is deprecated and will be removed in a future release.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Iteration-of-the-Minimization-Algorithm"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Finite-Difference-Jacobian" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-Minimization-Algorithms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Finite-Difference-Jacobian" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-Minimization-Algorithms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iteration"></a>
+<h2 class="section">7. Iteration</h2>
+
+<p>The following functions drive the iteration of each algorithm.  Each
+function performs one iteration to update the state of any solver of the
+corresponding type.  The same functions work for all solvers so that
+different methods can be substituted at runtime without modifications to
+the code.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005fiterate"></a><u>Function:</u> int <b>gsl_multifit_fsolver_iterate</b><i> (gsl_multifit_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fiterate"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_iterate</b><i> (gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fiterate"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_iterate</b><i> (gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions perform a single iteration of the solver <var>s</var>.  If
+the iteration encounters an unexpected problem then an error code will
+be returned.  The solver maintains a current estimate of the best-fit
+parameters at all times. 
+</p></dd></dl>
+
+<p>The solver struct <var>s</var> contains the following entries, which can
+be used to track the progress of the solution:
+</p>
+<dl compact="compact">
+<dt> <code>gsl_vector * x</code></dt>
+<dd><p>The current position.
+</p>
+</dd>
+<dt> <code>gsl_vector * f</code></dt>
+<dd><p>The function residual vector at the current position <em>f(x)</em>.
+</p>
+</dd>
+<dt> <code>gsl_vector * dx</code></dt>
+<dd><p>The difference between the current position and the previous position,
+i.e. the last step <em>\delta</em>, taken as a vector.
+</p>
+</dd>
+</dl>
+
+<p>The best-fit information also can be accessed with the following
+auxiliary functions,
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005fposition"></a><u>Function:</u> gsl_vector * <b>gsl_multifit_fsolver_position</b><i> (const gsl_multifit_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fposition"></a><u>Function:</u> gsl_vector * <b>gsl_multifit_fdfsolver_position</b><i> (const gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fposition"></a><u>Function:</u> gsl_vector * <b>gsl_multifit_fdfridge_position</b><i> (const gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions return the current position <em>x</em> (i.e. best-fit
+parameters) of the solver <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fresidual"></a><u>Function:</u> gsl_vector * <b>gsl_multifit_fdfsolver_residual</b><i> (const gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fresidual"></a><u>Function:</u> gsl_vector * <b>gsl_multifit_fdfridge_residual</b><i> (const gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions return the current residual vector <em>f</em> of the
+solver <var>s</var>.  For weighted cases, the residual vector includes the
+weighting factor <em>\sqrtW</em>. For ridge regression, the residual
+vector is the augmented vector <em>\tildef</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fniter"></a><u>Function:</u> size_t <b>gsl_multifit_fdfsolver_niter</b><i> (const gsl_multifit_fdfsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fniter"></a><u>Function:</u> size_t <b>gsl_multifit_fdfridge_niter</b><i> (const gsl_multifit_fdfridge * <var>s</var>)</i></dt>
+<dd><p>These functions return the number of iterations performed so far.
+The iteration counter is updated on each call to the
+<code>_iterate</code> functions above, and reset to 0 in the
+<code>_set</code> functions.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Search-Stopping-Parameters-for-Minimization-Algorithms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Iteration-of-the-Minimization-Algorithm" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#High-Level-Driver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Iteration-of-the-Minimization-Algorithm" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#High-Level-Driver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Search-Stopping-Parameters"></a>
+<h2 class="section">8. Search Stopping Parameters</h2>
+<a name="index-nonlinear-fitting_002c-stopping-parameters"></a>
+
+<p>A minimization procedure should stop when one of the following conditions is
+true:
+</p>
+<ul>
+<li>
+A minimum has been found to within the user-specified precision.
+
+</li><li>
+A user-specified maximum number of iterations has been reached.
+
+</li><li>
+An error has occurred.
+</li></ul>
+
+<p>The handling of these conditions is under user control.  The functions
+below allow the user to test the current estimate of the best-fit
+parameters in several standard ways.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005ftest"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_test</b><i> (const gsl_multifit_fdfsolver * <var>s</var>, const double <var>xtol</var>, const double <var>gtol</var>, const double <var>ftol</var>, int * <var>info</var>)</i></dt>
+<dd><p>This function tests for convergence of the minimization method
+using the following criteria:
+</p>
+<ul>
+<li>
+Testing for a small step size relative to the current parameter vector
+for each <em>0 &lt;= i &lt; p</em>. Each element of the step vector <em>\delta</em>
+is tested individually in case the different parameters have widely
+different scales. Adding <var>xtol</var> to <em>|x_i|</em> helps the test avoid
+breaking down in situations where the true solution value <em>x_i = 0</em>.
+If this test succeeds, <var>info</var> is set to 1 and the function
+returns <code>GSL_SUCCESS</code>.
+
+<p>A general guideline for selecting the step tolerance is to choose
+<em>xtol = 10^-d</em> where <em>d</em> is the number of accurate
+decimal digits desired in the solution <em>x</em>. See Dennis and
+Schnabel for more information.
+</p>
+</li><li>
+Testing for a small gradient (<em>g = \nabla \Phi(x) = J^T f</em>)
+indicating a local function minimum:
+This expression tests whether the ratio
+<em>(\nabla \Phi)_i x_i / \Phi</em> is small. Testing this scaled gradient
+is a better than <em>\nabla \Phi</em> alone since it is a dimensionless
+quantity and so independent of the scale of the problem. The
+<code>max</code> arguments help ensure the test doesn&rsquo;t break down in
+regions where <em>x_i</em> or <em>\Phi(x)</em> are close to 0.
+If this test succeeds, <var>info</var> is set to 2 and the function
+returns <code>GSL_SUCCESS</code>.
+
+<p>A general guideline for choosing the gradient tolerance is to set
+<code>gtol = GSL_DBL_EPSILON^(1/3)</code>. See Dennis and Schnabel for
+more information.
+</p>
+</li></ul>
+
+<p>If none of the tests succeed, <var>info</var> is set to 0 and the
+function returns <code>GSL_CONTINUE</code>, indicating further iterations
+are required.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ftest_005fdelta"></a><u>Function:</u> int <b>gsl_multifit_test_delta</b><i> (const gsl_vector * <var>dx</var>, const gsl_vector * <var>x</var>, double <var>epsabs</var>, double <var>epsrel</var>)</i></dt>
+<dd>
+<p>This function tests for the convergence of the sequence by comparing the
+last step <var>dx</var> with the absolute error <var>epsabs</var> and relative
+error <var>epsrel</var> to the current position <var>x</var>.  The test returns
+<code>GSL_SUCCESS</code> if the following condition is achieved,
+for each component of <var>x</var> and returns <code>GSL_CONTINUE</code> otherwise.
+</p></dd></dl>
+
+<a name="index-residual_002c-in-nonlinear-systems-of-equations"></a>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ftest_005fgradient"></a><u>Function:</u> int <b>gsl_multifit_test_gradient</b><i> (const gsl_vector * <var>g</var>, double <var>epsabs</var>)</i></dt>
+<dd><p>This function tests the residual gradient <var>g</var> against the absolute
+error bound <var>epsabs</var>.  Mathematically, the gradient should be
+exactly zero at the minimum. The test returns <code>GSL_SUCCESS</code> if the
+following condition is achieved,
+and returns <code>GSL_CONTINUE</code> otherwise.  This criterion is suitable
+for situations where the precise location of the minimum, <em>x</em>,
+is unimportant provided a value can be found where the gradient is small
+enough.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005fgradient"></a><u>Function:</u> int <b>gsl_multifit_gradient</b><i> (const gsl_matrix * <var>J</var>, const gsl_vector * <var>f</var>, gsl_vector * <var>g</var>)</i></dt>
+<dd><p>This function computes the gradient <var>g</var> of <em>\Phi(x) = (1/2)
+||f(x)||^2</em> from the Jacobian matrix <em>J</em> and the function values
+<var>f</var>, using the formula <em>g = J^T f</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="High-Level-Driver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-Minimization-Algorithms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-using-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters-for-Minimization-Algorithms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-using-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="High-Level-Driver-1"></a>
+<h2 class="section">9. High Level Driver</h2>
+
+<p>These routines provide a high level wrapper that combine the iteration
+and convergence testing for easy use.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffsolver_005fdriver"></a><u>Function:</u> int <b>gsl_multifit_fsolver_driver</b><i> (gsl_multifit_fsolver * <var>s</var>, const size_t <var>maxiter</var>, const double <var>epsabs</var>, const double <var>epsrel</var>)</i></dt>
+<dd><p>This function iterates the solver <var>s</var> for a maximum of <var>maxiter</var>
+iterations. After each iteration, the system is tested for convergence
+using <code>gsl_multifit_test_delta</code> with the error tolerances <var>epsabs</var>
+and <var>epsrel</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fdriver"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_driver</b><i> (gsl_multifit_fdfsolver * <var>s</var>, const size_t <var>maxiter</var>, const double <var>xtol</var>, const double <var>gtol</var>, const double <var>ftol</var>, int * <var>info</var>)</i></dt>
+<dt><a name="index-gsl_005fmultifit_005ffdfridge_005fdriver"></a><u>Function:</u> int <b>gsl_multifit_fdfridge_driver</b><i> (gsl_multifit_fdfridge * <var>s</var>, const size_t <var>maxiter</var>, const double <var>xtol</var>, const double <var>gtol</var>, const double <var>ftol</var>, int * <var>info</var>)</i></dt>
+<dd><p>These functions iterate the solver <var>s</var> for a maximum of <var>maxiter</var>
+iterations. After each iteration, the system is tested for convergence
+with the error tolerances <var>xtol</var>, <var>gtol</var> and <var>ftol</var>.
+Upon successful convergence,
+the function returns <code>GSL_SUCCESS</code> and sets <var>info</var> to
+the reason for convergence (see <code>gsl_multifit_fdfsolver_test</code>).
+Otherwise, the function returns <code>GSL_EMAXITER</code> indicating
+the system did not converge after <var>maxiter</var> iterations.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Minimization-Algorithms-using-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#High-Level-Driver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-without-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#High-Level-Driver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-without-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Minimization-Algorithms-using-Derivatives-1"></a>
+<h2 class="section">10. Minimization Algorithms using Derivatives</h2>
+
+<p>The minimization algorithms described in this section make use of both
+the function and its derivative.  They require an initial guess for the
+location of the minimum. There is no absolute guarantee of
+convergence&mdash;the function must be suitable for this technique and the
+initial guess must be sufficiently close to the minimum for it to work.
+</p>
+<a name="index-Levenberg_002dMarquardt-algorithms"></a>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005flmsder"></a><u>Derivative Solver:</u> <b>gsl_multifit_fdfsolver_lmsder</b></dt>
+<dd><a name="index-LMDER-algorithm"></a>
+<a name="index-MINPACK_002c-minimization-algorithms"></a>
+
+<p>This is a robust and efficient version of the Levenberg-Marquardt
+algorithm as implemented in the scaled <small>LMDER</small> routine in
+<small>MINPACK</small>.  Minpack was written by Jorge J. Mor&eacute;, Burton S. Garbow
+and Kenneth E. Hillstrom.
+</p>
+<p>The algorithm uses a generalized trust region to keep each step under
+control.  In order to be accepted a proposed new position <em>x&rsquo;</em> must
+satisfy the condition <em>|D (x&rsquo; - x)| &lt; \Delta</em>, where <em>D</em> is a
+diagonal scaling matrix and <em>\Delta</em> is the size of the trust
+region.  The components of <em>D</em> are computed internally, using the
+column norms of the Jacobian to estimate the sensitivity of the residual
+to each component of <em>x</em>.  This improves the behavior of the
+algorithm for badly scaled functions.
+</p>
+<p>On each iteration the algorithm attempts to minimize the linear system
+<em>|f + J \delta|</em> subject to the constraint <em>|D \delta| &lt; \Delta</em>.
+The solution to this constrained linear system is found by solving
+the linear least squares system
+where <em>\mu</em> is the Levenberg-Marquardt parameter. The above
+system is solved using a QR decomposition of <em>J</em>.
+</p>
+<p>The proposed step <em>\delta</em> is now tested by evaluating the
+function at the resulting point, <em>x&rsquo;</em>.  If the step reduces the norm of the
+function sufficiently, and follows the predicted behavior of the
+function within the trust region, then it is accepted and the size of the
+trust region is increased.  If the proposed step fails to improve the
+solution, or differs significantly from the expected behavior within
+the trust region, then the size of the trust region is decreased and
+another trial step is computed.
+</p>
+<p>The algorithm also monitors the progress of the solution and returns an
+error if the changes in the solution are smaller than the machine
+precision.  The possible error codes are,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_ETOLF</code></dt>
+<dd><p>the decrease in the function falls below machine precision
+</p>
+</dd>
+<dt> <code>GSL_ETOLX</code></dt>
+<dd><p>the change in the position vector falls below machine precision
+</p>
+</dd>
+<dt> <code>GSL_ETOLG</code></dt>
+<dd><p>the norm of the gradient, relative to the norm of the function, falls
+below machine precision
+</p>
+</dd>
+<dt> <code>GSL_ENOPROG</code></dt>
+<dd><p>the routine has made 10 or more attempts to find a suitable trial step
+without success (but subsequent calls can be made to continue the
+search).<a name="DOCF1" href="#FOOT1">(1)</a>
+</p></dd>
+</dl>
+
+<p>These error codes indicate that further iterations will be unlikely to
+change the solution from its current value.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005flmder"></a><u>Derivative Solver:</u> <b>gsl_multifit_fdfsolver_lmder</b></dt>
+<dd>
+<p>This is an unscaled version of the <small>LMDER</small> algorithm.  The elements of the
+diagonal scaling matrix <em>D</em> are set to 1.  This algorithm may be
+useful in circumstances where the scaled version of <small>LMDER</small> converges too
+slowly, or the function is already scaled appropriately.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005flmniel"></a><u>Derivative Solver:</u> <b>gsl_multifit_fdfsolver_lmniel</b></dt>
+<dd>
+<p>This is a Levenberg-Marquardt solver based on a smoother updating
+procedure for the damping parameter <em>\mu</em> proposed by
+Nielsen, 1999. It does not use a trust region approach and only
+performs rudimentary scaling and is therefore not as robust as
+<code>lmsder</code>. However, on each iteration it solves the normal
+equation system to compute the next step:
+which makes it a much more practical method for problems with a
+large number of residuals (<em>n &gt;&gt; p</em>), since only the
+<em>p</em>-by-<em>p</em> matrix <em>J^T J</em> is decomposed rather than
+the full <em>n</em>-by-<em>p</em> Jacobian. This makes a significant
+difference in efficiency when solving systems with large amounts
+of data. While not as robust as <code>lmsder</code>, this algorithm has
+proven effective on a wide class of problems.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Minimization-Algorithms-without-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Algorithms-using-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Computing-the-covariance-matrix-of-best-fit-parameters" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-using-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Computing-the-covariance-matrix-of-best-fit-parameters" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Minimization-Algorithms-without-Derivatives-1"></a>
+<h2 class="section">11. Minimization Algorithms without Derivatives</h2>
+
+<p>There are no algorithms implemented in this section at the moment.
+</p>
+<hr size="6">
+<a name="Computing-the-covariance-matrix-of-best-fit-parameters"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Algorithms-without-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Troubleshooting-Nonlinear-Least-Squares" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms-without-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Troubleshooting-Nonlinear-Least-Squares" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Computing-the-covariance-matrix-of-best-fit-parameters-1"></a>
+<h2 class="section">12. Computing the covariance matrix of best fit parameters</h2>
+<a name="index-best_002dfit-parameters_002c-covariance"></a>
+<a name="index-least-squares_002c-covariance-of-best_002dfit-parameters"></a>
+<a name="index-covariance-matrix_002c-nonlinear-fits"></a>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005ffdfsolver_005fjac"></a><u>Function:</u> int <b>gsl_multifit_fdfsolver_jac</b><i> (gsl_multifit_fdfsolver * <var>s</var>, gsl_matrix * <var>J</var>)</i></dt>
+<dd><p>This function stores the <em>n</em>-by-<em>p</em> Jacobian matrix for the
+current iteration of the solver <var>s</var> into the output <var>J</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmultifit_005fcovar"></a><u>Function:</u> int <b>gsl_multifit_covar</b><i> (const gsl_matrix * <var>J</var>, const double <var>epsrel</var>, gsl_matrix * <var>covar</var>)</i></dt>
+<dd><p>This function computes the covariance matrix of best-fit parameters
+using the Jacobian matrix <var>J</var> and stores it in <var>covar</var>.
+The parameter <var>epsrel</var> is used to remove linear-dependent columns
+when <var>J</var> is rank deficient.
+</p>
+<p>The covariance matrix is given by,
+or in the weighted case,
+and is computed by QR decomposition of J with column-pivoting.  Any
+columns of <em>R</em> which satisfy 
+are considered linearly-dependent and are excluded from the covariance
+matrix (the corresponding rows and columns of the covariance matrix are
+set to zero).
+</p>
+<p>If the minimisation uses the weighted least-squares function
+<em>f_i = (Y(x, t_i) - y_i) / \sigma_i</em> then the covariance
+matrix above gives the statistical error on the best-fit parameters
+resulting from the Gaussian errors <em>\sigma_i</em> on 
+the underlying data <em>y_i</em>.  This can be verified from the relation 
+<em>\delta f = J \delta c</em> and the fact that the fluctuations in <em>f</em>
+from the data <em>y_i</em> are normalised by <em>\sigma_i</em> and 
+so satisfy <em>&lt;\delta f \delta f^T&gt; = I</em>.
+</p>
+<p>For an unweighted least-squares function <em>f_i = (Y(x, t_i) -
+y_i)</em> the covariance matrix above should be multiplied by the variance
+of the residuals about the best-fit <em>\sigma^2 = \sum (y_i - Y(x,t_i))^2 / (n-p)</em>
+to give the variance-covariance
+matrix <em>\sigma^2 C</em>.  This estimates the statistical error on the
+best-fit parameters from the scatter of the underlying data.
+</p>
+<p>For more information about covariance matrices see @ref{Fitting Overview}.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Troubleshooting-Nonlinear-Least-Squares"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Computing-the-covariance-matrix-of-best-fit-parameters" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Nonlinear-Least_002dSquares-Fitting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Computing-the-covariance-matrix-of-best-fit-parameters" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Nonlinear-Least_002dSquares-Fitting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Troubleshooting"></a>
+<h2 class="section">13. Troubleshooting</h2>
+
+<p>When developing a code to solve a nonlinear least squares problem,
+here are a few considerations to keep in mind.
+</p>
+<ol>
+<li>
+The most common difficulty is the accurate implementation of the Jacobian
+matrix. If the analytic Jacobian is not properly provided to the
+solver, this can hinder and many times prevent convergence of the method.
+When developing a new nonlinear least squares code, it often helps
+to compare the program output with the internally computed finite
+difference Jacobian and the user supplied analytic Jacobian. If there
+is a large difference in coefficients, it is likely the analytic
+Jacobian is incorrectly implemented.
+
+</li><li>
+If your code is having difficulty converging, the next thing to
+check is the starting point provided to the solver. The methods
+of this chapter are local methods, meaning if you provide a starting
+point far away from the true minimum, the method may converge to
+a local minimum or not converge at all. Sometimes it is possible
+to solve a linearized approximation to the nonlinear problem,
+and use the linear solution as the starting point to the nonlinear
+problem.
+
+</li><li>
+If the various parameters of the coefficient vector <em>x</em>
+vary widely in magnitude, then the problem is said to be badly scaled.
+The methods of this chapter do attempt to automatically rescale
+the elements of <em>x</em> to have roughly the same order of magnitude,
+but in extreme cases this could still cause problems for convergence.
+In these cases it is recommended for the user to scale their
+parameter vector <em>x</em> so that each parameter spans roughly the
+same range, say <em>[-1,1]</em>. The solution vector can be backscaled
+to recover the original units of the problem.
+
+</li></ol>
+
+<hr size="6">
+<a name="Example-programs-for-Nonlinear-Least_002dSquares-Fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Troubleshooting-Nonlinear-Least-Squares" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#References-and-Further-Reading-for-Nonlinear-Least_002dSquares-Fitting" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Troubleshooting-Nonlinear-Least-Squares" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#References-and-Further-Reading-for-Nonlinear-Least_002dSquares-Fitting" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">14. Examples</h2>
+
+<p>The following example program fits a weighted exponential model with
+background to experimental data, <em>Y = A \exp(-\lambda t) + b</em>. The
+first part of the program sets up the functions <code>expb_f</code> and
+<code>expb_df</code> to calculate the model and its Jacobian.  The appropriate
+fitting function is given by,
+where we have chosen <em>t_i = i</em>.  The Jacobian matrix <em>J</em> is
+the derivative of these functions with respect to the three parameters
+(<em>A</em>, <em>\lambda</em>, <em>b</em>).  It is given by,
+where <em>x_0 = A</em>, <em>x_1 = \lambda</em> and <em>x_2 = b</em>. The
+weights are given by <em>w_i = 1/\sigma_i^2</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">/* expfit.c -- model functions for exponential + background */
+
+struct data {
+  size_t n;
+  double * y;
+};
+
+int
+expb_f (const gsl_vector * x, void *data, 
+        gsl_vector * f)
+{
+  size_t n = ((struct data *)data)-&gt;n;
+  double *y = ((struct data *)data)-&gt;y;
+
+  double A = gsl_vector_get (x, 0);
+  double lambda = gsl_vector_get (x, 1);
+  double b = gsl_vector_get (x, 2);
+
+  size_t i;
+
+  for (i = 0; i &lt; n; i++)
+    {
+      /* Model Yi = A * exp(-lambda * i) + b */
+      double t = i;
+      double Yi = A * exp (-lambda * t) + b;
+      gsl_vector_set (f, i, Yi - y[i]);
+    }
+
+  return GSL_SUCCESS;
+}
+
+int
+expb_df (const gsl_vector * x, void *data, 
+         gsl_matrix * J)
+{
+  size_t n = ((struct data *)data)-&gt;n;
+
+  double A = gsl_vector_get (x, 0);
+  double lambda = gsl_vector_get (x, 1);
+
+  size_t i;
+
+  for (i = 0; i &lt; n; i++)
+    {
+      /* Jacobian matrix J(i,j) = dfi / dxj, */
+      /* where fi = (Yi - yi)/sigma[i],      */
+      /*       Yi = A * exp(-lambda * i) + b  */
+      /* and the xj are the parameters (A,lambda,b) */
+      double t = i;
+      double e = exp(-lambda * t);
+      gsl_matrix_set (J, i, 0, e); 
+      gsl_matrix_set (J, i, 1, -t * A * e);
+      gsl_matrix_set (J, i, 2, 1.0);
+    }
+  return GSL_SUCCESS;
+}
+</pre></pre></td></tr></table>
+
+<p>The main part of the program sets up a Levenberg-Marquardt solver and
+some simulated random data. The data uses the known parameters
+(5.0,0.1,1.0) combined with Gaussian noise (standard deviation = 0.1)
+over a range of 40 timesteps. The initial guess for the parameters is
+chosen as (0.0, 1.0, 0.0).
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_rng.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+#include &lt;gsl/gsl_vector.h&gt;
+#include &lt;gsl/gsl_blas.h&gt;
+#include &lt;gsl/gsl_multifit_nlin.h&gt;
+
+#include &quot;expfit.c&quot;
+
+/* number of data points to fit */
+#define N 40
+
+int
+main (void)
+{
+  const gsl_multifit_fdfsolver_type *T = gsl_multifit_fdfsolver_lmsder;
+  gsl_multifit_fdfsolver *s;
+  int status, info;
+  size_t i;
+  const size_t n = N;
+  const size_t p = 3;
+
+  gsl_matrix *covar = gsl_matrix_alloc (p, p);
+  double y[N], weights[N];
+  struct data d = { n, y };
+  gsl_multifit_function_fdf f;
+  double x_init[3] = { 1.0, 0.0, 0.0 };
+  gsl_vector_view x = gsl_vector_view_array (x_init, p);
+  gsl_vector_view w = gsl_vector_view_array(weights, n);
+  const gsl_rng_type * type;
+  gsl_rng * r;
+  gsl_vector *res_f;
+  double chi, chi0;
+
+  const double xtol = 1e-8;
+  const double gtol = 1e-8;
+  const double ftol = 0.0;
+
+  gsl_rng_env_setup();
+
+  type = gsl_rng_default;
+  r = gsl_rng_alloc (type);
+
+  f.f = &amp;expb_f;
+  f.df = &amp;expb_df;   /* set to NULL for finite-difference Jacobian */
+  f.n = n;
+  f.p = p;
+  f.params = &amp;d;
+
+  /* This is the data to be fitted */
+
+  for (i = 0; i &lt; n; i++)
+    {
+      double t = i;
+      double yi = 1.0 + 5 * exp (-0.1 * t);
+      double si = 0.1 * yi;
+      double dy = gsl_ran_gaussian(r, si);
+
+      weights[i] = 1.0 / (si * si);
+      y[i] = yi + dy;
+      printf (&quot;data: %zu %g %g\n&quot;, i, y[i], si);
+    };
+
+  s = gsl_multifit_fdfsolver_alloc (T, n, p);
+
+  /* initialize solver with starting point and weights */
+  gsl_multifit_fdfsolver_wset (s, &amp;f, &amp;x.vector, &amp;w.vector);
+
+  /* compute initial residual norm */
+  res_f = gsl_multifit_fdfsolver_residual(s);
+  chi0 = gsl_blas_dnrm2(res_f);
+
+  /* solve the system with a maximum of 20 iterations */
+  status = gsl_multifit_fdfsolver_driver(s, 20, xtol, gtol, ftol, &amp;info);
+
+  gsl_multifit_fdfsolver_covar (s, 0.0, covar);
+
+  /* compute final residual norm */
+  chi = gsl_blas_dnrm2(res_f);
+
+#define FIT(i) gsl_vector_get(s-&gt;x, i)
+#define ERR(i) sqrt(gsl_matrix_get(covar,i,i))
+
+  fprintf(stderr, &quot;summary from method '%s'\n&quot;,
+          gsl_multifit_fdfsolver_name(s));
+  fprintf(stderr, &quot;number of iterations: %zu\n&quot;,
+          gsl_multifit_fdfsolver_niter(s));
+  fprintf(stderr, &quot;function evaluations: %zu\n&quot;, f.nevalf);
+  fprintf(stderr, &quot;Jacobian evaluations: %zu\n&quot;, f.nevaldf);
+  fprintf(stderr, &quot;reason for stopping: %s\n&quot;,
+          (info == 1) ? &quot;small step size&quot; : &quot;small gradient&quot;);
+  fprintf(stderr, &quot;initial |f(x)| = %g\n&quot;, chi0);
+  fprintf(stderr, &quot;final   |f(x)| = %g\n&quot;, chi);
+
+  { 
+    double dof = n - p;
+    double c = GSL_MAX_DBL(1, chi / sqrt(dof)); 
+
+    fprintf(stderr, &quot;chisq/dof = %g\n&quot;,  pow(chi, 2.0) / dof);
+
+    fprintf (stderr, &quot;A      = %.5f +/- %.5f\n&quot;, FIT(0), c*ERR(0));
+    fprintf (stderr, &quot;lambda = %.5f +/- %.5f\n&quot;, FIT(1), c*ERR(1));
+    fprintf (stderr, &quot;b      = %.5f +/- %.5f\n&quot;, FIT(2), c*ERR(2));
+  }
+
+  fprintf (stderr, &quot;status = %s\n&quot;, gsl_strerror (status));
+
+  gsl_multifit_fdfsolver_free (s);
+  gsl_matrix_free (covar);
+  gsl_rng_free (r);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The iteration terminates when the relative change in x is smaller than
+<em>10^-8</em>, or when the magnitude of the gradient falls below
+<em>10^-8</em>.
+Here are the results of running the program:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">summary from method 'lmsder'
+number of iterations: 8
+function evaluations: 11
+Jacobian evaluations: 9
+reason for stopping: small step size
+initial |f(x)| = 31.1919
+final   |f(x)| = 5.45418
+chisq/dof = 0.804002
+A      = 5.17379 +/- 0.27938
+lambda = 0.11104 +/- 0.00817
+b      = 1.05283 +/- 0.05365
+status = success
+</pre></td></tr></table>
+
+<p>The approximate values of the parameters are found correctly, and the
+chi-squared value indicates a good fit (the chi-squared per degree of
+freedom is approximately 1).  In this case the errors on the parameters
+can be estimated from the square roots of the diagonal elements of the
+covariance matrix.  
+</p>
+<p>If the chi-squared value shows a poor fit (i.e. <em>chi^2/dof &gt;&gt; 1</em>) then the error estimates obtained from the
+covariance matrix will be too small.  In the example program the error estimates
+are multiplied by <em>\sqrt\chi^2/dof</em> in this case, a common way of increasing the
+errors for a poor fit.  Note that a poor fit will result from the use
+an inappropriate model, and the scaled error estimates may then
+be outside the range of validity for Gaussian errors.
+</p>
+
+<hr size="6">
+<a name="References-and-Further-Reading-for-Nonlinear-Least_002dSquares-Fitting"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Example-programs-for-Nonlinear-Least_002dSquares-Fitting" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-Nonlinear-Least_002dSquares-Fitting" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">15. References and Further Reading</h2>
+
+<p>The <small>MINPACK</small> algorithm is described in the following article,
+</p>
+<ul class="toc">
+<li>
+J.J. Mor&eacute;, <cite>The Levenberg-Marquardt Algorithm: Implementation and
+Theory</cite>, Lecture Notes in Mathematics, v630 (1978), ed G. Watson.
+</li></ul>
+
+<p>The <code>lmniel</code> algorithm closely follows the following publications,
+</p>
+<ul class="toc">
+<li>
+H. B. Nielsen, &ldquo;Damping Parameter in Marquardt&rsquo;s Method&rdquo;,
+IMM Department of Mathematical Modeling, DTU, Tech. Report IMM-REP-1999-05
+(1999).
+
+</li><li>
+K. Madsen and H. B. Nielsen, &ldquo;Introduction to Optimization and Data
+Fitting&rdquo;, IMM Department of Mathematical Modeling, DTU, 2010.
+</li></ul>
+
+<p>The following publications are also relevant to the algorithms described
+in this section,
+</p>
+<ul class="toc">
+<li>
+J. E. Dennis and R. B. Schnabel, Numerical Methods for Unconstrained
+Optimization and Nonlinear Equations, SIAM, 1996.
+
+</li><li> 
+J.J. Mor&eacute;, B.S. Garbow, K.E. Hillstrom, &ldquo;Testing Unconstrained
+Optimization Software&rdquo;, ACM Transactions on Mathematical Software, Vol
+7, No 1 (1981), p 17&ndash;41.
+
+</li><li> 
+H. B. Nielsen, &ldquo;UCTP Test Problems for Unconstrained Optimization&rdquo;,
+IMM Department of Mathematical Modeling, DTU, Tech. Report IMM-REP-2000-17
+(2000).
+</li></ul>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>The return code <code>GSL_CONTINUE</code> was used for
+this case in versions prior to 1.14.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-Nonlinear-Least_002dSquares-Fitting" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

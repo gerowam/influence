@@ -1,0 +1,955 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-statistics"></a>
+<a name="index-mean"></a>
+<a name="index-standard-deviation"></a>
+<a name="index-variance"></a>
+<a name="index-estimated-standard-deviation"></a>
+<a name="index-estimated-variance"></a>
+<a name="index-t_002dtest"></a>
+<a name="index-range"></a>
+<a name="index-min"></a>
+<a name="index-max"></a>
+
+<p>This chapter describes the statistical functions in the library.  The
+basic statistical functions include routines to compute the mean,
+variance and standard deviation.  More advanced functions allow you to
+calculate absolute deviations, skewness, and kurtosis as well as the
+median and arbitrary percentiles.  The algorithms use recurrence
+relations to compute average quantities in a stable way, without large
+intermediate values that might overflow. 
+</p>
+<p>The functions are available in versions for datasets in the standard
+floating-point and integer types.  The versions for double precision
+floating-point data have the prefix <code>gsl_stats</code> and are declared in
+the header file &lsquo;<tt>gsl_statistics_double.h</tt>&rsquo;.  The versions for integer
+data have the prefix <code>gsl_stats_int</code> and are declared in the header
+file &lsquo;<tt>gsl_statistics_int.h</tt>&rsquo;.   All the functions operate on C 
+arrays with a <var>stride</var> parameter specifying the spacing between 
+elements.  
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Mean-and-standard-deviation-and-variance">1. Mean, Standard Deviation and Variance</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Absolute-deviation">2. Absolute deviation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Higher-moments-_0028skewness-and-kurtosis_0029">3. Higher moments (skewness and kurtosis)</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Autocorrelation">4. Autocorrelation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Covariance">5. Covariance</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Correlation">6. Correlation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Weighted-Samples">7. Weighted Samples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Maximum-and-Minimum-values">8. Maximum and Minimum values</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Median-and-Percentiles">9. Median and Percentiles</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Example-statistical-programs">10. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Statistics-References-and-Further-Reading">11. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Mean-and-standard-deviation-and-variance"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Absolute-deviation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Absolute-deviation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Mean_002c-Standard-Deviation-and-Variance"></a>
+<h2 class="section">1. Mean, Standard Deviation and Variance</h2>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fmean"></a><u>Function:</u> double <b>gsl_stats_mean</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the arithmetic mean of <var>data</var>, a dataset of
+length <var>n</var> with stride <var>stride</var>.  The arithmetic mean, or
+<em>sample mean</em>, is denoted by <em>\Hat\mu</em> and defined as,
+where <em>x_i</em> are the elements of the dataset <var>data</var>.  For
+samples drawn from a gaussian distribution the variance of
+<em>\Hat\mu</em> is <em>\sigma^2 / N</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fvariance"></a><u>Function:</u> double <b>gsl_stats_variance</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the estimated, or <em>sample</em>, variance of
+<var>data</var>, a dataset of length <var>n</var> with stride <var>stride</var>.  The
+estimated variance is denoted by <em>\Hat\sigma^2</em> and is defined by,
+where <em>x_i</em> are the elements of the dataset <var>data</var>.  Note that
+the normalization factor of <em>1/(N-1)</em> results from the derivation
+of <em>\Hat\sigma^2</em> as an unbiased estimator of the population
+variance <em>\sigma^2</em>.  For samples drawn from a Gaussian distribution
+the variance of <em>\Hat\sigma^2</em> itself is <em>2 \sigma^4 / N</em>.
+</p>
+<p>This function computes the mean via a call to <code>gsl_stats_mean</code>.  If
+you have already computed the mean then you can pass it directly to
+<code>gsl_stats_variance_m</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fvariance_005fm"></a><u>Function:</u> double <b>gsl_stats_variance_m</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>This function returns the sample variance of <var>data</var> relative to the
+given value of <var>mean</var>.  The function is computed with <em>\Hat\mu</em>
+replaced by the value of <var>mean</var> that you supply,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fsd"></a><u>Function:</u> double <b>gsl_stats_sd</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fstats_005fsd_005fm"></a><u>Function:</u> double <b>gsl_stats_sd_m</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>The standard deviation is defined as the square root of the variance.
+These functions return the square root of the corresponding variance
+functions above.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005ftss"></a><u>Function:</u> double <b>gsl_stats_tss</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fstats_005ftss_005fm"></a><u>Function:</u> double <b>gsl_stats_tss_m</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>These functions return the total sum of squares (TSS) of <var>data</var> about
+the mean.  For <code>gsl_stats_tss_m</code> the user-supplied value of
+<var>mean</var> is used, and for <code>gsl_stats_tss</code> it is computed using
+<code>gsl_stats_mean</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fvariance_005fwith_005ffixed_005fmean"></a><u>Function:</u> double <b>gsl_stats_variance_with_fixed_mean</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>This function computes an unbiased estimate of the variance of
+<var>data</var> when the population mean <var>mean</var> of the underlying
+distribution is known <em>a priori</em>.  In this case the estimator for
+the variance uses the factor <em>1/N</em> and the sample mean
+<em>\Hat\mu</em> is replaced by the known population mean <em>\mu</em>,
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fsd_005fwith_005ffixed_005fmean"></a><u>Function:</u> double <b>gsl_stats_sd_with_fixed_mean</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>This function calculates the standard deviation of <var>data</var> for a
+fixed population mean <var>mean</var>.  The result is the square root of the
+corresponding variance function.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Absolute-deviation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Higher-moments-_0028skewness-and-kurtosis_0029" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Higher-moments-_0028skewness-and-kurtosis_0029" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Absolute-deviation-1"></a>
+<h2 class="section">2. Absolute deviation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fabsdev"></a><u>Function:</u> double <b>gsl_stats_absdev</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the absolute deviation from the mean of
+<var>data</var>, a dataset of length <var>n</var> with stride <var>stride</var>.  The
+absolute deviation from the mean is defined as,
+where <em>x_i</em> are the elements of the dataset <var>data</var>.  The
+absolute deviation from the mean provides a more robust measure of the
+width of a distribution than the variance.  This function computes the
+mean of <var>data</var> via a call to <code>gsl_stats_mean</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fabsdev_005fm"></a><u>Function:</u> double <b>gsl_stats_absdev_m</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>)</i></dt>
+<dd><p>This function computes the absolute deviation of the dataset <var>data</var>
+relative to the given value of <var>mean</var>,
+This function is useful if you have already computed the mean of
+<var>data</var> (and want to avoid recomputing it), or wish to calculate the
+absolute deviation relative to another value (such as zero, or the
+median).
+</p></dd></dl>
+
+<hr size="6">
+<a name="Higher-moments-_0028skewness-and-kurtosis_0029"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Absolute-deviation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Autocorrelation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Absolute-deviation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Autocorrelation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Higher-moments-_0028skewness-and-kurtosis_0029-1"></a>
+<h2 class="section">3. Higher moments (skewness and kurtosis)</h2>
+<a name="index-skewness"></a>
+<a name="index-kurtosis"></a>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fskew"></a><u>Function:</u> double <b>gsl_stats_skew</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the skewness of <var>data</var>, a dataset of length
+<var>n</var> with stride <var>stride</var>.  The skewness is defined as,
+where <em>x_i</em> are the elements of the dataset <var>data</var>.  The skewness
+measures the asymmetry of the tails of a distribution.
+</p>
+<p>The function computes the mean and estimated standard deviation of
+<var>data</var> via calls to <code>gsl_stats_mean</code> and <code>gsl_stats_sd</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fskew_005fm_005fsd"></a><u>Function:</u> double <b>gsl_stats_skew_m_sd</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>, double <var>sd</var>)</i></dt>
+<dd><p>This function computes the skewness of the dataset <var>data</var> using the
+given values of the mean <var>mean</var> and standard deviation <var>sd</var>,
+These functions are useful if you have already computed the mean and
+standard deviation of <var>data</var> and want to avoid recomputing them.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fkurtosis"></a><u>Function:</u> double <b>gsl_stats_kurtosis</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the kurtosis of <var>data</var>, a dataset of length
+<var>n</var> with stride <var>stride</var>.  The kurtosis is defined as,
+The kurtosis measures how sharply peaked a distribution is, relative to
+its width.  The kurtosis is normalized to zero for a Gaussian
+distribution.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fkurtosis_005fm_005fsd"></a><u>Function:</u> double <b>gsl_stats_kurtosis_m_sd</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>mean</var>, double <var>sd</var>)</i></dt>
+<dd><p>This function computes the kurtosis of the dataset <var>data</var> using the
+given values of the mean <var>mean</var> and standard deviation <var>sd</var>,
+This function is useful if you have already computed the mean and
+standard deviation of <var>data</var> and want to avoid recomputing them.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Autocorrelation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Higher-moments-_0028skewness-and-kurtosis_0029" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Covariance" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Higher-moments-_0028skewness-and-kurtosis_0029" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Covariance" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Autocorrelation-1"></a>
+<h2 class="section">4. Autocorrelation</h2>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005flag1_005fautocorrelation"></a><u>Function:</u> double <b>gsl_stats_lag1_autocorrelation</b><i> (const double <var>data</var>[], const size_t <var>stride</var>, const size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the lag-1 autocorrelation of the dataset <var>data</var>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fstats_005flag1_005fautocorrelation_005fm"></a><u>Function:</u> double <b>gsl_stats_lag1_autocorrelation_m</b><i> (const double <var>data</var>[], const size_t <var>stride</var>, const size_t <var>n</var>, const double <var>mean</var>)</i></dt>
+<dd><p>This function computes the lag-1 autocorrelation of the dataset
+<var>data</var> using the given value of the mean <var>mean</var>.
+</p>
+</dd></dl>
+
+<hr size="6">
+<a name="Covariance"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Autocorrelation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Correlation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Autocorrelation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Correlation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Covariance-1"></a>
+<h2 class="section">5. Covariance</h2>
+<a name="index-covariance_002c-of-two-datasets"></a>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fcovariance"></a><u>Function:</u> double <b>gsl_stats_covariance</b><i> (const double <var>data1</var>[], const size_t <var>stride1</var>, const double <var>data2</var>[], const size_t <var>stride2</var>, const size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the covariance of the datasets <var>data1</var> and
+<var>data2</var> which must both be of the same length <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fcovariance_005fm"></a><u>Function:</u> double <b>gsl_stats_covariance_m</b><i> (const double <var>data1</var>[], const size_t <var>stride1</var>, const double <var>data2</var>[], const size_t <var>stride2</var>, const size_t <var>n</var>, const double <var>mean1</var>, const double <var>mean2</var>)</i></dt>
+<dd><p>This function computes the covariance of the datasets <var>data1</var> and
+<var>data2</var> using the given values of the means, <var>mean1</var> and
+<var>mean2</var>.  This is useful if you have already computed the means of
+<var>data1</var> and <var>data2</var> and want to avoid recomputing them.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Correlation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Covariance" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Weighted-Samples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Covariance" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Weighted-Samples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Correlation-1"></a>
+<h2 class="section">6. Correlation</h2>
+<a name="index-correlation_002c-of-two-datasets"></a>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fcorrelation"></a><u>Function:</u> double <b>gsl_stats_correlation</b><i> (const double <var>data1</var>[], const size_t <var>stride1</var>, const double <var>data2</var>[], const size_t <var>stride2</var>, const size_t <var>n</var>)</i></dt>
+<dd><p>This function efficiently computes the Pearson correlation coefficient
+between the datasets <var>data1</var> and <var>data2</var> which must both be of
+the same length <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fspearman"></a><u>Function:</u> double <b>gsl_stats_spearman</b><i> (const double <var>data1</var>[], const size_t <var>stride1</var>, const double <var>data2</var>[], const size_t <var>stride2</var>, const size_t <var>n</var>, double <var>work</var>[])</i></dt>
+<dd><p>This function computes the Spearman rank correlation coefficient between
+the datasets <var>data1</var> and <var>data2</var> which must both be of the same
+length <var>n</var>. Additional workspace of size 2*<var>n</var> is required in
+<var>work</var>. The Spearman rank correlation between vectors <em>x</em> and
+<em>y</em> is equivalent to the Pearson correlation between the ranked
+vectors <em>x_R</em> and <em>y_R</em>, where ranks are defined to be the
+average of the positions of an element in the ascending order of the values.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Weighted-Samples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Correlation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Maximum-and-Minimum-values" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Correlation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Maximum-and-Minimum-values" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Weighted-Samples-1"></a>
+<h2 class="section">7. Weighted Samples</h2>
+
+<p>The functions described in this section allow the computation of
+statistics for weighted samples.  The functions accept an array of
+samples, <em>x_i</em>, with associated weights, <em>w_i</em>.  Each sample
+<em>x_i</em> is considered as having been drawn from a Gaussian
+distribution with variance <em>\sigma_i^2</em>.  The sample weight
+<em>w_i</em> is defined as the reciprocal of this variance, <em>w_i =
+1/\sigma_i^2</em>.  Setting a weight to zero corresponds to removing a
+sample from a dataset.
+</p>
+<dl>
+<dt><a name="index-gsl_005fstats_005fwmean"></a><u>Function:</u> double <b>gsl_stats_wmean</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the weighted mean of the dataset <var>data</var> with
+stride <var>stride</var> and length <var>n</var>, using the set of weights <var>w</var>
+with stride <var>wstride</var> and length <var>n</var>.  The weighted mean is defined as,
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwvariance"></a><u>Function:</u> double <b>gsl_stats_wvariance</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the estimated variance of the dataset <var>data</var>
+with stride <var>stride</var> and length <var>n</var>, using the set of weights
+<var>w</var> with stride <var>wstride</var> and length <var>n</var>.  The estimated
+variance of a weighted dataset is calculated as,
+Note that this expression reduces to an unweighted variance with the
+familiar <em>1/(N-1)</em> factor when there are <em>N</em> equal non-zero
+weights.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwvariance_005fm"></a><u>Function:</u> double <b>gsl_stats_wvariance_m</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>)</i></dt>
+<dd><p>This function returns the estimated variance of the weighted dataset
+<var>data</var> using the given weighted mean <var>wmean</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwsd"></a><u>Function:</u> double <b>gsl_stats_wsd</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>The standard deviation is defined as the square root of the variance.
+This function returns the square root of the corresponding variance
+function <code>gsl_stats_wvariance</code> above.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwsd_005fm"></a><u>Function:</u> double <b>gsl_stats_wsd_m</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>)</i></dt>
+<dd><p>This function returns the square root of the corresponding variance
+function <code>gsl_stats_wvariance_m</code> above.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwvariance_005fwith_005ffixed_005fmean"></a><u>Function:</u> double <b>gsl_stats_wvariance_with_fixed_mean</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, const double <var>mean</var>)</i></dt>
+<dd><p>This function computes an unbiased estimate of the variance of the weighted
+dataset <var>data</var> when the population mean <var>mean</var> of the underlying
+distribution is known <em>a priori</em>.  In this case the estimator for
+the variance replaces the sample mean <em>\Hat\mu</em> by the known
+population mean <em>\mu</em>,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwsd_005fwith_005ffixed_005fmean"></a><u>Function:</u> double <b>gsl_stats_wsd_with_fixed_mean</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, const double <var>mean</var>)</i></dt>
+<dd><p>The standard deviation is defined as the square root of the variance.
+This function returns the square root of the corresponding variance
+function above.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwtss"></a><u>Function:</u> double <b>gsl_stats_wtss</b><i> (const double <var>w</var>[], const size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fstats_005fwtss_005fm"></a><u>Function:</u> double <b>gsl_stats_wtss_m</b><i> (const double <var>w</var>[], const size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>)</i></dt>
+<dd><p>These functions return the weighted total sum of squares (TSS) of
+<var>data</var> about the weighted mean.  For <code>gsl_stats_wtss_m</code> the
+user-supplied value of <var>wmean</var> is used, and for <code>gsl_stats_wtss</code>
+it is computed using <code>gsl_stats_wmean</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwabsdev"></a><u>Function:</u> double <b>gsl_stats_wabsdev</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the weighted absolute deviation from the weighted
+mean of <var>data</var>.  The absolute deviation from the mean is defined as,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwabsdev_005fm"></a><u>Function:</u> double <b>gsl_stats_wabsdev_m</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>)</i></dt>
+<dd><p>This function computes the absolute deviation of the weighted dataset
+<var>data</var> about the given weighted mean <var>wmean</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwskew"></a><u>Function:</u> double <b>gsl_stats_wskew</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the weighted skewness of the dataset <var>data</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwskew_005fm_005fsd"></a><u>Function:</u> double <b>gsl_stats_wskew_m_sd</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>, double <var>wsd</var>)</i></dt>
+<dd><p>This function computes the weighted skewness of the dataset <var>data</var>
+using the given values of the weighted mean and weighted standard
+deviation, <var>wmean</var> and <var>wsd</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwkurtosis"></a><u>Function:</u> double <b>gsl_stats_wkurtosis</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function computes the weighted kurtosis of the dataset <var>data</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fwkurtosis_005fm_005fsd"></a><u>Function:</u> double <b>gsl_stats_wkurtosis_m_sd</b><i> (const double <var>w</var>[], size_t <var>wstride</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>wmean</var>, double <var>wsd</var>)</i></dt>
+<dd><p>This function computes the weighted kurtosis of the dataset <var>data</var>
+using the given values of the weighted mean and weighted standard
+deviation, <var>wmean</var> and <var>wsd</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Maximum-and-Minimum-values"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Weighted-Samples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Median-and-Percentiles" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Weighted-Samples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Median-and-Percentiles" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Maximum-and-Minimum-values-1"></a>
+<h2 class="section">8. Maximum and Minimum values</h2>
+
+<p>The following functions find the maximum and minimum values of a
+dataset (or their indices).  If the data contains <code>NaN</code>s then a
+<code>NaN</code> will be returned, since the maximum or minimum value is
+undefined.  For functions which return an index, the location of the
+first <code>NaN</code> in the array is returned.
+</p>
+<dl>
+<dt><a name="index-gsl_005fstats_005fmax"></a><u>Function:</u> double <b>gsl_stats_max</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the maximum value in <var>data</var>, a dataset of
+length <var>n</var> with stride <var>stride</var>.  The maximum value is defined
+as the value of the element <em>x_i</em> which satisfies <em>x_i &gt;= x_j</em> for all <em>j</em>.
+</p>
+<p>If you want instead to find the element with the largest absolute
+magnitude you will need to apply <code>fabs</code> or <code>abs</code> to your data
+before calling this function.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fmin"></a><u>Function:</u> double <b>gsl_stats_min</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the minimum value in <var>data</var>, a dataset of
+length <var>n</var> with stride <var>stride</var>.  The minimum value is defined
+as the value of the element <em>x_i</em> which satisfies <em>x_i &lt;= x_j</em> for all <em>j</em>.
+</p>
+<p>If you want instead to find the element with the smallest absolute
+magnitude you will need to apply <code>fabs</code> or <code>abs</code> to your data
+before calling this function.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fminmax"></a><u>Function:</u> void <b>gsl_stats_minmax</b><i> (double * <var>min</var>, double * <var>max</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function finds both the minimum and maximum values <var>min</var>,
+<var>max</var> in <var>data</var> in a single pass.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fmax_005findex"></a><u>Function:</u> size_t <b>gsl_stats_max_index</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the index of the maximum value in <var>data</var>, a
+dataset of length <var>n</var> with stride <var>stride</var>.  The maximum value is
+defined as the value of the element <em>x_i</em> which satisfies 
+<em>x_i &gt;= x_j</em> for all <em>j</em>.  When there are several equal maximum
+elements then the first one is chosen.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fmin_005findex"></a><u>Function:</u> size_t <b>gsl_stats_min_index</b><i> (const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the index of the minimum value in <var>data</var>, a
+dataset of length <var>n</var> with stride <var>stride</var>.  The minimum value
+is defined as the value of the element <em>x_i</em> which satisfies
+<em>x_i &gt;= x_j</em> for all <em>j</em>.  When there are several equal
+minimum elements then the first one is chosen.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fminmax_005findex"></a><u>Function:</u> void <b>gsl_stats_minmax_index</b><i> (size_t * <var>min_index</var>, size_t * <var>max_index</var>, const double <var>data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the indexes <var>min_index</var>, <var>max_index</var> of
+the minimum and maximum values in <var>data</var> in a single pass.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Median-and-Percentiles"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Maximum-and-Minimum-values" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-statistical-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Maximum-and-Minimum-values" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-statistical-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Median-and-Percentiles-1"></a>
+<h2 class="section">9. Median and Percentiles</h2>
+
+<p>The median and percentile functions described in this section operate on
+sorted data.  For convenience we use <em>quantiles</em>, measured on a scale
+of 0 to 1, instead of percentiles (which use a scale of 0 to 100).
+</p>
+<dl>
+<dt><a name="index-gsl_005fstats_005fmedian_005ffrom_005fsorted_005fdata"></a><u>Function:</u> double <b>gsl_stats_median_from_sorted_data</b><i> (const double <var>sorted_data</var>[], size_t <var>stride</var>, size_t <var>n</var>)</i></dt>
+<dd><p>This function returns the median value of <var>sorted_data</var>, a dataset
+of length <var>n</var> with stride <var>stride</var>.  The elements of the array
+must be in ascending numerical order.  There are no checks to see
+whether the data are sorted, so the function <code>gsl_sort</code> should
+always be used first.
+</p>
+<p>When the dataset has an odd number of elements the median is the value
+of element <em>(n-1)/2</em>.  When the dataset has an even number of
+elements the median is the mean of the two nearest middle values,
+elements <em>(n-1)/2</em> and <em>n/2</em>.  Since the algorithm for
+computing the median involves interpolation this function always returns
+a floating-point number, even for integer data types.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fstats_005fquantile_005ffrom_005fsorted_005fdata"></a><u>Function:</u> double <b>gsl_stats_quantile_from_sorted_data</b><i> (const double <var>sorted_data</var>[], size_t <var>stride</var>, size_t <var>n</var>, double <var>f</var>)</i></dt>
+<dd><p>This function returns a quantile value of <var>sorted_data</var>, a
+double-precision array of length <var>n</var> with stride <var>stride</var>.  The
+elements of the array must be in ascending numerical order.  The
+quantile is determined by the <var>f</var>, a fraction between 0 and 1.  For
+example, to compute the value of the 75th percentile <var>f</var> should have
+the value 0.75.
+</p>
+<p>There are no checks to see whether the data are sorted, so the function
+<code>gsl_sort</code> should always be used first.
+</p>
+<p>The quantile is found by interpolation, using the formula
+where <em>i</em> is <code>floor</code>(<em>(n - 1)f</em>) and <em>\delta</em> is
+<em>(n-1)f - i</em>.
+</p>
+<p>Thus the minimum value of the array (<code>data[0*stride]</code>) is given by
+<var>f</var> equal to zero, the maximum value (<code>data[(n-1)*stride]</code>) is
+given by <var>f</var> equal to one and the median value is given by <var>f</var>
+equal to 0.5.  Since the algorithm for computing quantiles involves
+interpolation this function always returns a floating-point number, even
+for integer data types.
+</p></dd></dl>
+
+
+
+
+
+
+
+<hr size="6">
+<a name="Example-statistical-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Median-and-Percentiles" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Statistics-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Median-and-Percentiles" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Statistics-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">10. Examples</h2>
+<p>Here is a basic example of how to use the statistical functions:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_statistics.h&gt;
+
+int
+main(void)
+{
+  double data[5] = {17.2, 18.1, 16.5, 18.3, 12.6};
+  double mean, variance, largest, smallest;
+
+  mean     = gsl_stats_mean(data, 1, 5);
+  variance = gsl_stats_variance(data, 1, 5);
+  largest  = gsl_stats_max(data, 1, 5);
+  smallest = gsl_stats_min(data, 1, 5);
+
+  printf (&quot;The dataset is %g, %g, %g, %g, %g\n&quot;,
+         data[0], data[1], data[2], data[3], data[4]);
+
+  printf (&quot;The sample mean is %g\n&quot;, mean);
+  printf (&quot;The estimated variance is %g\n&quot;, variance);
+  printf (&quot;The largest value is %g\n&quot;, largest);
+  printf (&quot;The smallest value is %g\n&quot;, smallest);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The program should produce the following output,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">The dataset is 17.2, 18.1, 16.5, 18.3, 12.6
+The sample mean is 16.54
+The estimated variance is 5.373
+The largest value is 18.3
+The smallest value is 12.6
+</pre></pre></td></tr></table>
+
+
+<p>Here is an example using sorted data,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_sort.h&gt;
+#include &lt;gsl/gsl_statistics.h&gt;
+
+int
+main(void)
+{
+  double data[5] = {17.2, 18.1, 16.5, 18.3, 12.6};
+  double median, upperq, lowerq;
+
+  printf (&quot;Original dataset:  %g, %g, %g, %g, %g\n&quot;,
+         data[0], data[1], data[2], data[3], data[4]);
+
+  gsl_sort (data, 1, 5);
+
+  printf (&quot;Sorted dataset: %g, %g, %g, %g, %g\n&quot;,
+         data[0], data[1], data[2], data[3], data[4]);
+
+  median 
+    = gsl_stats_median_from_sorted_data (data, 
+                                         1, 5);
+
+  upperq 
+    = gsl_stats_quantile_from_sorted_data (data, 
+                                           1, 5,
+                                           0.75);
+  lowerq 
+    = gsl_stats_quantile_from_sorted_data (data, 
+                                           1, 5,
+                                           0.25);
+
+  printf (&quot;The median is %g\n&quot;, median);
+  printf (&quot;The upper quartile is %g\n&quot;, upperq);
+  printf (&quot;The lower quartile is %g\n&quot;, lowerq);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>This program should produce the following output,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">Original dataset: 17.2, 18.1, 16.5, 18.3, 12.6
+Sorted dataset: 12.6, 16.5, 17.2, 18.1, 18.3
+The median is 17.2
+The upper quartile is 18.1
+The lower quartile is 16.5
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Statistics-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Example-statistical-programs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Example-statistical-programs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">11. References and Further Reading</h2>
+
+<p>The standard reference for almost any topic in statistics is the
+multi-volume <cite>Advanced Theory of Statistics</cite> by Kendall and Stuart.
+</p>
+<ul class="toc">
+<li>
+Maurice Kendall, Alan Stuart, and J. Keith Ord.
+<cite>The Advanced Theory of Statistics</cite> (multiple volumes)
+reprinted as <cite>Kendall&rsquo;s Advanced Theory of Statistics</cite>.
+Wiley, ISBN 047023380X.
+</li></ul>
+
+<p>Many statistical concepts can be more easily understood by a Bayesian
+approach.  The following book by Gelman, Carlin, Stern and Rubin gives a
+comprehensive coverage of the subject.
+</p>
+<ul class="toc">
+<li>
+Andrew Gelman, John B. Carlin, Hal S. Stern, Donald B. Rubin.
+<cite>Bayesian Data Analysis</cite>.
+Chapman &amp; Hall, ISBN 0412039915.
+</li></ul>
+
+<p>For physicists the Particle Data Group provides useful reviews of
+Probability and Statistics in the &ldquo;Mathematical Tools&rdquo; section of its
+Annual Review of Particle Physics. 
+</p>
+<ul class="toc">
+<li>
+<cite>Review of Particle Properties</cite>
+R.M. Barnett et al., Physical Review D54, 1 (1996)
+</li></ul>
+
+<p>The Review of Particle Physics is available online at
+the website <a href="http://pdg.lbl.gov/">http://pdg.lbl.gov/</a>.
+</p>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Mean-and-standard-deviation-and-variance" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

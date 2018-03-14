@@ -1,0 +1,544 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Gamma-Functions">1. Gamma Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Factorials">2. Factorials</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Pochhammer-Symbol">3. Pochhammer Symbol</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Incomplete-Gamma-Functions">4. Incomplete Gamma Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Beta-Functions">5. Beta Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Incomplete-Beta-Function">6. Incomplete Beta Function</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+</table>
+
+<a name="Gamma-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Factorials" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Factorials" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Gamma-Functions-1"></a>
+<h3 class="subsection">1. Gamma Functions</h3>
+<a name="index-gamma-functions"></a>
+
+<p>The Gamma function is defined by the following integral,
+It is related to the factorial function by <em>\Gamma(n)=(n-1)!</em>
+for positive integer <em>n</em>.  Further information on the Gamma function
+can be found in Abramowitz &amp; Stegun, Chapter 6.  
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005fgamma"></a><u>Function:</u> double <b>gsl_sf_gamma</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgamma_005fe"></a><u>Function:</u> int <b>gsl_sf_gamma_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Gamma function <em>\Gamma(x)</em>, subject to <em>x</em>
+not being a negative integer or zero.  The function is computed using the real
+Lanczos method. The maximum value of <em>x</em> such that <em>\Gamma(x)</em> is not
+considered an overflow is given by the macro <code>GSL_SF_GAMMA_XMAX</code>
+and is 171.0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flngamma"></a><u>Function:</u> double <b>gsl_sf_lngamma</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flngamma_005fe"></a><u>Function:</u> int <b>gsl_sf_lngamma_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-Gamma-function"></a>
+<p>These routines compute the logarithm of the Gamma function,
+<em>\log(\Gamma(x))</em>, subject to <em>x</em> not being a negative
+integer or zero.  For <em>x&lt;0</em> the real part of <em>\log(\Gamma(x))</em> is
+returned, which is equivalent to <em>\log(|\Gamma(x)|)</em>.  The function
+is computed using the real Lanczos method.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flngamma_005fsgn_005fe"></a><u>Function:</u> int <b>gsl_sf_lngamma_sgn_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result_lg</var>, double * <var>sgn</var>)</i></dt>
+<dd><p>This routine computes the sign of the gamma function and the logarithm of
+its magnitude, subject to <em>x</em> not being a negative integer or zero.  The
+function is computed using the real Lanczos method.  The value of the
+gamma function and its error can be reconstructed using the relation 
+<em>\Gamma(x) = sgn * \exp(result\_lg)</em>, taking into account the two 
+components of <var>result_lg</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fgammastar"></a><u>Function:</u> double <b>gsl_sf_gammastar</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgammastar_005fe"></a><u>Function:</u> int <b>gsl_sf_gammastar_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-Regulated-Gamma-function"></a>
+<p>These routines compute the regulated Gamma Function <em>\Gamma^*(x)</em>
+for <em>x &gt; 0</em>. The regulated gamma function is given by,
+and is a useful suggestion of Temme.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fgammainv"></a><u>Function:</u> double <b>gsl_sf_gammainv</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgammainv_005fe"></a><u>Function:</u> int <b>gsl_sf_gammainv_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-Reciprocal-Gamma-function"></a>
+<p>These routines compute the reciprocal of the gamma function,
+<em>1/\Gamma(x)</em> using the real Lanczos method.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flngamma_005fcomplex_005fe"></a><u>Function:</u> int <b>gsl_sf_lngamma_complex_e</b><i> (double <var>zr</var>, double <var>zi</var>, gsl_sf_result * <var>lnr</var>, gsl_sf_result * <var>arg</var>)</i></dt>
+<dd><a name="index-Complex-Gamma-function"></a>
+<p>This routine computes <em>\log(\Gamma(z))</em> for complex <em>z=z_r+i
+z_i</em> and <em>z</em> not a negative integer or zero, using the complex Lanczos
+method.  The returned parameters are <em>lnr = \log|\Gamma(z)|</em> and
+<em>arg = \arg(\Gamma(z))</em> in <em>(-\pi,\pi]</em>.  Note that the phase
+part (<var>arg</var>) is not well-determined when <em>|z|</em> is very large,
+due to inevitable roundoff in restricting to <em>(-\pi,\pi]</em>.  This
+will result in a <code>GSL_ELOSS</code> error when it occurs.  The absolute
+value part (<var>lnr</var>), however, never suffers from loss of precision.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Factorials"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Gamma-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Pochhammer-Symbol" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Pochhammer-Symbol" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Factorials-1"></a>
+<h3 class="subsection">2. Factorials</h3>
+<a name="index-factorial"></a>
+
+<p>Although factorials can be computed from the Gamma function, using
+the relation <em>n! = \Gamma(n+1)</em> for non-negative integer <em>n</em>,
+it is usually more efficient to call the functions in this section,
+particularly for small values of <em>n</em>, whose factorial values are
+maintained in hardcoded tables.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsf_005ffact"></a><u>Function:</u> double <b>gsl_sf_fact</b><i> (unsigned int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005ffact_005fe"></a><u>Function:</u> int <b>gsl_sf_fact_e</b><i> (unsigned int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-factorial-1"></a>
+<p>These routines compute the factorial <em>n!</em>.  The factorial is
+related to the Gamma function by <em>n! = \Gamma(n+1)</em>.
+The maximum value of <em>n</em> such that <em>n!</em> is not
+considered an overflow is given by the macro <code>GSL_SF_FACT_NMAX</code>
+and is 170.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fdoublefact"></a><u>Function:</u> double <b>gsl_sf_doublefact</b><i> (unsigned int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fdoublefact_005fe"></a><u>Function:</u> int <b>gsl_sf_doublefact_e</b><i> (unsigned int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-double-factorial"></a>
+<p>These routines compute the double factorial <em>n!! = n(n-2)(n-4) \dots</em>. 
+The maximum value of <em>n</em> such that <em>n!!</em> is not
+considered an overflow is given by the macro <code>GSL_SF_DOUBLEFACT_NMAX</code>
+and is 297.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnfact"></a><u>Function:</u> double <b>gsl_sf_lnfact</b><i> (unsigned int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flnfact_005fe"></a><u>Function:</u> int <b>gsl_sf_lnfact_e</b><i> (unsigned int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-factorial"></a>
+<p>These routines compute the logarithm of the factorial of <var>n</var>,
+<em>\log(n!)</em>.  The algorithm is faster than computing
+<em>\ln(\Gamma(n+1))</em> via <code>gsl_sf_lngamma</code> for <em>n &lt; 170</em>,
+but defers for larger <var>n</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flndoublefact"></a><u>Function:</u> double <b>gsl_sf_lndoublefact</b><i> (unsigned int <var>n</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flndoublefact_005fe"></a><u>Function:</u> int <b>gsl_sf_lndoublefact_e</b><i> (unsigned int <var>n</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-double-factorial"></a>
+<p>These routines compute the logarithm of the double factorial of <var>n</var>,
+<em>\log(n!!)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fchoose"></a><u>Function:</u> double <b>gsl_sf_choose</b><i> (unsigned int <var>n</var>, unsigned int <var>m</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fchoose_005fe"></a><u>Function:</u> int <b>gsl_sf_choose_e</b><i> (unsigned int <var>n</var>, unsigned int <var>m</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-combinatorial-factor-C_0028m_002cn_0029"></a>
+<p>These routines compute the combinatorial factor <code>n choose m</code>
+<em>= n!/(m!(n-m)!)</em>
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnchoose"></a><u>Function:</u> double <b>gsl_sf_lnchoose</b><i> (unsigned int <var>n</var>, unsigned int <var>m</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flnchoose_005fe"></a><u>Function:</u> int <b>gsl_sf_lnchoose_e</b><i> (unsigned int <var>n</var>, unsigned int <var>m</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-combinatorial-factor-C_0028m_002cn_0029"></a>
+<p>These routines compute the logarithm of <code>n choose m</code>.  This is
+equivalent to the sum <em>\log(n!) - \log(m!) - \log((n-m)!)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005ftaylorcoeff"></a><u>Function:</u> double <b>gsl_sf_taylorcoeff</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005ftaylorcoeff_005fe"></a><u>Function:</u> int <b>gsl_sf_taylorcoeff_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-Taylor-coefficients_002c-computation-of"></a>
+<p>These routines compute the Taylor coefficient <em>x^n / n!</em> for 
+<em>x &gt;= 0</em>, 
+<em>n &gt;= 0</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Pochhammer-Symbol"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Factorials" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Incomplete-Gamma-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Factorials" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Incomplete-Gamma-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Pochhammer-Symbol-1"></a>
+<h3 class="subsection">3. Pochhammer Symbol</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fpoch"></a><u>Function:</u> double <b>gsl_sf_poch</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fpoch_005fe"></a><u>Function:</u> int <b>gsl_sf_poch_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-Pochhammer-symbol"></a>
+<a name="index-Apell-symbol_002c-see-Pochhammer-symbol"></a>
+<p>These routines compute the Pochhammer symbol <em>(a)_x = \Gamma(a +
+x)/\Gamma(a)</em>.  The Pochhammer symbol is also known as the Apell symbol and
+sometimes written as <em>(a,x)</em>.  When <em>a</em> and <em>a+x</em> 
+are negative integers or zero, the limiting value of the ratio is returned. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnpoch"></a><u>Function:</u> double <b>gsl_sf_lnpoch</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flnpoch_005fe"></a><u>Function:</u> int <b>gsl_sf_lnpoch_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-Pochhammer-symbol"></a>
+<p>These routines compute the logarithm of the Pochhammer symbol,
+<em>\log((a)_x) = \log(\Gamma(a + x)/\Gamma(a))</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnpoch_005fsgn_005fe"></a><u>Function:</u> int <b>gsl_sf_lnpoch_sgn_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>, double * <var>sgn</var>)</i></dt>
+<dd><p>These routines compute the sign of the Pochhammer symbol and the
+logarithm of its magnitude.  The computed parameters are <em>result =
+\log(|(a)_x|)</em> with a corresponding error term,  
+and <em>sgn = \sgn((a)_x)</em> where <em>(a)_x =
+\Gamma(a + x)/\Gamma(a)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fpochrel"></a><u>Function:</u> double <b>gsl_sf_pochrel</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fpochrel_005fe"></a><u>Function:</u> int <b>gsl_sf_pochrel_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-relative-Pochhammer-symbol"></a>
+<p>These routines compute the relative Pochhammer symbol <em>((a)_x -
+1)/x</em> where <em>(a)_x = \Gamma(a + x)/\Gamma(a)</em>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Incomplete-Gamma-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Pochhammer-Symbol" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Beta-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Pochhammer-Symbol" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Beta-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Incomplete-Gamma-Functions-1"></a>
+<h3 class="subsection">4. Incomplete Gamma Functions</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc"></a><u>Function:</u> double <b>gsl_sf_gamma_inc</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc_005fe"></a><u>Function:</u> int <b>gsl_sf_gamma_inc_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-non_002dnormalized-incomplete-Gamma-function"></a>
+<a name="index-unnormalized-incomplete-Gamma-function"></a>
+<p>These functions compute the unnormalized incomplete Gamma Function
+<em>\Gamma(a,x) = \int_x^\infty dt t^a-1 \exp(-t)</em>
+for <em>a</em> real and <em>x &gt;= 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc_005fQ"></a><u>Function:</u> double <b>gsl_sf_gamma_inc_Q</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc_005fQ_005fe"></a><u>Function:</u> int <b>gsl_sf_gamma_inc_Q_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-incomplete-Gamma-function"></a>
+<p>These routines compute the normalized incomplete Gamma Function
+<em>Q(a,x) = 1/\Gamma(a) \int_x^\infty dt t^a-1 \exp(-t)</em>
+for <em>a &gt; 0</em>, <em>x &gt;= 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc_005fP"></a><u>Function:</u> double <b>gsl_sf_gamma_inc_P</b><i> (double <var>a</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fgamma_005finc_005fP_005fe"></a><u>Function:</u> int <b>gsl_sf_gamma_inc_P_e</b><i> (double <var>a</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-complementary-incomplete-Gamma-function"></a>
+<p>These routines compute the complementary normalized incomplete Gamma Function
+<em>P(a,x) = 1 - Q(a,x) = 1/\Gamma(a) \int_0^x dt t^a-1 \exp(-t)</em>
+for <em>a &gt; 0</em>, <em>x &gt;= 0</em>. 
+</p>
+<p>Note that Abramowitz &amp; Stegun call <em>P(a,x)</em> the incomplete gamma
+function (section 6.5).
+</p></dd></dl>
+
+<hr size="6">
+<a name="Beta-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Incomplete-Gamma-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Incomplete-Beta-Function" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Incomplete-Gamma-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Incomplete-Beta-Function" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Beta-Functions-1"></a>
+<h3 class="subsection">5. Beta Functions</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbeta"></a><u>Function:</u> double <b>gsl_sf_beta</b><i> (double <var>a</var>, double <var>b</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbeta_005fe"></a><u>Function:</u> int <b>gsl_sf_beta_e</b><i> (double <var>a</var>, double <var>b</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-Beta-function"></a>
+<p>These routines compute the Beta Function, <em>B(a,b) =
+\Gamma(a)\Gamma(b)/\Gamma(a+b)</em> subject to <em>a</em> and <em>b</em> not
+being negative integers.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnbeta"></a><u>Function:</u> double <b>gsl_sf_lnbeta</b><i> (double <var>a</var>, double <var>b</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flnbeta_005fe"></a><u>Function:</u> int <b>gsl_sf_lnbeta_e</b><i> (double <var>a</var>, double <var>b</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-Beta-function"></a>
+<p>These routines compute the logarithm of the Beta Function, <em>\log(B(a,b))</em>
+subject to <em>a</em> and <em>b</em> not
+being negative integers.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Incomplete-Beta-Function"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Beta-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Beta-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Incomplete-Beta-Function-1"></a>
+<h3 class="subsection">6. Incomplete Beta Function</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fbeta_005finc"></a><u>Function:</u> double <b>gsl_sf_beta_inc</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fbeta_005finc_005fe"></a><u>Function:</u> int <b>gsl_sf_beta_inc_e</b><i> (double <var>a</var>, double <var>b</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-incomplete-Beta-function_002c-normalized"></a>
+<a name="index-normalized-incomplete-Beta-function"></a>
+<a name="index-Beta-function_002c-incomplete-normalized"></a>
+<p>These routines compute the normalized incomplete Beta function
+<em>I_x(a,b)=B_x(a,b)/B(a,b)</em> where <em>B_x(a,b) = \int_0^x t^a-1 (1-t)^b-1 dt</em>
+for <em>0 &lt;= x &lt;= 1</em>.   For <em>a &gt; 0</em>, <em>b &gt; 0</em> the value is computed using
+a continued fraction expansion.  For all other values it is computed using 
+the relation <em>I_x(a,b,x) = (1/a) x^a 2F1(a,1-b,a+1,x)/B(a,b)</em>.
+</p></dd></dl>
+
+
+
+
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Gamma-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

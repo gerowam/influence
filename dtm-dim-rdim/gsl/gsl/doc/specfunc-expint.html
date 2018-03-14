@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-exponential-integrals"></a>
+<a name="index-integrals_002c-exponential"></a>
+
+<p>Information on the exponential integrals can be found in Abramowitz &amp;
+Stegun, Chapter 5.  These functions are declared in the header file
+&lsquo;<tt>gsl_sf_expint.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Exponential-Integral">1. Exponential Integral</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Ei_0028x_0029">2. Ei(x)</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hyperbolic-Integrals">3. Hyperbolic Integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Ei_005f3_0028x_0029">4. Ei_3(x)</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Trigonometric-Integrals">5. Trigonometric Integrals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Arctangent-Integral">6. Arctangent Integral</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+</table>
+
+<a name="Exponential-Integral"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Ei_0028x_0029" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Ei_0028x_0029" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Exponential-Integral-1"></a>
+<h3 class="subsection">1. Exponential Integral</h3>
+<a name="index-E1_0028x_0029_002c-E2_0028x_0029_002c-Ei_0028x_0029"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fexpint_005fE1"></a><u>Function:</u> double <b>gsl_sf_expint_E1</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fexpint_005fE1_005fe"></a><u>Function:</u> int <b>gsl_sf_expint_E1_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the exponential integral <em>E_1(x)</em>,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fexpint_005fE2"></a><u>Function:</u> double <b>gsl_sf_expint_E2</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fexpint_005fE2_005fe"></a><u>Function:</u> int <b>gsl_sf_expint_E2_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the second-order exponential integral <em>E_2(x)</em>,
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fexpint_005fEn"></a><u>Function:</u> double <b>gsl_sf_expint_En</b><i> (int <var>n</var>, double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fexpint_005fEn_005fe"></a><u>Function:</u> int <b>gsl_sf_expint_En_e</b><i> (int <var>n</var>, double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the exponential integral <em>E_n(x)</em> of order <em>n</em>, 
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Ei_0028x_0029"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Exponential-Integral" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Ei_0028x_0029-1"></a>
+<h3 class="subsection">2. Ei(x)</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fexpint_005fEi"></a><u>Function:</u> double <b>gsl_sf_expint_Ei</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fexpint_005fEi_005fe"></a><u>Function:</u> int <b>gsl_sf_expint_Ei_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the exponential integral <em>Ei(x)</em>,
+where <em>PV</em> denotes the principal value of the integral.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Hyperbolic-Integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Ei_0028x_0029" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Ei_005f3_0028x_0029" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Ei_0028x_0029" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Ei_005f3_0028x_0029" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Hyperbolic-Integrals-1"></a>
+<h3 class="subsection">3. Hyperbolic Integrals</h3>
+<a name="index-hyperbolic-integrals"></a>
+<a name="index-Shi_0028x_0029"></a>
+<a name="index-Chi_0028x_0029"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fShi"></a><u>Function:</u> double <b>gsl_sf_Shi</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fShi_005fe"></a><u>Function:</u> int <b>gsl_sf_Shi_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the integral <em>Shi(x) = \int_0^x dt \sinh(t)/t</em>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fChi"></a><u>Function:</u> double <b>gsl_sf_Chi</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fChi_005fe"></a><u>Function:</u> int <b>gsl_sf_Chi_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the integral <em> Chi(x) := \Re[ \gamma_E + \log(x) + \int_0^x dt (\cosh(t)-1)/t] </em>, 
+where <em>\gamma_E</em> is the Euler constant (available as the macro <code>M_EULER</code>).
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Ei_005f3_0028x_0029"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hyperbolic-Integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Integrals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Integrals" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Ei_005f3_0028x_0029-1"></a>
+<h3 class="subsection">4. Ei_3(x)</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fexpint_005f3"></a><u>Function:</u> double <b>gsl_sf_expint_3</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fexpint_005f3_005fe"></a><u>Function:</u> int <b>gsl_sf_expint_3_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the third-order exponential integral <em>Ei_3(x) = \int_0^xdt \exp(-t^3)</em> for <em>x &gt;= 0</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Trigonometric-Integrals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Ei_005f3_0028x_0029" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Arctangent-Integral" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Ei_005f3_0028x_0029" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Arctangent-Integral" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Trigonometric-Integrals-1"></a>
+<h3 class="subsection">5. Trigonometric Integrals</h3>
+<a name="index-trigonometric-integrals"></a>
+<a name="index-Si_0028x_0029"></a>
+<a name="index-Ci_0028x_0029"></a>
+<dl>
+<dt><a name="index-gsl_005fsf_005fSi"></a><u>Function:</u> double <b>gsl_sf_Si</b><i> (const double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fSi_005fe"></a><u>Function:</u> int <b>gsl_sf_Si_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Sine integral <em>Si(x) = \int_0^x dt \sin(t)/t</em>.
+</p></dd></dl>
+
+ 
+<dl>
+<dt><a name="index-gsl_005fsf_005fCi"></a><u>Function:</u> double <b>gsl_sf_Ci</b><i> (const double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fCi_005fe"></a><u>Function:</u> int <b>gsl_sf_Ci_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Cosine integral <em>Ci(x) = -\int_x^\infty dt \cos(t)/t</em> for <em>x &gt; 0</em>.  
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Arctangent-Integral"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Trigonometric-Integrals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Integrals" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Arctangent-Integral-1"></a>
+<h3 class="subsection">6. Arctangent Integral</h3>
+<a name="index-arctangent-integral"></a>
+<dl>
+<dt><a name="index-gsl_005fsf_005fatanint"></a><u>Function:</u> double <b>gsl_sf_atanint</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fatanint_005fe"></a><u>Function:</u> int <b>gsl_sf_atanint_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>These routines compute the Arctangent integral, which is defined as <em>AtanInt(x) = \int_0^x dt \arctan(t)/t</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Exponential-Integral" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,761 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-optimization_002c-see-minimization"></a>
+<a name="index-maximization_002c-see-minimization"></a>
+<a name="index-minimization_002c-one_002ddimensional"></a>
+<a name="index-finding-minima"></a>
+<a name="index-nonlinear-functions_002c-minimization"></a>
+
+<p>This chapter describes routines for finding minima of arbitrary
+one-dimensional functions.  The library provides low level components
+for a variety of iterative minimizers and convergence tests.  These can be
+combined by the user to achieve the desired solution, with full access
+to the intermediate steps of the algorithms.  Each class of methods uses
+the same framework, so that you can switch between minimizers at runtime
+without needing to recompile your program.  Each instance of a minimizer
+keeps track of its own state, allowing the minimizers to be used in
+multi-threaded programs.
+</p>
+<p>The header file &lsquo;<tt>gsl_min.h</tt>&rsquo; contains prototypes for the
+minimization functions and related declarations.  To use the minimization
+algorithms to find the maximum of a function simply invert its sign.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Minimization-Overview">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Caveats">2. Caveats</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-Minimizer">3. Initializing the Minimizer</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Providing-the-function-to-minimize">4. Providing the function to minimize</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Iteration">5. Iteration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Stopping-Parameters">6. Stopping Parameters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Algorithms">7. Minimization Algorithms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-Examples">8. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Minimization-References-and-Further-Reading">9. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Minimization-Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Caveats" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Caveats" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-minimization_002c-overview"></a>
+
+<p>The minimization algorithms begin with a bounded region known to contain
+a minimum.  The region is described by a lower bound <em>a</em> and an
+upper bound <em>b</em>, with an estimate of the location of the minimum
+<em>x</em>.
+</p>
+
+<p>The value of the function at <em>x</em> must be less than the value of the
+function at the ends of the interval,
+This condition guarantees that a minimum is contained somewhere within
+the interval.  On each iteration a new point <em>x&rsquo;</em> is selected using
+one of the available algorithms.  If the new point is a better estimate
+of the minimum, i.e. where <em>f(x&rsquo;) &lt; f(x)</em>, then the current
+estimate of the minimum <em>x</em> is updated.  The new point also allows
+the size of the bounded interval to be reduced, by choosing the most
+compact set of points which satisfies the constraint <em>f(a) &gt; f(x) &lt;
+f(b)</em>.  The interval is reduced until it encloses the true minimum to a
+desired tolerance.  This provides a best estimate of the location of the
+minimum and a rigorous error estimate.
+</p>
+<p>Several bracketing algorithms are available within a single framework.
+The user provides a high-level driver for the algorithm, and the
+library provides the individual functions necessary for each of the
+steps.  There are three main phases of the iteration.  The steps are,
+</p>
+<ul>
+<li>
+initialize minimizer state, <var>s</var>, for algorithm <var>T</var>
+
+</li><li>
+update <var>s</var> using the iteration <var>T</var>
+
+</li><li>
+test <var>s</var> for convergence, and repeat iteration if necessary
+</li></ul>
+
+<p>The state for the minimizers is held in a <code>gsl_min_fminimizer</code>
+struct.  The updating procedure uses only function evaluations (not
+derivatives).
+</p>
+<hr size="6">
+<a name="Minimization-Caveats"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Minimizer" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Minimizer" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Caveats"></a>
+<h2 class="section">2. Caveats</h2>
+<a name="index-minimization_002c-caveats"></a>
+
+<p>Note that minimization functions can only search for one minimum at a
+time.  When there are several minima in the search area, the first
+minimum to be found will be returned; however it is difficult to predict
+which of the minima this will be. <em>In most cases, no error will be
+reported if you try to find a minimum in an area where there is more
+than one.</em>
+</p>
+<p>With all minimization algorithms it can be difficult to determine the
+location of the minimum to full numerical precision.  The behavior of the
+function in the region of the minimum <em>x^*</em> can be approximated by
+a Taylor expansion,
+and the second term of this expansion can be lost when added to the
+first term at finite precision.  This magnifies the error in locating
+<em>x^*</em>, making it proportional to <em>\sqrt \epsilon</em> (where
+<em>\epsilon</em> is the relative accuracy of the floating point numbers).
+For functions with higher order minima, such as <em>x^4</em>, the
+magnification of the error is correspondingly worse.  The best that can
+be achieved is to converge to the limit of numerical accuracy in the
+function values, rather than the location of the minimum itself.
+</p>
+<hr size="6">
+<a name="Initializing-the-Minimizer"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Caveats" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-minimize" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Caveats" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-minimize" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-Minimizer-1"></a>
+<h2 class="section">3. Initializing the Minimizer</h2>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005falloc"></a><u>Function:</u> gsl_min_fminimizer * <b>gsl_min_fminimizer_alloc</b><i> (const gsl_min_fminimizer_type * <var>T</var>)</i></dt>
+<dd><a name="index-gsl_005fmin_005ffminimizer"></a>
+<a name="index-gsl_005fmin_005ffminimizer_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+minimizer of type <var>T</var>.  For example, the following code
+creates an instance of a golden section minimizer,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_min_fminimizer_type * T 
+  = gsl_min_fminimizer_goldensection;
+gsl_min_fminimizer * s 
+  = gsl_min_fminimizer_alloc (T);
+</pre></td></tr></table>
+
+<p>If there is insufficient memory to create the minimizer then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fset"></a><u>Function:</u> int <b>gsl_min_fminimizer_set</b><i> (gsl_min_fminimizer * <var>s</var>, gsl_function * <var>f</var>, double <var>x_minimum</var>, double <var>x_lower</var>, double <var>x_upper</var>)</i></dt>
+<dd><p>This function sets, or resets, an existing minimizer <var>s</var> to use the
+function <var>f</var> and the initial search interval [<var>x_lower</var>,
+<var>x_upper</var>], with a guess for the location of the minimum
+<var>x_minimum</var>.
+</p>
+<p>If the interval given does not contain a minimum, then the function
+returns an error code of <code>GSL_EINVAL</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fset_005fwith_005fvalues"></a><u>Function:</u> int <b>gsl_min_fminimizer_set_with_values</b><i> (gsl_min_fminimizer * <var>s</var>, gsl_function * <var>f</var>, double <var>x_minimum</var>, double <var>f_minimum</var>, double <var>x_lower</var>, double <var>f_lower</var>, double <var>x_upper</var>, double <var>f_upper</var>)</i></dt>
+<dd><p>This function is equivalent to <code>gsl_min_fminimizer_set</code> but uses
+the values <var>f_minimum</var>, <var>f_lower</var> and <var>f_upper</var> instead of
+computing <code>f(x_minimum)</code>, <code>f(x_lower)</code> and <code>f(x_upper)</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005ffree"></a><u>Function:</u> void <b>gsl_min_fminimizer_free</b><i> (gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the minimizer
+<var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fname"></a><u>Function:</u> const char * <b>gsl_min_fminimizer_name</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the minimizer.  For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;s is a '%s' minimizer\n&quot;,
+        gsl_min_fminimizer_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>s is a 'brent' minimizer</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Providing-the-function-to-minimize"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-Minimizer" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Iteration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Minimizer" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Iteration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Providing-the-function-to-minimize-1"></a>
+<h2 class="section">4. Providing the function to minimize</h2>
+<a name="index-minimization_002c-providing-a-function-to-minimize"></a>
+
+<p>You must provide a continuous function of one variable for the
+minimizers to operate on.  In order to allow for general parameters the
+functions are defined by a <code>gsl_function</code> data type
+(@pxref{Providing the function to solve}).
+</p>
+<hr size="6">
+<a name="Minimization-Iteration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Providing-the-function-to-minimize" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Stopping-Parameters" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-minimize" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Stopping-Parameters" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iteration"></a>
+<h2 class="section">5. Iteration</h2>
+
+<p>The following functions drive the iteration of each algorithm.  Each
+function performs one iteration to update the state of any minimizer of the
+corresponding type.  The same functions work for all minimizers so that
+different methods can be substituted at runtime without modifications to
+the code.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fiterate"></a><u>Function:</u> int <b>gsl_min_fminimizer_iterate</b><i> (gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function performs a single iteration of the minimizer <var>s</var>.  If the
+iteration encounters an unexpected problem then an error code will be
+returned,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_EBADFUNC</code></dt>
+<dd><p>the iteration encountered a singular point where the function evaluated
+to <code>Inf</code> or <code>NaN</code>.
+</p>
+</dd>
+<dt> <code>GSL_FAILURE</code></dt>
+<dd><p>the algorithm could not improve the current best approximation or
+bounding interval.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>The minimizer maintains a current best estimate of the position of the
+minimum at all times, and the current interval bounding the minimum.
+This information can be accessed with the following auxiliary functions,
+</p>
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fx_005fminimum"></a><u>Function:</u> double <b>gsl_min_fminimizer_x_minimum</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>This function returns the current estimate of the position of the
+minimum for the minimizer <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fx_005fupper"></a><u>Function:</u> double <b>gsl_min_fminimizer_x_upper</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fx_005flower"></a><u>Function:</u> double <b>gsl_min_fminimizer_x_lower</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>These functions return the current upper and lower bound of the interval
+for the minimizer <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005ff_005fminimum"></a><u>Function:</u> double <b>gsl_min_fminimizer_f_minimum</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005ff_005fupper"></a><u>Function:</u> double <b>gsl_min_fminimizer_f_upper</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005ff_005flower"></a><u>Function:</u> double <b>gsl_min_fminimizer_f_lower</b><i> (const gsl_min_fminimizer * <var>s</var>)</i></dt>
+<dd><p>These functions return the value of the function at the current estimate
+of the minimum and at the upper and lower bounds of the interval for the
+minimizer <var>s</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Minimization-Stopping-Parameters"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Iteration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Iteration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Stopping-Parameters"></a>
+<h2 class="section">6. Stopping Parameters</h2>
+<a name="index-minimization_002c-stopping-parameters"></a>
+
+<p>A minimization procedure should stop when one of the following
+conditions is true:
+</p>
+<ul>
+<li>
+A minimum has been found to within the user-specified precision.
+
+</li><li>
+A user-specified maximum number of iterations has been reached.
+
+</li><li>
+An error has occurred.
+</li></ul>
+
+<p>The handling of these conditions is under user control.  The function
+below allows the user to test the precision of the current result.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmin_005ftest_005finterval"></a><u>Function:</u> int <b>gsl_min_test_interval</b><i> (double <var>x_lower</var>, double <var>x_upper</var>,  double <var>epsabs</var>, double <var>epsrel</var>)</i></dt>
+<dd><p>This function tests for the convergence of the interval [<var>x_lower</var>,
+<var>x_upper</var>] with absolute error <var>epsabs</var> and relative error
+<var>epsrel</var>.  The test returns <code>GSL_SUCCESS</code> if the following
+condition is achieved,
+when the interval <em>x = [a,b]</em> does not include the origin.  If the
+interval includes the origin then <em>\min(|a|,|b|)</em> is replaced by
+zero (which is the minimum value of <em>|x|</em> over the interval).  This
+ensures that the relative error is accurately estimated for minima close
+to the origin.
+</p>
+<p>This condition on the interval also implies that any estimate of the
+minimum <em>x_m</em> in the interval satisfies the same condition with respect
+to the true minimum <em>x_m^*</em>,
+assuming that the true minimum <em>x_m^*</em> is contained within the interval.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Minimization-Algorithms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Stopping-Parameters" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Stopping-Parameters" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Minimization-Algorithms-1"></a>
+<h2 class="section">7. Minimization Algorithms</h2>
+
+<p>The minimization algorithms described in this section require an initial
+interval which is guaranteed to contain a minimum&mdash;if <em>a</em> and
+<em>b</em> are the endpoints of the interval and <em>x</em> is an estimate
+of the minimum then <em>f(a) &gt; f(x) &lt; f(b)</em>.  This ensures that the
+function has at least one minimum somewhere in the interval.  If a valid
+initial interval is used then these algorithm cannot fail, provided the
+function is well-behaved.
+</p>
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fgoldensection"></a><u>Minimizer:</u> <b>gsl_min_fminimizer_goldensection</b></dt>
+<dd>
+<a name="index-golden-section-algorithm-for-finding-minima"></a>
+<a name="index-minimum-finding_002c-golden-section-algorithm"></a>
+
+<p>The <em>golden section algorithm</em> is the simplest method of bracketing
+the minimum of a function.  It is the slowest algorithm provided by the
+library, with linear convergence.
+</p>
+<p>On each iteration, the algorithm first compares the subintervals from
+the endpoints to the current minimum.  The larger subinterval is divided
+in a golden section (using the famous ratio <em>(3-\sqrt 5)/2 =
+0.3189660</em>&hellip;) and the value of the function at this new point is
+calculated.  The new value is used with the constraint <em>f(a&rsquo;) &gt;
+f(x&rsquo;) &lt; f(b&rsquo;)</em> to a select new interval containing the minimum, by
+discarding the least useful point.  This procedure can be continued
+indefinitely until the interval is sufficiently small.  Choosing the
+golden section as the bisection ratio can be shown to provide the
+fastest convergence for this type of algorithm.
+</p>
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fbrent"></a><u>Minimizer:</u> <b>gsl_min_fminimizer_brent</b></dt>
+<dd><a name="index-Brent_0027s-method-for-finding-minima"></a>
+<a name="index-minimum-finding_002c-Brent_0027s-method"></a>
+
+<p>The <em>Brent minimization algorithm</em> combines a parabolic
+interpolation with the golden section algorithm.  This produces a fast
+algorithm which is still robust.
+</p>
+<p>The outline of the algorithm can be summarized as follows: on each
+iteration Brent&rsquo;s method approximates the function using an
+interpolating parabola through three existing points.  The minimum of the
+parabola is taken as a guess for the minimum.  If it lies within the
+bounds of the current interval then the interpolating point is accepted,
+and used to generate a smaller interval.  If the interpolating point is
+not accepted then the algorithm falls back to an ordinary golden section
+step.  The full details of Brent&rsquo;s method include some additional checks
+to improve convergence.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fmin_005ffminimizer_005fquad_005fgolden"></a><u>Minimizer:</u> <b>gsl_min_fminimizer_quad_golden</b></dt>
+<dd><a name="index-safeguarded-step_002dlength-algorithm"></a>
+<p>This is a variant of Brent&rsquo;s algorithm which uses the safeguarded
+step-length algorithm of Gill and Murray.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Minimization-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Algorithms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Algorithms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">8. Examples</h2>
+
+<p>The following program uses the Brent algorithm to find the minimum of
+the function <em>f(x) = \cos(x) + 1</em>, which occurs at <em>x = \pi</em>.
+The starting interval is <em>(0,6)</em>, with an initial guess for the
+minimum of <em>2</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_min.h&gt;
+
+double fn1 (double x, void * params)
+{
+  return cos(x) + 1.0;
+}
+
+int
+main (void)
+{
+  int status;
+  int iter = 0, max_iter = 100;
+  const gsl_min_fminimizer_type *T;
+  gsl_min_fminimizer *s;
+  double m = 2.0, m_expected = M_PI;
+  double a = 0.0, b = 6.0;
+  gsl_function F;
+
+  F.function = &amp;fn1;
+  F.params = 0;
+
+  T = gsl_min_fminimizer_brent;
+  s = gsl_min_fminimizer_alloc (T);
+  gsl_min_fminimizer_set (s, &amp;F, m, a, b);
+
+  printf (&quot;using %s method\n&quot;,
+          gsl_min_fminimizer_name (s));
+
+  printf (&quot;%5s [%9s, %9s] %9s %10s %9s\n&quot;,
+          &quot;iter&quot;, &quot;lower&quot;, &quot;upper&quot;, &quot;min&quot;,
+          &quot;err&quot;, &quot;err(est)&quot;);
+
+  printf (&quot;%5d [%.7f, %.7f] %.7f %+.7f %.7f\n&quot;,
+          iter, a, b,
+          m, m - m_expected, b - a);
+
+  do
+    {
+      iter++;
+      status = gsl_min_fminimizer_iterate (s);
+
+      m = gsl_min_fminimizer_x_minimum (s);
+      a = gsl_min_fminimizer_x_lower (s);
+      b = gsl_min_fminimizer_x_upper (s);
+
+      status 
+        = gsl_min_test_interval (a, b, 0.001, 0.0);
+
+      if (status == GSL_SUCCESS)
+        printf (&quot;Converged:\n&quot;);
+
+      printf (&quot;%5d [%.7f, %.7f] &quot;
+              &quot;%.7f %+.7f %.7f\n&quot;,
+              iter, a, b,
+              m, m - m_expected, b - a);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; max_iter);
+
+  gsl_min_fminimizer_free (s);
+
+  return status;
+}
+</pre></pre></td></tr></table>
+
+<p>Here are the results of the minimization procedure.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ ./a.out 
+<pre class="verbatim">    0 [0.0000000, 6.0000000] 2.0000000 -1.1415927 6.0000000
+    1 [2.0000000, 6.0000000] 3.2758640 +0.1342713 4.0000000
+    2 [2.0000000, 3.2831929] 3.2758640 +0.1342713 1.2831929
+    3 [2.8689068, 3.2831929] 3.2758640 +0.1342713 0.4142862
+    4 [2.8689068, 3.2831929] 3.2758640 +0.1342713 0.4142862
+    5 [2.8689068, 3.2758640] 3.1460585 +0.0044658 0.4069572
+    6 [3.1346075, 3.2758640] 3.1460585 +0.0044658 0.1412565
+    7 [3.1346075, 3.1874620] 3.1460585 +0.0044658 0.0528545
+    8 [3.1346075, 3.1460585] 3.1460585 +0.0044658 0.0114510
+    9 [3.1346075, 3.1460585] 3.1424060 +0.0008133 0.0114510
+   10 [3.1346075, 3.1424060] 3.1415885 -0.0000041 0.0077985
+Converged:                            
+   11 [3.1415885, 3.1424060] 3.1415927 -0.0000000 0.0008175
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="Minimization-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">9. References and Further Reading</h2>
+
+<p>Further information on Brent&rsquo;s algorithm is available in the following
+book,
+</p>
+<ul class="toc">
+<li>
+Richard Brent, <cite>Algorithms for minimization without derivatives</cite>,
+Prentice-Hall (1973), republished by Dover in paperback (2002), ISBN
+0-486-41998-3.
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Minimization-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

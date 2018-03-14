@@ -1,0 +1,1245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-root-finding"></a>
+<a name="index-zero-finding"></a>
+<a name="index-finding-roots"></a>
+<a name="index-finding-zeros"></a>
+<a name="index-roots"></a>
+<a name="index-solving-a-nonlinear-equation"></a>
+<a name="index-nonlinear-equation_002c-solutions-of"></a>
+
+<p>This chapter describes routines for finding roots of arbitrary
+one-dimensional functions.  The library provides low level components
+for a variety of iterative solvers and convergence tests.  These can be
+combined by the user to achieve the desired solution, with full access
+to the intermediate steps of the iteration.  Each class of methods uses
+the same framework, so that you can switch between solvers at runtime
+without needing to recompile your program.  Each instance of a solver
+keeps track of its own state, allowing the solvers to be used in
+multi-threaded programs.
+</p>
+<p>The header file &lsquo;<tt>gsl_roots.h</tt>&rsquo; contains prototypes for the root
+finding functions and related declarations.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Root-Finding-Overview">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Finding-Caveats">2. Caveats</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-Solver">3. Initializing the Solver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Providing-the-function-to-solve">4. Providing the function to solve</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Search-Bounds-and-Guesses">5. Search Bounds and Guesses</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Finding-Iteration">6. Iteration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Search-Stopping-Parameters">7. Search Stopping Parameters</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Bracketing-Algorithms">8. Root Bracketing Algorithms</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Finding-Algorithms-using-Derivatives">9. Root Finding Algorithms using Derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Finding-Examples">10. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Root-Finding-References-and-Further-Reading">11. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Root-Finding-Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Caveats" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Caveats" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-root-finding_002c-overview"></a>
+
+<p>One-dimensional root finding algorithms can be divided into two classes,
+<em>root bracketing</em> and <em>root polishing</em>.  Algorithms which proceed
+by bracketing a root are guaranteed to converge.  Bracketing algorithms
+begin with a bounded region known to contain a root.  The size of this
+bounded region is reduced, iteratively, until it encloses the root to a
+desired tolerance.  This provides a rigorous error estimate for the
+location of the root.
+</p>
+<p>The technique of <em>root polishing</em> attempts to improve an initial
+guess to the root.  These algorithms converge only if started &ldquo;close
+enough&rdquo; to a root, and sacrifice a rigorous error bound for speed.  By
+approximating the behavior of a function in the vicinity of a root they
+attempt to find a higher order improvement of an initial guess.  When the
+behavior of the function is compatible with the algorithm and a good
+initial guess is available a polishing algorithm can provide rapid
+convergence.
+</p>
+<p>In GSL both types of algorithm are available in similar frameworks.  The
+user provides a high-level driver for the algorithms, and the library
+provides the individual functions necessary for each of the steps.
+There are three main phases of the iteration.  The steps are,
+</p>
+<ul>
+<li>
+initialize solver state, <var>s</var>, for algorithm <var>T</var>
+
+</li><li>
+update <var>s</var> using the iteration <var>T</var>
+
+</li><li>
+test <var>s</var> for convergence, and repeat iteration if necessary
+</li></ul>
+
+<p>The state for bracketing solvers is held in a <code>gsl_root_fsolver</code>
+struct.  The updating procedure uses only function evaluations (not
+derivatives).  The state for root polishing solvers is held in a
+<code>gsl_root_fdfsolver</code> struct.  The updates require both the function
+and its derivative (hence the name <code>fdf</code>) to be supplied by the
+user.
+</p>
+<hr size="6">
+<a name="Root-Finding-Caveats"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Caveats"></a>
+<h2 class="section">2. Caveats</h2>
+<a name="index-root-finding_002c-caveats"></a>
+
+<p>Note that root finding functions can only search for one root at a time.
+When there are several roots in the search area, the first root to be
+found will be returned; however it is difficult to predict which of the
+roots this will be. <em>In most cases, no error will be reported if
+you try to find a root in an area where there is more than one.</em>
+</p>
+<p>Care must be taken when a function may have a multiple root (such as 
+<em>f(x) = (x-x_0)^2</em> or 
+<em>f(x) = (x-x_0)^3</em>).  
+It is not possible to use root-bracketing algorithms on
+even-multiplicity roots.  For these algorithms the initial interval must
+contain a zero-crossing, where the function is negative at one end of
+the interval and positive at the other end.  Roots with even-multiplicity
+do not cross zero, but only touch it instantaneously.  Algorithms based
+on root bracketing will still work for odd-multiplicity roots
+(e.g. cubic, quintic, &hellip;). 
+Root polishing algorithms generally work with higher multiplicity roots,
+but at a reduced rate of convergence.  In these cases the <em>Steffenson
+algorithm</em> can be used to accelerate the convergence of multiple roots.
+</p>
+<p>While it is not absolutely required that <em>f</em> have a root within the
+search region, numerical root finding functions should not be used
+haphazardly to check for the <em>existence</em> of roots.  There are better
+ways to do this.  Because it is easy to create situations where numerical
+root finders can fail, it is a bad idea to throw a root finder at a
+function you do not know much about.  In general it is best to examine
+the function visually by plotting before searching for a root.
+</p>
+<hr size="6">
+<a name="Initializing-the-Solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Caveats" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-solve" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Caveats" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-solve" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-Solver-1"></a>
+<h2 class="section">3. Initializing the Solver</h2>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005falloc"></a><u>Function:</u> gsl_root_fsolver * <b>gsl_root_fsolver_alloc</b><i> (const gsl_root_fsolver_type * <var>T</var>)</i></dt>
+<dd><a name="index-gsl_005froot_005ffsolver"></a>
+<a name="index-gsl_005froot_005ffsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+solver of type <var>T</var>.  For example, the following code creates an
+instance of a bisection solver,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_root_fsolver_type * T 
+  = gsl_root_fsolver_bisection;
+gsl_root_fsolver * s 
+  = gsl_root_fsolver_alloc (T);
+</pre></td></tr></table>
+
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005falloc"></a><u>Function:</u> gsl_root_fdfsolver * <b>gsl_root_fdfsolver_alloc</b><i> (const gsl_root_fdfsolver_type * <var>T</var>)</i></dt>
+<dd><a name="index-gsl_005froot_005ffdfsolver"></a>
+<a name="index-gsl_005froot_005ffdfsolver_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+derivative-based solver of type <var>T</var>.  For example, the following
+code creates an instance of a Newton-Raphson solver,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">const gsl_root_fdfsolver_type * T 
+  = gsl_root_fdfsolver_newton;
+gsl_root_fdfsolver * s 
+  = gsl_root_fdfsolver_alloc (T);
+</pre></td></tr></table>
+
+<p>If there is insufficient memory to create the solver then the function
+returns a null pointer and the error handler is invoked with an error
+code of <code>GSL_ENOMEM</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fset"></a><u>Function:</u> int <b>gsl_root_fsolver_set</b><i> (gsl_root_fsolver * <var>s</var>, gsl_function * <var>f</var>, double <var>x_lower</var>, double <var>x_upper</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing solver <var>s</var>
+to use the function <var>f</var> and the initial search interval
+[<var>x_lower</var>, <var>x_upper</var>].
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fset"></a><u>Function:</u> int <b>gsl_root_fdfsolver_set</b><i> (gsl_root_fdfsolver * <var>s</var>, gsl_function_fdf * <var>fdf</var>, double <var>root</var>)</i></dt>
+<dd><p>This function initializes, or reinitializes, an existing solver <var>s</var>
+to use the function and derivative <var>fdf</var> and the initial guess
+<var>root</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005ffree"></a><u>Function:</u> void <b>gsl_root_fsolver_free</b><i> (gsl_root_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005ffree"></a><u>Function:</u> void <b>gsl_root_fdfsolver_free</b><i> (gsl_root_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions free all the memory associated with the solver <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fname"></a><u>Function:</u> const char * <b>gsl_root_fsolver_name</b><i> (const gsl_root_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fname"></a><u>Function:</u> const char * <b>gsl_root_fdfsolver_name</b><i> (const gsl_root_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return a pointer to the name of the solver.  For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;s is a '%s' solver\n&quot;,
+        gsl_root_fsolver_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>s is a 'bisection' solver</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Providing-the-function-to-solve"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-Solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Bounds-and-Guesses" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-Solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Bounds-and-Guesses" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Providing-the-function-to-solve-1"></a>
+<h2 class="section">4. Providing the function to solve</h2>
+<a name="index-root-finding_002c-providing-a-function-to-solve"></a>
+
+<p>You must provide a continuous function of one variable for the root
+finders to operate on, and, sometimes, its first derivative.  In order
+to allow for general parameters the functions are defined by the
+following data types:
+</p>
+<dl>
+<dt><a name="index-gsl_005ffunction"></a><u>Data Type:</u> <b>gsl_function</b></dt>
+<dd><p>This data type defines a general function with parameters. 
+</p>
+<dl compact="compact">
+<dt> <code>double (* function) (double <var>x</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the value
+<em>f(x,params)</em> for argument <var>x</var> and parameters <var>params</var>
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>Here is an example for the general quadratic function,
+with <em>a = 3</em>, <em>b = 2</em>, <em>c = 1</em>.  The following code
+defines a <code>gsl_function</code> <code>F</code> which you could pass to a root
+finder as a function pointer:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">struct my_f_params { double a; double b; double c; };
+
+double
+my_f (double x, void * p) {
+   struct my_f_params * params 
+     = (struct my_f_params *)p;
+   double a = (params-&gt;a);
+   double b = (params-&gt;b);
+   double c = (params-&gt;c);
+
+   return  (a * x + b) * x + c;
+}
+
+gsl_function F;
+struct my_f_params params = { 3.0, 2.0, 1.0 };
+
+F.function = &amp;my_f;
+F.params = &amp;params;
+</pre></td></tr></table>
+
+<p>The function <em>f(x)</em> can be evaluated using the macro
+<code>GSL_FN_EVAL(&amp;F,x)</code> defined in &lsquo;<tt>gsl_math.h</tt>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-gsl_005ffunction_005ffdf"></a><u>Data Type:</u> <b>gsl_function_fdf</b></dt>
+<dd><p>This data type defines a general function with parameters and its first
+derivative.
+</p>
+<dl compact="compact">
+<dt> <code>double (* f) (double <var>x</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the value of
+<em>f(x,params)</em> for argument <var>x</var> and parameters <var>params</var>
+</p>
+</dd>
+<dt> <code>double (* df) (double <var>x</var>, void * <var>params</var>)</code></dt>
+<dd><p>this function should return the value of the derivative of <var>f</var> with
+respect to <var>x</var>,
+<em>f&rsquo;(x,params)</em>, for argument <var>x</var> and parameters <var>params</var>
+</p>
+</dd>
+<dt> <code>void (* fdf) (double <var>x</var>, void * <var>params</var>, double * <var>f</var>, double * <var>df</var>)</code></dt>
+<dd><p>this function should set the values of the function <var>f</var> to 
+<em>f(x,params)</em>
+and its derivative <var>df</var> to
+<em>f&rsquo;(x,params)</em> 
+for argument <var>x</var> and parameters <var>params</var>.  This function
+provides an optimization of the separate functions for <em>f(x)</em> and
+<em>f&rsquo;(x)</em>&mdash;it is always faster to compute the function and its
+derivative at the same time.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>a pointer to the parameters of the function
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>Here is an example where 
+<em>f(x) = 2\exp(2x)</em>:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">double
+my_f (double x, void * params)
+{
+   return exp (2 * x);
+}
+
+double
+my_df (double x, void * params)
+{
+   return 2 * exp (2 * x);
+}
+
+void
+my_fdf (double x, void * params, 
+        double * f, double * df)
+{
+   double t = exp (2 * x);
+
+   *f = t;
+   *df = 2 * t;   /* uses existing value */
+}
+
+gsl_function_fdf FDF;
+
+FDF.f = &amp;my_f;
+FDF.df = &amp;my_df;
+FDF.fdf = &amp;my_fdf;
+FDF.params = 0;
+</pre></td></tr></table>
+
+<p>The function <em>f(x)</em> can be evaluated using the macro
+<code>GSL_FN_FDF_EVAL_F(&amp;FDF,x)</code> and the derivative <em>f&rsquo;(x)</em> can
+be evaluated using the macro <code>GSL_FN_FDF_EVAL_DF(&amp;FDF,x)</code>.  Both
+the function <em>y = f(x)</em> and its derivative <em>dy = f&rsquo;(x)</em> can
+be evaluated at the same time using the macro
+<code>GSL_FN_FDF_EVAL_F_DF(&amp;FDF,x,y,dy)</code>.  The macro stores
+<em>f(x)</em> in its <var>y</var> argument and <em>f&rsquo;(x)</em> in its <var>dy</var>
+argument&mdash;both of these should be pointers to <code>double</code>.
+</p>
+<hr size="6">
+<a name="Search-Bounds-and-Guesses"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Providing-the-function-to-solve" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Iteration" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Providing-the-function-to-solve" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Iteration" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Search-Bounds-and-Guesses-1"></a>
+<h2 class="section">5. Search Bounds and Guesses</h2>
+<a name="index-root-finding_002c-search-bounds"></a>
+<a name="index-root-finding_002c-initial-guess"></a>
+
+<p>You provide either search bounds or an initial guess; this section
+explains how search bounds and guesses work and how function arguments
+control them.
+</p>
+<p>A guess is simply an <em>x</em> value which is iterated until it is within
+the desired precision of a root.  It takes the form of a <code>double</code>.
+</p>
+<p>Search bounds are the endpoints of an interval which is iterated until
+the length of the interval is smaller than the requested precision.  The
+interval is defined by two values, the lower limit and the upper limit.
+Whether the endpoints are intended to be included in the interval or not
+depends on the context in which the interval is used.
+</p>
+<hr size="6">
+<a name="Root-Finding-Iteration"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Search-Bounds-and-Guesses" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Search-Bounds-and-Guesses" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Iteration"></a>
+<h2 class="section">6. Iteration</h2>
+
+<p>The following functions drive the iteration of each algorithm.  Each
+function performs one iteration to update the state of any solver of the
+corresponding type.  The same functions work for all solvers so that
+different methods can be substituted at runtime without modifications to
+the code.
+</p>
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fiterate"></a><u>Function:</u> int <b>gsl_root_fsolver_iterate</b><i> (gsl_root_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fiterate"></a><u>Function:</u> int <b>gsl_root_fdfsolver_iterate</b><i> (gsl_root_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions perform a single iteration of the solver <var>s</var>.  If the
+iteration encounters an unexpected problem then an error code will be
+returned,
+</p>
+<dl compact="compact">
+<dt> <code>GSL_EBADFUNC</code></dt>
+<dd><p>the iteration encountered a singular point where the function or its
+derivative evaluated to <code>Inf</code> or <code>NaN</code>.
+</p>
+</dd>
+<dt> <code>GSL_EZERODIV</code></dt>
+<dd><p>the derivative of the function vanished at the iteration point,
+preventing the algorithm from continuing without a division by zero.
+</p></dd>
+</dl>
+</dd></dl>
+
+<p>The solver maintains a current best estimate of the root at all
+times.  The bracketing solvers also keep track of the current best
+interval bounding the root.  This information can be accessed with the
+following auxiliary functions,
+</p>
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005froot"></a><u>Function:</u> double <b>gsl_root_fsolver_root</b><i> (const gsl_root_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005froot"></a><u>Function:</u> double <b>gsl_root_fdfsolver_root</b><i> (const gsl_root_fdfsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return the current estimate of the root for the solver <var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fx_005flower"></a><u>Function:</u> double <b>gsl_root_fsolver_x_lower</b><i> (const gsl_root_fsolver * <var>s</var>)</i></dt>
+<dt><a name="index-gsl_005froot_005ffsolver_005fx_005fupper"></a><u>Function:</u> double <b>gsl_root_fsolver_x_upper</b><i> (const gsl_root_fsolver * <var>s</var>)</i></dt>
+<dd><p>These functions return the current bracketing interval for the solver <var>s</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Search-Stopping-Parameters"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Iteration" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Bracketing-Algorithms" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Iteration" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Bracketing-Algorithms" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Search-Stopping-Parameters-1"></a>
+<h2 class="section">7. Search Stopping Parameters</h2>
+<a name="index-root-finding_002c-stopping-parameters"></a>
+
+<p>A root finding procedure should stop when one of the following conditions is
+true:
+</p>
+<ul>
+<li>
+A root has been found to within the user-specified precision.
+
+</li><li>
+A user-specified maximum number of iterations has been reached.
+
+</li><li>
+An error has occurred.
+</li></ul>
+
+<p>The handling of these conditions is under user control.  The functions
+below allow the user to test the precision of the current result in
+several standard ways.
+</p>
+<dl>
+<dt><a name="index-gsl_005froot_005ftest_005finterval"></a><u>Function:</u> int <b>gsl_root_test_interval</b><i> (double <var>x_lower</var>, double <var>x_upper</var>, double <var>epsabs</var>, double <var>epsrel</var>)</i></dt>
+<dd><p>This function tests for the convergence of the interval [<var>x_lower</var>,
+<var>x_upper</var>] with absolute error <var>epsabs</var> and relative error
+<var>epsrel</var>.  The test returns <code>GSL_SUCCESS</code> if the following
+condition is achieved,
+when the interval <em>x = [a,b]</em> does not include the origin.  If the
+interval includes the origin then <em>\min(|a|,|b|)</em> is replaced by
+zero (which is the minimum value of <em>|x|</em> over the interval).  This
+ensures that the relative error is accurately estimated for roots close
+to the origin.
+</p>
+<p>This condition on the interval also implies that any estimate of the
+root <em>r</em> in the interval satisfies the same condition with respect
+to the true root <em>r^*</em>,
+assuming that the true root <em>r^*</em> is contained within the interval.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005froot_005ftest_005fdelta"></a><u>Function:</u> int <b>gsl_root_test_delta</b><i> (double <var>x1</var>, double <var>x0</var>, double <var>epsabs</var>, double <var>epsrel</var>)</i></dt>
+<dd>
+<p>This function tests for the convergence of the sequence &hellip;, <var>x0</var>,
+<var>x1</var> with absolute error <var>epsabs</var> and relative error
+<var>epsrel</var>.  The test returns <code>GSL_SUCCESS</code> if the following
+condition is achieved,
+and returns <code>GSL_CONTINUE</code> otherwise.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ftest_005fresidual"></a><u>Function:</u> int <b>gsl_root_test_residual</b><i> (double <var>f</var>, double <var>epsabs</var>)</i></dt>
+<dd><p>This function tests the residual value <var>f</var> against the absolute
+error bound <var>epsabs</var>.  The test returns <code>GSL_SUCCESS</code> if the
+following condition is achieved,
+and returns <code>GSL_CONTINUE</code> otherwise.  This criterion is suitable
+for situations where the precise location of the root, <em>x</em>, is
+unimportant provided a value can be found where the residual,
+<em>|f(x)|</em>, is small enough.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Root-Bracketing-Algorithms"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Search-Stopping-Parameters" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Algorithms-using-Derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Search-Stopping-Parameters" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Algorithms-using-Derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Root-Bracketing-Algorithms-1"></a>
+<h2 class="section">8. Root Bracketing Algorithms</h2>
+
+<p>The root bracketing algorithms described in this section require an
+initial interval which is guaranteed to contain a root&mdash;if <em>a</em>
+and <em>b</em> are the endpoints of the interval then <em>f(a)</em> must
+differ in sign from <em>f(b)</em>.  This ensures that the function crosses
+zero at least once in the interval.  If a valid initial interval is used
+then these algorithm cannot fail, provided the function is well-behaved.
+</p>
+<p>Note that a bracketing algorithm cannot find roots of even degree, since
+these do not cross the <em>x</em>-axis.
+</p>
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fbisection"></a><u>Solver:</u> <b>gsl_root_fsolver_bisection</b></dt>
+<dd>
+<a name="index-bisection-algorithm-for-finding-roots"></a>
+<a name="index-root-finding_002c-bisection-algorithm"></a>
+
+<p>The <em>bisection algorithm</em> is the simplest method of bracketing the
+roots of a function.   It is the slowest algorithm provided by
+the library, with linear convergence.
+</p>
+<p>On each iteration, the interval is bisected and the value of the
+function at the midpoint is calculated.  The sign of this value is used
+to determine which half of the interval does not contain a root.  That
+half is discarded to give a new, smaller interval containing the
+root.  This procedure can be continued indefinitely until the interval is
+sufficiently small.
+</p>
+<p>At any time the current estimate of the root is taken as the midpoint of
+the interval.
+</p>
+
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005ffalsepos"></a><u>Solver:</u> <b>gsl_root_fsolver_falsepos</b></dt>
+<dd><a name="index-false-position-algorithm-for-finding-roots"></a>
+<a name="index-root-finding_002c-false-position-algorithm"></a>
+
+<p>The <em>false position algorithm</em> is a method of finding roots based on
+linear interpolation.  Its convergence is linear, but it is usually
+faster than bisection.
+</p>
+<p>On each iteration a line is drawn between the endpoints <em>(a,f(a))</em>
+and <em>(b,f(b))</em> and the point where this line crosses the
+<em>x</em>-axis taken as a &ldquo;midpoint&rdquo;.  The value of the function at
+this point is calculated and its sign is used to determine which side of
+the interval does not contain a root.  That side is discarded to give a
+new, smaller interval containing the root.  This procedure can be
+continued indefinitely until the interval is sufficiently small.
+</p>
+<p>The best estimate of the root is taken from the linear interpolation of
+the interval on the current iteration.
+</p>
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffsolver_005fbrent"></a><u>Solver:</u> <b>gsl_root_fsolver_brent</b></dt>
+<dd><a name="index-Brent_0027s-method-for-finding-roots"></a>
+<a name="index-root-finding_002c-Brent_0027s-method"></a>
+
+<p>The <em>Brent-Dekker method</em> (referred to here as <em>Brent&rsquo;s method</em>)
+combines an interpolation strategy with the bisection algorithm.  This
+produces a fast algorithm which is still robust.
+</p>
+<p>On each iteration Brent&rsquo;s method approximates the function using an
+interpolating curve.  On the first iteration this is a linear
+interpolation of the two endpoints.  For subsequent iterations the
+algorithm uses an inverse quadratic fit to the last three points, for
+higher accuracy.  The intercept of the interpolating curve with the
+<em>x</em>-axis is taken as a guess for the root.  If it lies within the
+bounds of the current interval then the interpolating point is accepted,
+and used to generate a smaller interval.  If the interpolating point is
+not accepted then the algorithm falls back to an ordinary bisection
+step.
+</p>
+<p>The best estimate of the root is taken from the most recent
+interpolation or bisection.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Root-Finding-Algorithms-using-Derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Bracketing-Algorithms" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Examples" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Bracketing-Algorithms" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Examples" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Root-Finding-Algorithms-using-Derivatives-1"></a>
+<h2 class="section">9. Root Finding Algorithms using Derivatives</h2>
+
+<p>The root polishing algorithms described in this section require an
+initial guess for the location of the root.  There is no absolute
+guarantee of convergence&mdash;the function must be suitable for this
+technique and the initial guess must be sufficiently close to the root
+for it to work.  When these conditions are satisfied then convergence is
+quadratic.
+</p>
+<p>These algorithms make use of both the function and its derivative. 
+</p>
+<dl>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fnewton"></a><u>Derivative Solver:</u> <b>gsl_root_fdfsolver_newton</b></dt>
+<dd><a name="index-Newton_0027s-method-for-finding-roots"></a>
+<a name="index-root-finding_002c-Newton_0027s-method"></a>
+
+<p>Newton&rsquo;s Method is the standard root-polishing algorithm.  The algorithm
+begins with an initial guess for the location of the root.  On each
+iteration, a line tangent to the function <em>f</em> is drawn at that
+position.  The point where this line crosses the <em>x</em>-axis becomes
+the new guess.  The iteration is defined by the following sequence,
+Newton&rsquo;s method converges quadratically for single roots, and linearly
+for multiple roots.
+</p>
+
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fsecant"></a><u>Derivative Solver:</u> <b>gsl_root_fdfsolver_secant</b></dt>
+<dd><a name="index-secant-method-for-finding-roots"></a>
+<a name="index-root-finding_002c-secant-method"></a>
+
+<p>The <em>secant method</em> is a simplified version of Newton&rsquo;s method which does
+not require the computation of the derivative on every step.
+</p>
+<p>On its first iteration the algorithm begins with Newton&rsquo;s method, using
+the derivative to compute a first step,
+Subsequent iterations avoid the evaluation of the derivative by
+replacing it with a numerical estimate, the slope of the line through
+the previous two points,
+When the derivative does not change significantly in the vicinity of the
+root the secant method gives a useful saving.  Asymptotically the secant
+method is faster than Newton&rsquo;s method whenever the cost of evaluating
+the derivative is more than 0.44 times the cost of evaluating the
+function itself.  As with all methods of computing a numerical
+derivative the estimate can suffer from cancellation errors if the
+separation of the points becomes too small.
+</p>
+<p>On single roots, the method has a convergence of order <em>(1 + \sqrt
+5)/2</em> (approximately <em>1.62</em>).  It converges linearly for multiple
+roots.  
+</p>
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005froot_005ffdfsolver_005fsteffenson"></a><u>Derivative Solver:</u> <b>gsl_root_fdfsolver_steffenson</b></dt>
+<dd><a name="index-Steffenson_0027s-method-for-finding-roots"></a>
+<a name="index-root-finding_002c-Steffenson_0027s-method"></a>
+
+<p>The <em>Steffenson Method</em><a name="DOCF1" href="#FOOT1">(1)</a> provides the fastest
+convergence of all the routines.  It combines the basic Newton
+algorithm with an Aitken &ldquo;delta-squared&rdquo; acceleration.  If the
+Newton iterates are <em>x_i</em> then the acceleration procedure
+generates a new sequence <em>R_i</em>,
+which converges faster than the original sequence under reasonable
+conditions.  The new sequence requires three terms before it can produce
+its first value so the method returns accelerated values on the second
+and subsequent iterations.  On the first iteration it returns the
+ordinary Newton estimate.  The Newton iterate is also returned if the
+denominator of the acceleration term ever becomes zero.
+</p>
+<p>As with all acceleration procedures this method can become unstable if
+the function is not well-behaved. 
+</p></dd></dl>
+
+<hr size="6">
+<a name="Root-Finding-Examples"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Algorithms-using-Derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Algorithms-using-Derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">10. Examples</h2>
+
+<p>For any root finding algorithm we need to prepare the function to be
+solved.  For this example we will use the general quadratic equation
+described earlier.  We first need a header file (&lsquo;<tt>demo_fn.h</tt>&rsquo;) to
+define the function parameters,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">struct quadratic_params
+  {
+    double a, b, c;
+  };
+
+double quadratic (double x, void *params);
+double quadratic_deriv (double x, void *params);
+void quadratic_fdf (double x, void *params, 
+                    double *y, double *dy);
+</pre></pre></td></tr></table>
+
+<p>We place the function definitions in a separate file (&lsquo;<tt>demo_fn.c</tt>&rsquo;),
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">double
+quadratic (double x, void *params)
+{
+  struct quadratic_params *p 
+    = (struct quadratic_params *) params;
+
+  double a = p-&gt;a;
+  double b = p-&gt;b;
+  double c = p-&gt;c;
+
+  return (a * x + b) * x + c;
+}
+
+double
+quadratic_deriv (double x, void *params)
+{
+  struct quadratic_params *p 
+    = (struct quadratic_params *) params;
+
+  double a = p-&gt;a;
+  double b = p-&gt;b;
+  double c = p-&gt;c;
+
+  return 2.0 * a * x + b;
+}
+
+void
+quadratic_fdf (double x, void *params, 
+               double *y, double *dy)
+{
+  struct quadratic_params *p 
+    = (struct quadratic_params *) params;
+
+  double a = p-&gt;a;
+  double b = p-&gt;b;
+  double c = p-&gt;c;
+
+  *y = (a * x + b) * x + c;
+  *dy = 2.0 * a * x + b;
+}
+</pre></pre></td></tr></table>
+
+<p>The first program uses the function solver <code>gsl_root_fsolver_brent</code>
+for Brent&rsquo;s method and the general quadratic defined above to solve the
+following equation,
+with solution <em>x = \sqrt 5 = 2.236068...</em>
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_roots.h&gt;
+
+#include &quot;demo_fn.h&quot;
+#include &quot;demo_fn.c&quot;
+
+int
+main (void)
+{
+  int status;
+  int iter = 0, max_iter = 100;
+  const gsl_root_fsolver_type *T;
+  gsl_root_fsolver *s;
+  double r = 0, r_expected = sqrt (5.0);
+  double x_lo = 0.0, x_hi = 5.0;
+  gsl_function F;
+  struct quadratic_params params = {1.0, 0.0, -5.0};
+
+  F.function = &amp;quadratic;
+  F.params = &amp;params;
+
+  T = gsl_root_fsolver_brent;
+  s = gsl_root_fsolver_alloc (T);
+  gsl_root_fsolver_set (s, &amp;F, x_lo, x_hi);
+
+  printf (&quot;using %s method\n&quot;, 
+          gsl_root_fsolver_name (s));
+
+  printf (&quot;%5s [%9s, %9s] %9s %10s %9s\n&quot;,
+          &quot;iter&quot;, &quot;lower&quot;, &quot;upper&quot;, &quot;root&quot;, 
+          &quot;err&quot;, &quot;err(est)&quot;);
+
+  do
+    {
+      iter++;
+      status = gsl_root_fsolver_iterate (s);
+      r = gsl_root_fsolver_root (s);
+      x_lo = gsl_root_fsolver_x_lower (s);
+      x_hi = gsl_root_fsolver_x_upper (s);
+      status = gsl_root_test_interval (x_lo, x_hi,
+                                       0, 0.001);
+
+      if (status == GSL_SUCCESS)
+        printf (&quot;Converged:\n&quot;);
+
+      printf (&quot;%5d [%.7f, %.7f] %.7f %+.7f %.7f\n&quot;,
+              iter, x_lo, x_hi,
+              r, r - r_expected, 
+              x_hi - x_lo);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; max_iter);
+
+  gsl_root_fsolver_free (s);
+
+  return status;
+}
+</pre></pre></td></tr></table>
+
+<p>Here are the results of the iterations,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ ./a.out 
+using brent method
+ iter [    lower,     upper]      root        err  err(est)
+    1 [1.0000000, 5.0000000] 1.0000000 -1.2360680 4.0000000
+    2 [1.0000000, 3.0000000] 3.0000000 +0.7639320 2.0000000
+    3 [2.0000000, 3.0000000] 2.0000000 -0.2360680 1.0000000
+    4 [2.2000000, 3.0000000] 2.2000000 -0.0360680 0.8000000
+    5 [2.2000000, 2.2366300] 2.2366300 +0.0005621 0.0366300
+Converged:                            
+    6 [2.2360634, 2.2366300] 2.2360634 -0.0000046 0.0005666
+</pre></td></tr></table>
+
+<p>If the program is modified to use the bisection solver instead of
+Brent&rsquo;s method, by changing <code>gsl_root_fsolver_brent</code> to
+<code>gsl_root_fsolver_bisection</code> the slower convergence of the
+Bisection method can be observed,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ ./a.out 
+using bisection method
+ iter [    lower,     upper]      root        err  err(est)
+    1 [0.0000000, 2.5000000] 1.2500000 -0.9860680 2.5000000
+    2 [1.2500000, 2.5000000] 1.8750000 -0.3610680 1.2500000
+    3 [1.8750000, 2.5000000] 2.1875000 -0.0485680 0.6250000
+    4 [2.1875000, 2.5000000] 2.3437500 +0.1076820 0.3125000
+    5 [2.1875000, 2.3437500] 2.2656250 +0.0295570 0.1562500
+    6 [2.1875000, 2.2656250] 2.2265625 -0.0095055 0.0781250
+    7 [2.2265625, 2.2656250] 2.2460938 +0.0100258 0.0390625
+    8 [2.2265625, 2.2460938] 2.2363281 +0.0002601 0.0195312
+    9 [2.2265625, 2.2363281] 2.2314453 -0.0046227 0.0097656
+   10 [2.2314453, 2.2363281] 2.2338867 -0.0021813 0.0048828
+   11 [2.2338867, 2.2363281] 2.2351074 -0.0009606 0.0024414
+Converged:                            
+   12 [2.2351074, 2.2363281] 2.2357178 -0.0003502 0.0012207
+</pre></td></tr></table>
+
+<p>The next program solves the same function using a derivative solver
+instead.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_math.h&gt;
+#include &lt;gsl/gsl_roots.h&gt;
+
+#include &quot;demo_fn.h&quot;
+#include &quot;demo_fn.c&quot;
+
+int
+main (void)
+{
+  int status;
+  int iter = 0, max_iter = 100;
+  const gsl_root_fdfsolver_type *T;
+  gsl_root_fdfsolver *s;
+  double x0, x = 5.0, r_expected = sqrt (5.0);
+  gsl_function_fdf FDF;
+  struct quadratic_params params = {1.0, 0.0, -5.0};
+
+  FDF.f = &amp;quadratic;
+  FDF.df = &amp;quadratic_deriv;
+  FDF.fdf = &amp;quadratic_fdf;
+  FDF.params = &amp;params;
+
+  T = gsl_root_fdfsolver_newton;
+  s = gsl_root_fdfsolver_alloc (T);
+  gsl_root_fdfsolver_set (s, &amp;FDF, x);
+
+  printf (&quot;using %s method\n&quot;, 
+          gsl_root_fdfsolver_name (s));
+
+  printf (&quot;%-5s %10s %10s %10s\n&quot;,
+          &quot;iter&quot;, &quot;root&quot;, &quot;err&quot;, &quot;err(est)&quot;);
+  do
+    {
+      iter++;
+      status = gsl_root_fdfsolver_iterate (s);
+      x0 = x;
+      x = gsl_root_fdfsolver_root (s);
+      status = gsl_root_test_delta (x, x0, 0, 1e-3);
+
+      if (status == GSL_SUCCESS)
+        printf (&quot;Converged:\n&quot;);
+
+      printf (&quot;%5d %10.7f %+10.7f %10.7f\n&quot;,
+              iter, x, x - r_expected, x - x0);
+    }
+  while (status == GSL_CONTINUE &amp;&amp; iter &lt; max_iter);
+
+  gsl_root_fdfsolver_free (s);
+  return status;
+}
+</pre></pre></td></tr></table>
+
+<p>Here are the results for Newton&rsquo;s method,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out 
+using newton method
+iter        root        err   err(est)
+    1  3.0000000 +0.7639320 -2.0000000
+    2  2.3333333 +0.0972654 -0.6666667
+    3  2.2380952 +0.0020273 -0.0952381
+Converged:      
+    4  2.2360689 +0.0000009 -0.0020263
+</pre></td></tr></table>
+
+<p>Note that the error can be estimated more accurately by taking the
+difference between the current iterate and next iterate rather than the
+previous iterate.  The other derivative solvers can be investigated by
+changing <code>gsl_root_fdfsolver_newton</code> to
+<code>gsl_root_fdfsolver_secant</code> or
+<code>gsl_root_fdfsolver_steffenson</code>.
+</p>
+<hr size="6">
+<a name="Root-Finding-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Examples" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Examples" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">11. References and Further Reading</h2>
+
+<p>For information on the Brent-Dekker algorithm see the following two
+papers,
+</p>
+<ul class="toc">
+<li>
+R. P. Brent, &ldquo;An algorithm with guaranteed convergence for finding a
+zero of a function&rdquo;, <cite>Computer Journal</cite>, 14 (1971) 422&ndash;425
+
+</li><li>
+J. C. P. Bus and T. J. Dekker, &ldquo;Two Efficient Algorithms with Guaranteed
+Convergence for Finding a Zero of a Function&rdquo;, <cite>ACM Transactions of
+Mathematical Software</cite>, Vol. 1 No. 4 (1975) 330&ndash;345
+</li></ul>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>J.F. Steffensen (1873&ndash;1961). The
+spelling used in the name of the function is slightly incorrect, but
+has been preserved to avoid incompatibility.
+</p><hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Root-Finding-Overview" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

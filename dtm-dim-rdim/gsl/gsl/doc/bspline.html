@@ -1,0 +1,655 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-basis-splines_002c-B_002dsplines"></a>
+<a name="index-splines_002c-basis"></a>
+
+<p>This chapter describes functions for the computation of smoothing
+basis splines (B-splines). A smoothing spline differs from an
+interpolating spline in that the resulting curve is not required to
+pass through each datapoint.  @xref{Interpolation}, for information
+about interpolating splines.
+</p>
+<p>The header file &lsquo;<tt>gsl_bspline.h</tt>&rsquo; contains the prototypes for the
+bspline functions and related declarations.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-B_002dsplines">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Initializing-the-B_002dsplines-solver">2. Initializing the B-splines solver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Constructing-the-knots-vector">3. Constructing the knots vector</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Evaluation-of-B_002dspline-basis-functions">4. Evaluation of B-splines</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Evaluation-of-B_002dspline-basis-function-derivatives">5. Evaluation of B-spline derivatives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Working-with-the-Greville-abscissae">6. Working with the Greville abscissae</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Example-programs-for-B_002dsplines">7. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#B_002dSpline-References-and-Further-Reading">8. B-Spline References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<a name="Overview-of-B_002dsplines"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-B_002dsplines-solver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Initializing-the-B_002dsplines-solver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview"></a>
+<h2 class="section">1. Overview</h2>
+<a name="index-basis-splines_002c-overview"></a>
+
+<p>B-splines are commonly used as basis functions to fit smoothing
+curves to large data sets. To do this, the abscissa axis is
+broken up into some number of intervals, where the endpoints
+of each interval are called <em>breakpoints</em>. These breakpoints
+are then converted to <em>knots</em> by imposing various continuity
+and smoothness conditions at each interface. Given a nondecreasing
+knot vector
+<em>t = t_0, t_1, &hellip;, t_n+k-1</em>,
+the <em>n</em> basis splines of order <em>k</em> are defined by
+for <em>i = 0, &hellip;, n-1</em>. The common case of cubic B-splines
+is given by <em>k = 4</em>. The above recurrence relation can be
+evaluated in a numerically stable way by the de Boor algorithm.
+</p>
+<p>If we define appropriate knots on an interval <em>[a,b]</em> then
+the B-spline basis functions form a complete set on that interval.
+Therefore we can expand a smoothing function as
+given enough <em>(x_j, f(x_j))</em> data pairs. The coefficients
+<em>c_i</em> can be readily obtained from a least-squares fit.
+</p>
+<hr size="6">
+<a name="Initializing-the-B_002dsplines-solver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Constructing-the-knots-vector" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Constructing-the-knots-vector" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Initializing-the-B_002dsplines-solver-1"></a>
+<h2 class="section">2. Initializing the B-splines solver</h2>
+<a name="index-basis-splines_002c-initializing"></a>
+
+<p>The computation of B-spline functions requires a preallocated
+workspace of type <code>gsl_bspline_workspace</code>.
+</p>
+<dl>
+<dt><a name="index-gsl_005fbspline_005falloc"></a><u>Function:</u> gsl_bspline_workspace * <b>gsl_bspline_alloc</b><i> (const size_t <var>k</var>, const size_t <var>nbreak</var>)</i></dt>
+<dd><a name="index-gsl_005fbspline_005fworkspace"></a>
+<p>This function allocates a workspace for computing B-splines of order
+<var>k</var>. The number of breakpoints is given by <var>nbreak</var>. This
+leads to <em>n = nbreak + k - 2</em> basis functions. Cubic B-splines
+are specified by <em>k = 4</em>. The size of the workspace is
+<em>O(2k^2 + 5k + nbreak)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005ffree"></a><u>Function:</u> void <b>gsl_bspline_free</b><i> (gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function frees the memory associated with the workspace <var>w</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Constructing-the-knots-vector"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Initializing-the-B_002dsplines-solver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Initializing-the-B_002dsplines-solver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Constructing-the-knots-vector-1"></a>
+<h2 class="section">3. Constructing the knots vector</h2>
+<a name="index-knots_002c-basis-splines"></a>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005fknots"></a><u>Function:</u> int <b>gsl_bspline_knots</b><i> (const gsl_vector * <var>breakpts</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function computes the knots associated with the given breakpoints
+and stores them internally in <code>w-&gt;knots</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005fknots_005funiform"></a><u>Function:</u> int <b>gsl_bspline_knots_uniform</b><i> (const double <var>a</var>, const double <var>b</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function assumes uniformly spaced breakpoints on <em>[a,b]</em>
+and constructs the corresponding knot vector using the previously
+specified <var>nbreak</var> parameter. The knots are stored in
+<code>w-&gt;knots</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Evaluation-of-B_002dspline-basis-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Constructing-the-knots-vector" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-function-derivatives" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Constructing-the-knots-vector" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-function-derivatives" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Evaluation-of-B_002dsplines"></a>
+<h2 class="section">4. Evaluation of B-splines</h2>
+<a name="index-basis-splines_002c-evaluation"></a>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005feval"></a><u>Function:</u> int <b>gsl_bspline_eval</b><i> (const double <var>x</var>, gsl_vector * <var>B</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function evaluates all B-spline basis functions at the position
+<var>x</var> and stores them in the vector <var>B</var>, so that the <em>i</em>-th element
+is <em>B_i(x)</em>. The vector <var>B</var> must be of length
+<em>n = nbreak + k - 2</em>.  This value may also be obtained by calling
+<code>gsl_bspline_ncoeffs</code>.
+Computing all the basis functions at once is more efficient than
+computing them individually, due to the nature of the defining
+recurrence relation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005feval_005fnonzero"></a><u>Function:</u> int <b>gsl_bspline_eval_nonzero</b><i> (const double <var>x</var>, gsl_vector * <var>Bk</var>, size_t * <var>istart</var>, size_t * <var>iend</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function evaluates all potentially nonzero B-spline basis
+functions at the position <var>x</var> and stores them in the vector <var>Bk</var>, so
+that the <em>i</em>-th element is <em>B_(istart+i)(x)</em>.
+The last element of <var>Bk</var> is <em>B_(iend)(x)</em>.  The vector <var>Bk</var> must be
+of length <em>k</em>.  By returning only the nonzero basis functions,
+this function
+allows quantities involving linear combinations of the <em>B_i(x)</em>
+to be computed without unnecessary terms
+(such linear combinations occur, for example,
+when evaluating an interpolated function).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005fncoeffs"></a><u>Function:</u> size_t <b>gsl_bspline_ncoeffs</b><i> (gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function returns the number of B-spline coefficients given by
+<em>n = nbreak + k - 2</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Evaluation-of-B_002dspline-basis-function-derivatives"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-the-Greville-abscissae" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Working-with-the-Greville-abscissae" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Evaluation-of-B_002dspline-derivatives"></a>
+<h2 class="section">5. Evaluation of B-spline derivatives</h2>
+<a name="index-basis-splines_002c-derivatives"></a>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005fderiv_005feval"></a><u>Function:</u> int <b>gsl_bspline_deriv_eval</b><i> (const double <var>x</var>, const size_t <var>nderiv</var>, gsl_matrix * <var>dB</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function evaluates all B-spline basis function derivatives of orders
+<em>0</em> through <em>nderiv</em> (inclusive) at the position <var>x</var>
+and stores them in the matrix <var>dB</var>.  The <em>(i,j)</em>-th element of <var>dB</var>
+is <em>d^jB_i(x)/dx^j</em>.  The matrix <var>dB</var> must be
+of size <em>n = nbreak + k - 2</em> by <em>nderiv + 1</em>.
+The value <em>n</em> may also be obtained
+by calling <code>gsl_bspline_ncoeffs</code>.  Note that function evaluations
+are included as the zeroth order derivatives in <var>dB</var>.
+Computing all the basis function derivatives at once is more efficient
+than computing them individually, due to the nature of the defining
+recurrence relation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fbspline_005fderiv_005feval_005fnonzero"></a><u>Function:</u> int <b>gsl_bspline_deriv_eval_nonzero</b><i> (const double <var>x</var>, const size_t <var>nderiv</var>, gsl_matrix * <var>dB</var>, size_t * <var>istart</var>, size_t * <var>iend</var>, gsl_bspline_workspace * <var>w</var>)</i></dt>
+<dd><p>This function evaluates all potentially nonzero B-spline basis function
+derivatives of orders <em>0</em> through <em>nderiv</em> (inclusive) at
+the position <var>x</var> and stores them in the matrix <var>dB</var>.  The
+<em>(i,j)</em>-th element of <var>dB</var> is <em>d^j/dx^j B_(istart+i)(x)</em>.  The last row
+of <var>dB</var> contains <em>d^j/dx^j B_(iend)(x)</em>.  The matrix <var>dB</var> must be
+of size <em>k</em> by at least <em>nderiv + 1</em>.  Note that function
+evaluations are included as the zeroth order derivatives in <var>dB</var>.
+By returning only the nonzero basis functions, this function allows
+quantities involving linear combinations of the <em>B_i(x)</em> and
+their derivatives to be computed without unnecessary terms.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Working-with-the-Greville-abscissae"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-function-derivatives" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-B_002dsplines" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Evaluation-of-B_002dspline-basis-function-derivatives" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-B_002dsplines" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Working-with-the-Greville-abscissae-1"></a>
+<h2 class="section">6. Working with the Greville abscissae</h2>
+<a name="index-basis-splines_002c-Greville-abscissae"></a>
+<a name="index-basis-splines_002c-Marsden_002dSchoenberg-points"></a>
+
+<p>The Greville abscissae are defined to be the mean location of <em>k-1</em>
+consecutive knots in the knot vector for each basis spline function of order
+<em>k</em>.  With the first and last knots in the <code>gsl_bspline_workspace</code>
+knot vector excluded, there are <code>gsl_bspline_ncoeffs</code> Greville abscissae
+for any given B-spline basis.  These values are often used in B-spline
+collocation applications and may also be called Marsden-Schoenberg points.
+</p>
+<dl>
+<dt><a name="index-gsl_005fbspline_005fgreville_005fabscissa"></a><u>Function:</u> double <b>gsl_bspline_greville_abscissa</b><i> (size_t <var>i</var>, gsl_bspline_workspace *<var>w</var>);</i></dt>
+<dd><p>Returns the location of the <em>i</em>-th Greville abscissa for the given
+B-spline basis.  For the ill-defined case when <em>k=1</em>, the implementation
+chooses to return breakpoint interval midpoints.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Example-programs-for-B_002dsplines"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Working-with-the-Greville-abscissae" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#B_002dSpline-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Working-with-the-Greville-abscissae" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#B_002dSpline-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">7. Examples</h2>
+<a name="index-basis-splines_002c-examples"></a>
+
+<p>The following program computes a linear least squares fit to data using
+cubic B-spline basis functions with uniform breakpoints. The data is
+generated from the curve <em>y(x) = \cos(x) \exp(-x/10)</em> on
+the interval <em>[0, 15]</em> with Gaussian noise added.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;math.h&gt;
+#include &lt;gsl/gsl_bspline.h&gt;
+#include &lt;gsl/gsl_multifit.h&gt;
+#include &lt;gsl/gsl_rng.h&gt;
+#include &lt;gsl/gsl_randist.h&gt;
+#include &lt;gsl/gsl_statistics.h&gt;
+
+/* number of data points to fit */
+#define N        200
+
+/* number of fit coefficients */
+#define NCOEFFS  12
+
+/* nbreak = ncoeffs + 2 - k = ncoeffs - 2 since k = 4 */
+#define NBREAK   (NCOEFFS - 2)
+
+int
+main (void)
+{
+  const size_t n = N;
+  const size_t ncoeffs = NCOEFFS;
+  const size_t nbreak = NBREAK;
+  size_t i, j;
+  gsl_bspline_workspace *bw;
+  gsl_vector *B;
+  double dy;
+  gsl_rng *r;
+  gsl_vector *c, *w;
+  gsl_vector *x, *y;
+  gsl_matrix *X, *cov;
+  gsl_multifit_linear_workspace *mw;
+  double chisq, Rsq, dof, tss;
+
+  gsl_rng_env_setup();
+  r = gsl_rng_alloc(gsl_rng_default);
+
+  /* allocate a cubic bspline workspace (k = 4) */
+  bw = gsl_bspline_alloc(4, nbreak);
+  B = gsl_vector_alloc(ncoeffs);
+
+  x = gsl_vector_alloc(n);
+  y = gsl_vector_alloc(n);
+  X = gsl_matrix_alloc(n, ncoeffs);
+  c = gsl_vector_alloc(ncoeffs);
+  w = gsl_vector_alloc(n);
+  cov = gsl_matrix_alloc(ncoeffs, ncoeffs);
+  mw = gsl_multifit_linear_alloc(n, ncoeffs);
+
+  printf(&quot;#m=0,S=0\n&quot;);
+  /* this is the data to be fitted */
+  for (i = 0; i &lt; n; ++i)
+    {
+      double sigma;
+      double xi = (15.0 / (N - 1)) * i;
+      double yi = cos(xi) * exp(-0.1 * xi);
+
+      sigma = 0.1 * yi;
+      dy = gsl_ran_gaussian(r, sigma);
+      yi += dy;
+
+      gsl_vector_set(x, i, xi);
+      gsl_vector_set(y, i, yi);
+      gsl_vector_set(w, i, 1.0 / (sigma * sigma));
+
+      printf(&quot;%f %f\n&quot;, xi, yi);
+    }
+
+  /* use uniform breakpoints on [0, 15] */
+  gsl_bspline_knots_uniform(0.0, 15.0, bw);
+
+  /* construct the fit matrix X */
+  for (i = 0; i &lt; n; ++i)
+    {
+      double xi = gsl_vector_get(x, i);
+
+      /* compute B_j(xi) for all j */
+      gsl_bspline_eval(xi, B, bw);
+
+      /* fill in row i of X */
+      for (j = 0; j &lt; ncoeffs; ++j)
+        {
+          double Bj = gsl_vector_get(B, j);
+          gsl_matrix_set(X, i, j, Bj);
+        }
+    }
+
+  /* do the fit */
+  gsl_multifit_wlinear(X, w, y, c, cov, &amp;chisq, mw);
+
+  dof = n - ncoeffs;
+  tss = gsl_stats_wtss(w-&gt;data, 1, y-&gt;data, 1, y-&gt;size);
+  Rsq = 1.0 - chisq / tss;
+
+  fprintf(stderr, &quot;chisq/dof = %e, Rsq = %f\n&quot;, 
+                   chisq / dof, Rsq);
+
+  /* output the smoothed curve */
+  {
+    double xi, yi, yerr;
+
+    printf(&quot;#m=1,S=0\n&quot;);
+    for (xi = 0.0; xi &lt; 15.0; xi += 0.1)
+      {
+        gsl_bspline_eval(xi, B, bw);
+        gsl_multifit_linear_est(B, c, cov, &amp;yi, &amp;yerr);
+        printf(&quot;%f %f\n&quot;, xi, yi);
+      }
+  }
+
+  gsl_rng_free(r);
+  gsl_bspline_free(bw);
+  gsl_vector_free(B);
+  gsl_vector_free(x);
+  gsl_vector_free(y);
+  gsl_matrix_free(X);
+  gsl_vector_free(c);
+  gsl_vector_free(w);
+  gsl_matrix_free(cov);
+  gsl_multifit_linear_free(mw);
+
+  return 0;
+} /* main() */
+</pre></pre></td></tr></table>
+
+<p>The output can be plotted with <small>GNU</small> <code>graph</code>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./a.out &gt; bspline.dat
+chisq/dof = 1.118217e+00, Rsq = 0.989771
+$ graph -T ps -X x -Y y -x 0 15 -y -1 1.3 &lt; bspline.dat &gt; bspline.ps
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="B_002dSpline-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Example-programs-for-B_002dsplines" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Example-programs-for-B_002dsplines" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="B_002dSpline-References-and-Further-Reading-1"></a>
+<h2 class="section">8. B-Spline References and Further Reading</h2>
+
+<p>Further information on the algorithms described in this section can be
+found in the following book,
+</p>
+<ul class="toc">
+<li>
+C. de Boor, <cite>A Practical Guide to Splines</cite> (1978), Springer-Verlag,
+ISBN 0-387-90356-9.
+</li></ul>
+
+<p>Further information of Greville abscissae and B-spline collocation
+can be found in the following paper,
+</p>
+<ul class="toc">
+<li>
+Richard W. Johnson, Higher order B-spline collocation at the Greville
+abscissae.  <cite>Applied Numerical Mathematics</cite>. vol. 52, 2005, 63&ndash;75.
+</li></ul>
+
+<p>A large collection of B-spline routines is available in the
+<small>PPPACK</small> library available at <a href="http://www.netlib.org/pppack">http://www.netlib.org/pppack</a>,
+which is also part of <small>SLATEC</small>.
+</p><hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview-of-B_002dsplines" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

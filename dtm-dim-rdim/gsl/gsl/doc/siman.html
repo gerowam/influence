@@ -1,0 +1,674 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-simulated-annealing"></a>
+<a name="index-combinatorial-optimization"></a>
+<a name="index-optimization_002c-combinatorial"></a>
+<a name="index-energy-function"></a>
+<a name="index-cost-function"></a>
+<p>Stochastic search techniques are used when the structure of a space is
+not well understood or is not smooth, so that techniques like Newton&rsquo;s
+method (which requires calculating Jacobian derivative matrices) cannot
+be used. In particular, these techniques are frequently used to solve
+combinatorial optimization problems, such as the traveling salesman
+problem.
+</p>
+<p>The goal is to find a point in the space at which a real valued
+<em>energy function</em> (or <em>cost function</em>) is minimized.  Simulated
+annealing is a minimization technique which has given good results in
+avoiding local minima; it is based on the idea of taking a random walk
+through the space at successively lower temperatures, where the
+probability of taking a step is given by a Boltzmann distribution.
+</p>
+<p>The functions described in this chapter are declared in the header file
+&lsquo;<tt>gsl_siman.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Simulated-Annealing-algorithm">1. Simulated Annealing algorithm</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Simulated-Annealing-functions">2. Simulated Annealing functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Examples-with-Simulated-Annealing">3. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Simulated-Annealing-References-and-Further-Reading">4. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Simulated-Annealing-algorithm"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Simulated-Annealing-algorithm-1"></a>
+<h2 class="section">1. Simulated Annealing algorithm</h2>
+
+<p>The simulated annealing algorithm takes random walks through the problem
+space, looking for points with low energies; in these random walks, the
+probability of taking a step is determined by the Boltzmann distribution,
+if 
+<em>E_i+1 &gt; E_i</em>, and 
+<em>p = 1</em> when 
+<em>E_i+1 &lt;= E_i</em>.
+</p>
+<p>In other words, a step will occur if the new energy is lower.  If
+the new energy is higher, the transition can still occur, and its
+likelihood is proportional to the temperature <em>T</em> and inversely
+proportional to the energy difference 
+<em>E_i+1 - E_i</em>.
+</p>
+<p>The temperature <em>T</em> is initially set to a high value, and a random
+walk is carried out at that temperature.  Then the temperature is
+lowered very slightly according to a <em>cooling schedule</em>, for
+example: <em>T -&gt; T/mu_T</em>
+where <em>\mu_T</em> is slightly greater than 1. 
+<a name="index-cooling-schedule"></a>
+<a name="index-schedule_002c-cooling"></a>
+</p>
+<p>The slight probability of taking a step that gives higher energy is what
+allows simulated annealing to frequently get out of local minima.
+</p>
+<hr size="6">
+<a name="Simulated-Annealing-functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Simulated-Annealing-functions-1"></a>
+<h2 class="section">2. Simulated Annealing functions</h2>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fsolve"></a><u>Function:</u> void <b>gsl_siman_solve</b><i> (const gsl_rng * <var>r</var>, void * <var>x0_p</var>, gsl_siman_Efunc_t <var>Ef</var>, gsl_siman_step_t <var>take_step</var>, gsl_siman_metric_t <var>distance</var>, gsl_siman_print_t <var>print_position</var>, gsl_siman_copy_t <var>copyfunc</var>, gsl_siman_copy_construct_t <var>copy_constructor</var>, gsl_siman_destroy_t <var>destructor</var>, size_t <var>element_size</var>, gsl_siman_params_t <var>params</var>)</i></dt>
+<dd>
+<p>This function performs a simulated annealing search through a given
+space.  The space is specified by providing the functions <var>Ef</var> and
+<var>distance</var>.  The simulated annealing steps are generated using the
+random number generator <var>r</var> and the function <var>take_step</var>.
+</p>
+<p>The starting configuration of the system should be given by <var>x0_p</var>.
+The routine offers two modes for updating configurations, a fixed-size
+mode and a variable-size mode.  In the fixed-size mode the configuration
+is stored as a single block of memory of size <var>element_size</var>.
+Copies of this configuration are created, copied and destroyed
+internally using the standard library functions <code>malloc</code>,
+<code>memcpy</code> and <code>free</code>.  The function pointers <var>copyfunc</var>,
+<var>copy_constructor</var> and <var>destructor</var> should be null pointers in
+fixed-size mode.  In the variable-size mode the functions
+<var>copyfunc</var>, <var>copy_constructor</var> and <var>destructor</var> are used to
+create, copy and destroy configurations internally.  The variable
+<var>element_size</var> should be zero in the variable-size mode.
+</p>
+<p>The <var>params</var> structure (described below) controls the run by
+providing the temperature schedule and other tunable parameters to the
+algorithm.
+</p>
+<p>On exit the best result achieved during the search is placed in
+<code>*<var>x0_p</var></code>.  If the annealing process has been successful this
+should be a good approximation to the optimal point in the space.
+</p>
+<p>If the function pointer <var>print_position</var> is not null, a debugging
+log will be printed to <code>stdout</code> with the following columns:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">#-iter  #-evals  temperature  position  energy  best_energy
+</pre></td></tr></table>
+
+<p>and the output of the function <var>print_position</var> itself.  If
+<var>print_position</var> is null then no information is printed.
+</p></dd></dl>
+
+<p>The simulated annealing routines require several user-specified
+functions to define the configuration space and energy function.  The
+prototypes for these functions are given below.
+</p>
+<dl>
+<dt><a name="index-gsl_005fsiman_005fEfunc_005ft"></a><u>Data Type:</u> <b>gsl_siman_Efunc_t</b></dt>
+<dd><p>This function type should return the energy of a configuration <var>xp</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">double (*gsl_siman_Efunc_t) (void *xp)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fstep_005ft"></a><u>Data Type:</u> <b>gsl_siman_step_t</b></dt>
+<dd><p>This function type should modify the configuration <var>xp</var> using a random step
+taken from the generator <var>r</var>, up to a maximum distance of
+<var>step_size</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void (*gsl_siman_step_t) (const gsl_rng *r, void *xp, 
+                          double step_size)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fmetric_005ft"></a><u>Data Type:</u> <b>gsl_siman_metric_t</b></dt>
+<dd><p>This function type should return the distance between two configurations
+<var>xp</var> and <var>yp</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">double (*gsl_siman_metric_t) (void *xp, void *yp)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fprint_005ft"></a><u>Data Type:</u> <b>gsl_siman_print_t</b></dt>
+<dd><p>This function type should print the contents of the configuration <var>xp</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void (*gsl_siman_print_t) (void *xp)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fcopy_005ft"></a><u>Data Type:</u> <b>gsl_siman_copy_t</b></dt>
+<dd><p>This function type should copy the configuration <var>source</var> into <var>dest</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void (*gsl_siman_copy_t) (void *source, void *dest)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fcopy_005fconstruct_005ft"></a><u>Data Type:</u> <b>gsl_siman_copy_construct_t</b></dt>
+<dd><p>This function type should create a new copy of the configuration <var>xp</var>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void * (*gsl_siman_copy_construct_t) (void *xp)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fdestroy_005ft"></a><u>Data Type:</u> <b>gsl_siman_destroy_t</b></dt>
+<dd><p>This function type should destroy the configuration <var>xp</var>, freeing its
+memory.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">void (*gsl_siman_destroy_t) (void *xp)
+</pre></td></tr></table>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsiman_005fparams_005ft"></a><u>Data Type:</u> <b>gsl_siman_params_t</b></dt>
+<dd><p>These are the parameters that control a run of <code>gsl_siman_solve</code>.
+This structure contains all the information needed to control the
+search, beyond the energy function, the step function and the initial
+guess.
+</p>
+<dl compact="compact">
+<dt> <code>int n_tries</code>          </dt>
+<dd><p>The number of points to try for each step.
+</p>
+</dd>
+<dt> <code>int iters_fixed_T</code>    </dt>
+<dd><p>The number of iterations at each temperature.
+</p>
+</dd>
+<dt> <code>double step_size</code>     </dt>
+<dd><p>The maximum step size in the random walk.
+</p>
+</dd>
+<dt> <code>double k, t_initial, mu_t, t_min</code></dt>
+<dd><p>The parameters of the Boltzmann distribution and cooling schedule.
+</p></dd>
+</dl>
+</dd></dl>
+
+
+<hr size="6">
+<a name="Examples-with-Simulated-Annealing"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Simulated-Annealing-functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Trivial-example" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">3. Examples</h2>
+
+<p>The simulated annealing package is clumsy, and it has to be because it
+is written in C, for C callers, and tries to be polymorphic at the same
+time.  But here we provide some examples which can be pasted into your
+application with little change and should make things easier.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Trivial-example">3.1 Trivial example</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Traveling-Salesman-Problem">3.2 Traveling Salesman Problem</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Trivial-example"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Traveling-Salesman-Problem" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Trivial-example-1"></a>
+<h3 class="subsection">3.1 Trivial example</h3>
+
+<p>The first example, in one dimensional Cartesian space, sets up an energy
+function which is a damped sine wave; this has many local minima, but
+only one global minimum, somewhere between 1.0 and 1.5.  The initial
+guess given is 15.5, which is several local minima away from the global
+minimum.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"><pre class="verbatim">#include &lt;math.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;gsl/gsl_siman.h&gt;
+
+/* set up parameters for this simulated annealing run */
+
+/* how many points do we try before stepping */
+#define N_TRIES 200             
+
+/* how many iterations for each T? */
+#define ITERS_FIXED_T 1000
+
+/* max step size in random walk */
+#define STEP_SIZE 1.0            
+
+/* Boltzmann constant */
+#define K 1.0                   
+
+/* initial temperature */
+#define T_INITIAL 0.008         
+
+/* damping factor for temperature */
+#define MU_T 1.003              
+#define T_MIN 2.0e-6
+
+gsl_siman_params_t params 
+  = {N_TRIES, ITERS_FIXED_T, STEP_SIZE,
+     K, T_INITIAL, MU_T, T_MIN};
+
+/* now some functions to test in one dimension */
+double E1(void *xp)
+{
+  double x = * ((double *) xp);
+
+  return exp(-pow((x-1.0),2.0))*sin(8*x);
+}
+
+double M1(void *xp, void *yp)
+{
+  double x = *((double *) xp);
+  double y = *((double *) yp);
+
+  return fabs(x - y);
+}
+
+void S1(const gsl_rng * r, void *xp, double step_size)
+{
+  double old_x = *((double *) xp);
+  double new_x;
+
+  double u = gsl_rng_uniform(r);
+  new_x = u * 2 * step_size - step_size + old_x;
+
+  memcpy(xp, &amp;new_x, sizeof(new_x));
+}
+
+void P1(void *xp)
+{
+  printf (&quot;%12g&quot;, *((double *) xp));
+}
+
+int
+main(int argc, char *argv[])
+{
+  const gsl_rng_type * T;
+  gsl_rng * r;
+
+  double x_initial = 15.5;
+
+  gsl_rng_env_setup();
+
+  T = gsl_rng_default;
+  r = gsl_rng_alloc(T);
+
+  gsl_siman_solve(r, &amp;x_initial, E1, S1, M1, P1,
+                  NULL, NULL, NULL, 
+                  sizeof(double), params);
+
+  gsl_rng_free (r);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>Here are a couple of plots that are generated by running
+<code>siman_test</code> in the following way:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ ./siman_test | awk '!/^#/ {print $1, $4}' 
+ | graph -y 1.34 1.4 -W0 -X generation -Y position 
+ | plot -Tps &gt; siman-test.eps
+$ ./siman_test | awk '!/^#/ {print $1, $5}' 
+ | graph -y -0.88 -0.83 -W0 -X generation -Y energy 
+ | plot -Tps &gt; siman-energy.eps
+</pre></td></tr></table>
+
+
+<hr size="6">
+<a name="Traveling-Salesman-Problem"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Trivial-example" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Traveling-Salesman-Problem-1"></a>
+<h3 class="subsection">3.2 Traveling Salesman Problem</h3>
+<a name="index-TSP"></a>
+<a name="index-traveling-salesman-problem"></a>
+
+<p>The TSP (<em>Traveling Salesman Problem</em>) is the classic combinatorial
+optimization problem.  I have provided a very simple version of it,
+based on the coordinates of twelve cities in the southwestern United
+States.  This should maybe be called the <em>Flying Salesman Problem</em>,
+since I am using the great-circle distance between cities, rather than
+the driving distance.  Also: I assume the earth is a sphere, so I don&rsquo;t
+use geoid distances.
+</p>
+<p>The <code>gsl_siman_solve</code> routine finds a route which is 3490.62
+Kilometers long; this is confirmed by an exhaustive search of all
+possible routes with the same initial city.
+</p>
+<p>The full code can be found in &lsquo;<tt>siman/siman_tsp.c</tt>&rsquo;, but I include
+here some plots generated in the following way:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">$ ./siman_tsp &gt; tsp.output
+$ grep -v &quot;^#&quot; tsp.output  
+ | awk '{print $1, $NF}'
+ | graph -y 3300 6500 -W0 -X generation -Y distance 
+    -L &quot;TSP - 12 southwest cities&quot;
+ | plot -Tps &gt; 12-cities.eps
+$ grep initial_city_coord tsp.output 
+  | awk '{print $2, $3}' 
+  | graph -X &quot;longitude (- means west)&quot; -Y &quot;latitude&quot; 
+     -L &quot;TSP - initial-order&quot; -f 0.03 -S 1 0.1 
+  | plot -Tps &gt; initial-route.eps
+$ grep final_city_coord tsp.output 
+  | awk '{print $2, $3}' 
+  | graph -X &quot;longitude (- means west)&quot; -Y &quot;latitude&quot; 
+     -L &quot;TSP - final-order&quot; -f 0.03 -S 1 0.1 
+  | plot -Tps &gt; final-route.eps
+</pre></td></tr></table>
+
+<p>This is the output showing the initial order of the cities; longitude is
+negative, since it is west and I want the plot to look like a map.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"># initial coordinates of cities (longitude and latitude)
+###initial_city_coord: -105.95 35.68 Santa Fe
+###initial_city_coord: -112.07 33.54 Phoenix
+###initial_city_coord: -106.62 35.12 Albuquerque
+###initial_city_coord: -103.2 34.41 Clovis
+###initial_city_coord: -107.87 37.29 Durango
+###initial_city_coord: -96.77 32.79 Dallas
+###initial_city_coord: -105.92 35.77 Tesuque
+###initial_city_coord: -107.84 35.15 Grants
+###initial_city_coord: -106.28 35.89 Los Alamos
+###initial_city_coord: -106.76 32.34 Las Cruces
+###initial_city_coord: -108.58 37.35 Cortez
+###initial_city_coord: -108.74 35.52 Gallup
+###initial_city_coord: -105.95 35.68 Santa Fe
+</pre></td></tr></table>
+
+<p>The optimal route turns out to be:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample"># final coordinates of cities (longitude and latitude)
+###final_city_coord: -105.95 35.68 Santa Fe
+###final_city_coord: -103.2 34.41 Clovis
+###final_city_coord: -96.77 32.79 Dallas
+###final_city_coord: -106.76 32.34 Las Cruces
+###final_city_coord: -112.07 33.54 Phoenix
+###final_city_coord: -108.74 35.52 Gallup
+###final_city_coord: -108.58 37.35 Cortez
+###final_city_coord: -107.87 37.29 Durango
+###final_city_coord: -107.84 35.15 Grants
+###final_city_coord: -106.62 35.12 Albuquerque
+###final_city_coord: -106.28 35.89 Los Alamos
+###final_city_coord: -105.92 35.77 Tesuque
+###final_city_coord: -105.95 35.68 Santa Fe
+</pre></td></tr></table>
+
+
+<p>Here&rsquo;s a plot of the cost function (energy) versus generation (point in
+the calculation at which a new temperature is set) for this problem:
+</p>
+
+<hr size="6">
+<a name="Simulated-Annealing-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Traveling-Salesman-Problem" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Examples-with-Simulated-Annealing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">4. References and Further Reading</h2>
+
+<p>Further information is available in the following book,
+</p>
+<ul class="toc">
+<li>
+<cite>Modern Heuristic Techniques for Combinatorial Problems</cite>, Colin R. Reeves
+(ed.), McGraw-Hill, 1995 (ISBN 0-07-709239-2).
+</li></ul>
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Simulated-Annealing-algorithm" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

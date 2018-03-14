@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-trigonometric-functions"></a>
+
+<p>The library includes its own trigonometric functions in order to provide
+consistency across platforms and reliable error estimates.  These
+functions are declared in the header file &lsquo;<tt>gsl_sf_trig.h</tt>&rsquo;.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Circular-Trigonometric-Functions">1. Circular Trigonometric Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Trigonometric-Functions-for-Complex-Arguments">2. Trigonometric Functions for Complex Arguments</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hyperbolic-Trigonometric-Functions">3. Hyperbolic Trigonometric Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Conversion-Functions">4. Conversion Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Restriction-Functions">5. Restriction Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Trigonometric-Functions-With-Error-Estimates">6. Trigonometric Functions With Error Estimates</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Circular-Trigonometric-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Functions-for-Complex-Arguments" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Functions-for-Complex-Arguments" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Circular-Trigonometric-Functions-1"></a>
+<h3 class="subsection">1. Circular Trigonometric Functions</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fsin"></a><u>Function:</u> double <b>gsl_sf_sin</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fsin_005fe"></a><u>Function:</u> int <b>gsl_sf_sin_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-sine-function_002c-special-functions"></a>
+<p>These routines compute the sine function <em>\sin(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcos"></a><u>Function:</u> double <b>gsl_sf_cos</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fcos_005fe"></a><u>Function:</u> int <b>gsl_sf_cos_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-cosine-function_002c-special-functions"></a>
+<p>These routines compute the cosine function <em>\cos(x)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fhypot"></a><u>Function:</u> double <b>gsl_sf_hypot</b><i> (double <var>x</var>, double <var>y</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fhypot_005fe"></a><u>Function:</u> int <b>gsl_sf_hypot_e</b><i> (double <var>x</var>, double <var>y</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-hypot-function_002c-special-functions"></a>
+<p>These routines compute the hypotenuse function <em>\sqrtx^2 + y^2</em> avoiding overflow and underflow.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fsinc"></a><u>Function:</u> double <b>gsl_sf_sinc</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fsinc_005fe"></a><u>Function:</u> int <b>gsl_sf_sinc_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-complex-sinc-function_002c-special-functions"></a>
+<p>These routines compute <em>\sinc(x) = \sin(\pi x) / (\pi x)</em> for any
+value of <var>x</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Trigonometric-Functions-for-Complex-Arguments"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Trigonometric-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Trigonometric-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Trigonometric-Functions-for-Complex-Arguments-1"></a>
+<h3 class="subsection">2. Trigonometric Functions for Complex Arguments</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcomplex_005fsin_005fe"></a><u>Function:</u> int <b>gsl_sf_complex_sin_e</b><i> (double <var>zr</var>, double <var>zi</var>, gsl_sf_result * <var>szr</var>, gsl_sf_result * <var>szi</var>)</i></dt>
+<dd><a name="index-complex-sine-function_002c-special-functions"></a>
+<p>This function computes the complex sine, <em>\sin(z_r + i z_i)</em> storing
+the real and imaginary parts in <var>szr</var>, <var>szi</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcomplex_005fcos_005fe"></a><u>Function:</u> int <b>gsl_sf_complex_cos_e</b><i> (double <var>zr</var>, double <var>zi</var>, gsl_sf_result * <var>czr</var>, gsl_sf_result * <var>czi</var>)</i></dt>
+<dd><a name="index-complex-cosine-function_002c-special-functions"></a>
+<p>This function computes the complex cosine, <em>\cos(z_r + i z_i)</em> storing
+the real and imaginary parts in <var>czr</var>, <var>czi</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcomplex_005flogsin_005fe"></a><u>Function:</u> int <b>gsl_sf_complex_logsin_e</b><i> (double <var>zr</var>, double <var>zi</var>, gsl_sf_result * <var>lszr</var>, gsl_sf_result * <var>lszi</var>)</i></dt>
+<dd><a name="index-complex-log-sine-function_002c-special-functions"></a>
+<p>This function computes the logarithm of the complex sine,
+<em>\log(\sin(z_r + i z_i))</em> storing the real and imaginary parts in
+<var>lszr</var>, <var>lszi</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Hyperbolic-Trigonometric-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Trigonometric-Functions-for-Complex-Arguments" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Conversion-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Functions-for-Complex-Arguments" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Conversion-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Hyperbolic-Trigonometric-Functions-1"></a>
+<h3 class="subsection">3. Hyperbolic Trigonometric Functions</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flnsinh"></a><u>Function:</u> double <b>gsl_sf_lnsinh</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flnsinh_005fe"></a><u>Function:</u> int <b>gsl_sf_lnsinh_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-sinh-function_002c-special-functions"></a>
+<p>These routines compute <em>\log(\sinh(x))</em> for <em>x &gt; 0</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005flncosh"></a><u>Function:</u> double <b>gsl_sf_lncosh</b><i> (double <var>x</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005flncosh_005fe"></a><u>Function:</u> int <b>gsl_sf_lncosh_e</b><i> (double <var>x</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><a name="index-logarithm-of-cosh-function_002c-special-functions"></a>
+<p>These routines compute <em>\log(\cosh(x))</em> for any <var>x</var>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Conversion-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hyperbolic-Trigonometric-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Restriction-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Hyperbolic-Trigonometric-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Restriction-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Conversion-Functions-1"></a>
+<h3 class="subsection">4. Conversion Functions</h3>
+<a name="index-polar-to-rectangular-conversion"></a>
+<a name="index-rectangular-to-polar-conversion"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fpolar_005fto_005frect"></a><u>Function:</u> int <b>gsl_sf_polar_to_rect</b><i> (double <var>r</var>, double <var>theta</var>, gsl_sf_result * <var>x</var>, gsl_sf_result * <var>y</var>);</i></dt>
+<dd><p>This function converts the polar coordinates (<var>r</var>,<var>theta</var>) to
+rectilinear coordinates (<var>x</var>,<var>y</var>), <em>x = r\cos(\theta)</em>,
+<em>y = r\sin(\theta)</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005frect_005fto_005fpolar"></a><u>Function:</u> int <b>gsl_sf_rect_to_polar</b><i> (double <var>x</var>, double <var>y</var>, gsl_sf_result * <var>r</var>, gsl_sf_result * <var>theta</var>)</i></dt>
+<dd><p>This function converts the rectilinear coordinates (<var>x</var>,<var>y</var>) to
+polar coordinates (<var>r</var>,<var>theta</var>), such that <em>x =
+r\cos(\theta)</em>, <em>y = r\sin(\theta)</em>.  The argument <var>theta</var>
+lies in the range <em>[-\pi, \pi]</em>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Restriction-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Conversion-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Functions-With-Error-Estimates" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Conversion-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Trigonometric-Functions-With-Error-Estimates" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Restriction-Functions-1"></a>
+<h3 class="subsection">5. Restriction Functions</h3>
+<a name="index-angular-reduction"></a>
+<a name="index-reduction-of-angular-variables"></a>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fangle_005frestrict_005fsymm"></a><u>Function:</u> double <b>gsl_sf_angle_restrict_symm</b><i> (double <var>theta</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fangle_005frestrict_005fsymm_005fe"></a><u>Function:</u> int <b>gsl_sf_angle_restrict_symm_e</b><i> (double * <var>theta</var>)</i></dt>
+<dd><p>These routines force the angle <var>theta</var> to lie in the range
+<em>(-\pi,\pi]</em>.  
+</p>
+<p>Note that the mathematical value of <em>\pi</em> is slightly greater
+than <code>M_PI</code>, so the machine numbers <code>M_PI</code> and <code>-M_PI</code>
+are included in the range.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fangle_005frestrict_005fpos"></a><u>Function:</u> double <b>gsl_sf_angle_restrict_pos</b><i> (double <var>theta</var>)</i></dt>
+<dt><a name="index-gsl_005fsf_005fangle_005frestrict_005fpos_005fe"></a><u>Function:</u> int <b>gsl_sf_angle_restrict_pos_e</b><i> (double * <var>theta</var>)</i></dt>
+<dd><p>These routines force the angle <var>theta</var> to lie in the range <em>[0,
+2\pi)</em>. 
+</p>
+<p>Note that the mathematical value of <em>2\pi</em> is slightly greater
+than <code>2*M_PI</code>, so the machine number <code>2*M_PI</code> is included in
+the range.
+</p>
+</dd></dl>
+
+
+<hr size="6">
+<a name="Trigonometric-Functions-With-Error-Estimates"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Restriction-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Restriction-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Trigonometric-Functions-With-Error-Estimates-1"></a>
+<h3 class="subsection">6. Trigonometric Functions With Error Estimates</h3>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fsin_005ferr_005fe"></a><u>Function:</u> int <b>gsl_sf_sin_err_e</b><i> (double <var>x</var>, double <var>dx</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>This routine computes the sine of an angle <var>x</var> with an associated 
+absolute error <var>dx</var>,
+<em>\sin(x \pm dx)</em>.  Note that this function is provided in the error-handling form only since
+its purpose is to compute the propagated error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fsf_005fcos_005ferr_005fe"></a><u>Function:</u> int <b>gsl_sf_cos_err_e</b><i> (double <var>x</var>, double <var>dx</var>, gsl_sf_result * <var>result</var>)</i></dt>
+<dd><p>This routine computes the cosine of an angle <var>x</var> with an associated
+absolute error <var>dx</var>, 
+<em>\cos(x \pm dx)</em>.  Note that this function is provided in the error-handling form only since
+its purpose is to compute the propagated error.
+</p></dd></dl>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Circular-Trigonometric-Functions" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

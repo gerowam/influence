@@ -1,0 +1,1118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on April 2, 2015 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Untitled Document</title>
+
+<meta name="description" content="Untitled Document">
+<meta name="keywords" content="Untitled Document">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="index-differential-equations_002c-initial-value-problems"></a>
+<a name="index-initial-value-problems_002c-differential-equations"></a>
+<a name="index-ordinary-differential-equations_002c-initial-value-problem"></a>
+<a name="index-ODEs_002c-initial-value-problems"></a>
+<p>This chapter describes functions for solving ordinary differential
+equation (ODE) initial value problems.  The library provides a variety
+of low-level methods, such as Runge-Kutta and Bulirsch-Stoer routines,
+and higher-level components for adaptive step-size control. The
+components can be combined by the user to achieve the desired
+solution, with full access to any intermediate steps. A driver object
+can be used as a high level wrapper for easy use of low level
+functions.
+</p>
+<p>These functions are declared in the header file &lsquo;<tt>gsl_odeiv2.h</tt>&rsquo;.
+This is a new interface in version 1.15 and uses the prefix
+<code>gsl_odeiv2</code> for all functions.  It is recommended over the
+previous <code>gsl_odeiv</code> implementation defined in &lsquo;<tt>gsl_odeiv.h</tt>&rsquo;
+The old interface has been retained under the original name for
+backwards compatibility.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Defining-the-ODE-System">1. Defining the ODE System</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Stepping-Functions">2. Stepping Functions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Adaptive-Step_002dsize-Control">3. Adaptive Step-size Control</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Evolution">4. Evolution</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Driver">5. Driver</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ODE-Example-programs">6. Examples</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ODE-References-and-Further-Reading">7. References and Further Reading</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<a name="Defining-the-ODE-System"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[ &lt; ]</td>
+<td valign="middle" align="left">[<a href="#Stepping-Functions" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[ &lt;&lt; ]</td>
+<td valign="middle" align="left">[ Up ]</td>
+<td valign="middle" align="left">[<a href="#Stepping-Functions" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Defining-the-ODE-System-1"></a>
+<h2 class="section">1. Defining the ODE System</h2>
+
+<p>The routines solve the general <em>n</em>-dimensional first-order system,
+for <em>i = 1, \dots, n</em>.  The stepping functions rely on the vector
+of derivatives <em>f_i</em> and the Jacobian matrix, 
+<em>J_ij = df_i(t,y(t)) / dy_j</em>. 
+A system of equations is defined using the <code>gsl_odeiv2_system</code>
+datatype.
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fsystem"></a><u>Data Type:</u> <b>gsl_odeiv2_system</b></dt>
+<dd><p>This data type defines a general ODE system with arbitrary parameters.
+</p>
+<dl compact="compact">
+<dt> <code>int (* function) (double t, const double y[], double dydt[], void * params)</code></dt>
+<dd><p>This function should store the vector elements
+<em>f_i(t,y,params)</em> in the array <var>dydt</var>,
+for arguments (<var>t</var>,<var>y</var>) and parameters <var>params</var>.
+</p>
+<p>The function should return <code>GSL_SUCCESS</code> if the calculation was
+completed successfully. Any other return value indicates an error. A
+special return value <code>GSL_EBADFUNC</code> causes <code>gsl_odeiv2</code>
+routines to immediately stop and return. If <code>function</code> 
+is modified (for example contents of <var>params</var>), the user must call an
+appropriate reset function (<code>gsl_odeiv2_driver_reset</code>, 
+<code>gsl_odeiv2_evolve_reset</code> or <code>gsl_odeiv2_step_reset</code>) 
+before continuing. Use return values
+distinct from standard GSL error codes to distinguish your function as
+the source of the error.
+</p>
+</dd>
+<dt>  <code>int (* jacobian) (double t, const double y[], double * dfdy, double dfdt[], void * params);</code></dt>
+<dd><a name="index-Jacobian-matrix_002c-ODEs"></a>
+<p>This function should store the vector of derivative elements
+in the array <var>dfdt</var> and the Jacobian matrix <em>J_ij</em> in the array <var>dfdy</var>, regarded as a row-ordered
+matrix <code>J(i,j) = dfdy[i * dimension + j]</code> where <code>dimension</code>
+is the dimension of the system. 
+</p>
+<p>Not all of the stepper algorithms of <code>gsl_odeiv2</code> make use of the
+Jacobian matrix, so it may not be necessary to provide this function
+(the <code>jacobian</code> element of the struct can be replaced by a null
+pointer for those algorithms).
+</p>
+<p>The function should return <code>GSL_SUCCESS</code> if the calculation was
+completed successfully. Any other return value indicates an error. A
+special return value <code>GSL_EBADFUNC</code> causes <code>gsl_odeiv2</code>
+routines to immediately stop and return. If <code>jacobian</code> 
+is modified (for example contents of <var>params</var>), the user must call an
+appropriate reset function (<code>gsl_odeiv2_driver_reset</code>, 
+<code>gsl_odeiv2_evolve_reset</code> or <code>gsl_odeiv2_step_reset</code>) 
+before continuing. Use return values
+distinct from standard GSL error codes to distinguish your function as
+the source of the error.
+</p>
+</dd>
+<dt> <code>size_t dimension;</code></dt>
+<dd><p>This is the dimension of the system of equations.
+</p>
+</dd>
+<dt> <code>void * params</code></dt>
+<dd><p>This is a pointer to the arbitrary parameters of the system.
+</p></dd>
+</dl>
+</dd></dl>
+
+<hr size="6">
+<a name="Stepping-Functions"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Adaptive-Step_002dsize-Control" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Adaptive-Step_002dsize-Control" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Stepping-Functions-1"></a>
+<h2 class="section">2. Stepping Functions</h2>
+
+<p>The lowest level components are the <em>stepping functions</em> which
+advance a solution from time <em>t</em> to <em>t+h</em> for a fixed
+step-size <em>h</em> and estimate the resulting local error.
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005falloc"></a><u>Function:</u> gsl_odeiv2_step * <b>gsl_odeiv2_step_alloc</b><i> (const gsl_odeiv2_step_type * <var>T</var>, size_t <var>dim</var>)</i></dt>
+<dd><a name="index-gsl_005fodeiv2_005fstep"></a>
+<a name="index-gsl_005fodeiv2_005fstep_005ftype"></a>
+<p>This function returns a pointer to a newly allocated instance of a
+stepping function of type <var>T</var> for a system of <var>dim</var>
+dimensions. Please note that if you use a stepper method that
+requires access to a driver object, it is advisable to use a driver
+allocation method, which automatically allocates a stepper, too.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005freset"></a><u>Function:</u> int <b>gsl_odeiv2_step_reset</b><i> (gsl_odeiv2_step * <var>s</var>)</i></dt>
+<dd><p>This function resets the stepping function <var>s</var>.  It should be used
+whenever the next use of <var>s</var> will not be a continuation of a
+previous step.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005ffree"></a><u>Function:</u> void <b>gsl_odeiv2_step_free</b><i> (gsl_odeiv2_step * <var>s</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the stepping function
+<var>s</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fname"></a><u>Function:</u> const char * <b>gsl_odeiv2_step_name</b><i> (const gsl_odeiv2_step * <var>s</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the stepping function.
+For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;step method is '%s'\n&quot;,
+         gsl_odeiv2_step_name (s));
+</pre></td></tr></table>
+
+<p>would print something like <code>step method is 'rkf45'</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005forder"></a><u>Function:</u> unsigned int <b>gsl_odeiv2_step_order</b><i> (const gsl_odeiv2_step * <var>s</var>)</i></dt>
+<dd><p>This function returns the order of the stepping function on the previous
+step. The order can vary if the stepping function itself is adaptive.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fset_005fdriver"></a><u>Function:</u> int <b>gsl_odeiv2_step_set_driver</b><i> (gsl_odeiv2_step * <var>s</var>, const gsl_odeiv2_driver * <var>d</var>)</i></dt>
+<dd><p>This function sets a pointer of the driver object <var>d</var> for stepper
+<var>s</var>, to allow the stepper to access control (and evolve) object
+through the driver object. This is a requirement for some steppers, to
+get the desired error level for internal iteration of
+stepper. Allocation of a driver object calls this function
+automatically.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fapply"></a><u>Function:</u> int <b>gsl_odeiv2_step_apply</b><i> (gsl_odeiv2_step * <var>s</var>, double <var>t</var>, double <var>h</var>, double <var>y</var>[], double <var>yerr</var>[], const double <var>dydt_in</var>[], double <var>dydt_out</var>[], const gsl_odeiv2_system * <var>sys</var>)</i></dt>
+<dd><p>This function applies the stepping function <var>s</var> to the system of
+equations defined by <var>sys</var>, using the step-size <var>h</var> to advance
+the system from time <var>t</var> and state <var>y</var> to time <var>t</var>+<var>h</var>.
+The new state of the system is stored in <var>y</var> on output, with an
+estimate of the absolute error in each component stored in <var>yerr</var>.
+If the argument <var>dydt_in</var> is not null it should point an array
+containing the derivatives for the system at time <var>t</var> on input. This
+is optional as the derivatives will be computed internally if they are
+not provided, but allows the reuse of existing derivative information.
+On output the new derivatives of the system at time <var>t</var>+<var>h</var> will
+be stored in <var>dydt_out</var> if it is not null.
+</p>
+<p>The stepping function returns <code>GSL_FAILURE</code> if it is unable to
+compute the requested step. Also, if the user-supplied functions
+defined in the system <var>sys</var> return a status other than
+<code>GSL_SUCCESS</code> the step will be aborted. In that case, the
+elements of <var>y</var> will be restored to their pre-step values and the
+error code from the user-supplied function will be returned. Failure
+may be due to a singularity in the system or too large step-size
+<var>h</var>. In that case the step should be attempted again with a
+smaller step-size, e.g. <em><var>h</var>/2</em>.
+</p>
+<p>If the driver object is not appropriately set via
+<code>gsl_odeiv2_step_set_driver</code> for those steppers that need it, the
+stepping function returns <code>GSL_EFAULT</code>. If the user-supplied
+functions defined in the system <var>sys</var> returns <code>GSL_EBADFUNC</code>,
+the function returns immediately with the same return code. In this
+case the user must call <code>gsl_odeiv2_step_reset</code> before calling
+this function again.
+</p>
+</dd></dl>
+
+<p>The following algorithms are available,
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk2"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk2</b></dt>
+<dd><a name="index-RK2_002c-Runge_002dKutta-method"></a>
+<a name="index-Runge_002dKutta-methods_002c-ordinary-differential-equations"></a>
+<p>Explicit embedded Runge-Kutta (2, 3) method.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk4"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk4</b></dt>
+<dd><a name="index-RK4_002c-Runge_002dKutta-method"></a>
+<p>Explicit 4th order (classical) Runge-Kutta. Error estimation is
+carried out by the step doubling method. For more efficient estimate
+of the error, use the embedded methods described below.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frkf45"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rkf45</b></dt>
+<dd><a name="index-Fehlberg-method_002c-differential-equations"></a>
+<a name="index-RKF45_002c-Runge_002dKutta_002dFehlberg-method"></a>
+<p>Explicit embedded Runge-Kutta-Fehlberg (4, 5) method.  This method is
+a good general-purpose integrator.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frkck"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rkck</b></dt>
+<dd><a name="index-Runge_002dKutta-Cash_002dKarp-method"></a>
+<a name="index-Cash_002dKarp_002c-Runge_002dKutta-method"></a>
+<p>Explicit embedded Runge-Kutta Cash-Karp (4, 5) method.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk8pd"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk8pd</b></dt>
+<dd><a name="index-Runge_002dKutta-Prince_002dDormand-method"></a>
+<a name="index-Prince_002dDormand_002c-Runge_002dKutta-method"></a>
+<p>Explicit embedded Runge-Kutta Prince-Dormand (8, 9) method.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk1imp"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk1imp</b></dt>
+<dd><a name="index-Implicit-Euler-method"></a>
+<p>Implicit Gaussian first order Runge-Kutta. Also known as implicit
+Euler or backward Euler method. Error estimation is carried out by the
+step doubling method. This algorithm requires the Jacobian and 
+access to the driver object via <code>gsl_odeiv2_step_set_driver</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk2imp"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk2imp</b></dt>
+<dd><a name="index-Implicit-Runge_002dKutta-method"></a>
+<p>Implicit Gaussian second order Runge-Kutta. Also known as implicit
+mid-point rule. Error estimation is carried out by the step doubling
+method. This stepper requires the Jacobian and access to the driver
+object via <code>gsl_odeiv2_step_set_driver</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005frk4imp"></a><u>Step Type:</u> <b>gsl_odeiv2_step_rk4imp</b></dt>
+<dd><p>Implicit Gaussian 4th order Runge-Kutta. Error estimation is carried
+out by the step doubling method. This algorithm requires the Jacobian
+and access to the driver object via <code>gsl_odeiv2_step_set_driver</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fbsimp"></a><u>Step Type:</u> <b>gsl_odeiv2_step_bsimp</b></dt>
+<dd><a name="index-Bulirsch_002dStoer-method"></a>
+<a name="index-Bader-and-Deuflhard_002c-Bulirsch_002dStoer-method_002e"></a>
+<a name="index-Deuflhard-and-Bader_002c-Bulirsch_002dStoer-method_002e"></a>
+<p>Implicit Bulirsch-Stoer method of Bader and Deuflhard. The method is
+generally suitable for stiff problems. This stepper requires the
+Jacobian.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fmsadams"></a><u>Step Type:</u> <b>gsl_odeiv2_step_msadams</b></dt>
+<dd><a name="index-Adams-method"></a>
+<a name="index-multistep-methods_002c-ODEs"></a>
+<a name="index-predictor_002dcorrector-method_002c-ODEs"></a>
+<a name="index-Nordsieck-form"></a>
+<p>A variable-coefficient linear multistep Adams method in Nordsieck
+form. This stepper uses explicit Adams-Bashforth (predictor) and
+implicit Adams-Moulton (corrector) methods in <em>P(EC)^m</em>
+functional iteration mode. Method order varies dynamically between 1
+and 12. This stepper requires the access to the driver object via
+<code>gsl_odeiv2_step_set_driver</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fstep_005fmsbdf"></a><u>Step Type:</u> <b>gsl_odeiv2_step_msbdf</b></dt>
+<dd><a name="index-BDF-method"></a>
+<p>A variable-coefficient linear multistep backward differentiation
+formula (BDF) method in Nordsieck form. This stepper uses the explicit
+BDF formula as predictor and implicit BDF formula as corrector. A
+modified Newton iteration method is used to solve the system of
+non-linear equations. Method order varies dynamically between 1 and
+5. The method is generally suitable for stiff problems. This stepper
+requires the Jacobian and the access to the driver object via
+<code>gsl_odeiv2_step_set_driver</code>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Adaptive-Step_002dsize-Control"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Stepping-Functions" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Evolution" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Stepping-Functions" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Evolution" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Adaptive-Step_002dsize-Control-1"></a>
+<h2 class="section">3. Adaptive Step-size Control</h2>
+<a name="index-Adaptive-step_002dsize-control_002c-differential-equations"></a>
+
+<p>The control function examines the proposed change to the solution
+produced by a stepping function and attempts to determine the optimal
+step-size for a user-specified level of error.
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fstandard_005fnew"></a><u>Function:</u> gsl_odeiv2_control * <b>gsl_odeiv2_control_standard_new</b><i> (double <var>eps_abs</var>, double <var>eps_rel</var>, double <var>a_y</var>, double <var>a_dydt</var>)</i></dt>
+<dd><a name="index-gsl_005fodeiv2_005fcontrol"></a>
+<a name="index-gsl_005fodeiv2_005fcontrol_005ftype"></a>
+<p>The standard control object is a four parameter heuristic based on
+absolute and relative errors <var>eps_abs</var> and <var>eps_rel</var>, and
+scaling factors <var>a_y</var> and <var>a_dydt</var> for the system state
+<em>y(t)</em> and derivatives <em>y&rsquo;(t)</em> respectively.
+</p>
+<p>The step-size adjustment procedure for this method begins by computing
+the desired error level <em>D_i</em> for each component,
+and comparing it with the observed error <em>E_i = |yerr_i|</em>.  If the
+observed error <var>E</var> exceeds the desired error level <var>D</var> by more
+than 10% for any component then the method reduces the step-size by an
+appropriate factor,
+where <em>q</em> is the consistency order of the method (e.g. <em>q=4</em> for
+4(5) embedded RK), and <em>S</em> is a safety factor of 0.9. The ratio
+<em>E/D</em> is taken to be the maximum of the ratios
+<em>E_i/D_i</em>. 
+</p>
+<p>If the observed error <em>E</em> is less than 50% of the desired error
+level <var>D</var> for the maximum ratio <em>E_i/D_i</em> then the algorithm
+takes the opportunity to increase the step-size to bring the error in
+line with the desired level,
+This encompasses all the standard error scaling methods. To avoid
+uncontrolled changes in the stepsize, the overall scaling factor is
+limited to the range <em>1/5</em> to 5.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fy_005fnew"></a><u>Function:</u> gsl_odeiv2_control * <b>gsl_odeiv2_control_y_new</b><i> (double <var>eps_abs</var>, double <var>eps_rel</var>)</i></dt>
+<dd><p>This function creates a new control object which will keep the local
+error on each step within an absolute error of <var>eps_abs</var> and
+relative error of <var>eps_rel</var> with respect to the solution <em>y_i(t)</em>.
+This is equivalent to the standard control object with <var>a_y</var>=1 and
+<var>a_dydt</var>=0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fyp_005fnew"></a><u>Function:</u> gsl_odeiv2_control * <b>gsl_odeiv2_control_yp_new</b><i> (double <var>eps_abs</var>, double <var>eps_rel</var>)</i></dt>
+<dd><p>This function creates a new control object which will keep the local
+error on each step within an absolute error of <var>eps_abs</var> and
+relative error of <var>eps_rel</var> with respect to the derivatives of the
+solution <em>y&rsquo;_i(t)</em>.  This is equivalent to the standard control
+object with <var>a_y</var>=0 and <var>a_dydt</var>=1.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fscaled_005fnew"></a><u>Function:</u> gsl_odeiv2_control * <b>gsl_odeiv2_control_scaled_new</b><i> (double <var>eps_abs</var>, double <var>eps_rel</var>, double <var>a_y</var>, double <var>a_dydt</var>, const double <var>scale_abs</var>[], size_t <var>dim</var>)</i></dt>
+<dd><p>This function creates a new control object which uses the same algorithm
+as <code>gsl_odeiv2_control_standard_new</code> but with an absolute error
+which is scaled for each component by the array <var>scale_abs</var>.
+The formula for <em>D_i</em> for this control object is,
+where <em>s_i</em> is the <em>i</em>-th component of the array <var>scale_abs</var>.
+The same error control heuristic is used by the Matlab <small>ODE</small> suite. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005falloc"></a><u>Function:</u> gsl_odeiv2_control * <b>gsl_odeiv2_control_alloc</b><i> (const gsl_odeiv2_control_type * <var>T</var>)</i></dt>
+<dd><p>This function returns a pointer to a newly allocated instance of a
+control function of type <var>T</var>.  This function is only needed for
+defining new types of control functions.  For most purposes the standard
+control functions described above should be sufficient. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005finit"></a><u>Function:</u> int <b>gsl_odeiv2_control_init</b><i> (gsl_odeiv2_control * <var>c</var>, double <var>eps_abs</var>, double <var>eps_rel</var>, double <var>a_y</var>, double <var>a_dydt</var>)</i></dt>
+<dd><p>This function initializes the control function <var>c</var> with the
+parameters <var>eps_abs</var> (absolute error), <var>eps_rel</var> (relative
+error), <var>a_y</var> (scaling factor for y) and <var>a_dydt</var> (scaling
+factor for derivatives).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005ffree"></a><u>Function:</u> void <b>gsl_odeiv2_control_free</b><i> (gsl_odeiv2_control * <var>c</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the control function
+<var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fhadjust"></a><u>Function:</u> int <b>gsl_odeiv2_control_hadjust</b><i> (gsl_odeiv2_control * <var>c</var>, gsl_odeiv2_step * <var>s</var>, const double <var>y</var>[], const double <var>yerr</var>[], const double <var>dydt</var>[], double * <var>h</var>)</i></dt>
+<dd><p>This function adjusts the step-size <var>h</var> using the control function
+<var>c</var>, and the current values of <var>y</var>, <var>yerr</var> and <var>dydt</var>.
+The stepping function <var>step</var> is also needed to determine the order
+of the method.  If the error in the y-values <var>yerr</var> is found to be
+too large then the step-size <var>h</var> is reduced and the function returns
+<code>GSL_ODEIV_HADJ_DEC</code>.  If the error is sufficiently small then
+<var>h</var> may be increased and <code>GSL_ODEIV_HADJ_INC</code> is returned.  The
+function returns <code>GSL_ODEIV_HADJ_NIL</code> if the step-size is
+unchanged.  The goal of the function is to estimate the largest
+step-size which satisfies the user-specified accuracy requirements for
+the current point.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fname"></a><u>Function:</u> const char * <b>gsl_odeiv2_control_name</b><i> (const gsl_odeiv2_control * <var>c</var>)</i></dt>
+<dd><p>This function returns a pointer to the name of the control function.
+For example,
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">printf (&quot;control method is '%s'\n&quot;, 
+        gsl_odeiv2_control_name (c));
+</pre></td></tr></table>
+
+<p>would print something like <code>control method is 'standard'</code>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005ferrlevel"></a><u>Function:</u> int <b>gsl_odeiv2_control_errlevel</b><i> (gsl_odeiv2_control * <var>c</var>, const double <var>y</var>, const double <var>dydt</var>, const double <var>h</var>, const size_t <var>ind</var>, double * <var>errlev</var>)</i></dt>
+<dd><p>This function calculates the desired error level of the <var>ind</var>-th component to <var>errlev</var>. It requires the value (<var>y</var>) and value of the derivative (<var>dydt</var>) of the component, and the current step size <var>h</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fcontrol_005fset_005fdriver"></a><u>Function:</u> int <b>gsl_odeiv2_control_set_driver</b><i> (gsl_odeiv2_control * <var>c</var>, const gsl_odeiv2_driver * <var>d</var>)</i></dt>
+<dd><p>This function sets a pointer of the driver object <var>d</var> for control
+object <var>c</var>.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Evolution"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Adaptive-Step_002dsize-Control" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Driver" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Adaptive-Step_002dsize-Control" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Driver" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Evolution-1"></a>
+<h2 class="section">4. Evolution</h2>
+
+<p>The evolution function combines the results of a stepping function and
+control function to reliably advance the solution forward one step
+using an acceptable step-size.
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005falloc"></a><u>Function:</u> gsl_odeiv2_evolve * <b>gsl_odeiv2_evolve_alloc</b><i> (size_t <var>dim</var>)</i></dt>
+<dd><a name="index-gsl_005fodeiv2_005fevolve"></a>
+<p>This function returns a pointer to a newly allocated instance of an
+evolution function for a system of <var>dim</var> dimensions.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005fapply"></a><u>Function:</u> int <b>gsl_odeiv2_evolve_apply</b><i> (gsl_odeiv2_evolve * <var>e</var>, gsl_odeiv2_control * <var>con</var>, gsl_odeiv2_step * <var>step</var>, const gsl_odeiv2_system * <var>sys</var>, double * <var>t</var>, double <var>t1</var>, double * <var>h</var>, double <var>y</var>[])</i></dt>
+<dd><p>This function advances the system (<var>e</var>, <var>sys</var>) from time
+<var>t</var> and position <var>y</var> using the stepping function <var>step</var>.
+The new time and position are stored in <var>t</var> and <var>y</var> on output.
+</p>
+<p>The initial step-size is taken as <var>h</var>. The control function
+<var>con</var> is applied to check whether the local error estimated by the
+stepping function <var>step</var> using step-size <var>h</var> exceeds the
+required error tolerance. If the error is too high, the step is
+retried by calling <var>step</var> with a decreased step-size. This process
+is continued until an acceptable step-size is found. An estimate of
+the local error for the step can be obtained from the components of
+the array <code><var>e</var>-&gt;yerr[]</code>.
+</p>
+<p>If the user-supplied functions defined in the system <var>sys</var> returns
+<code>GSL_EBADFUNC</code>, the function returns immediately with the same
+return code. In this case the user must call
+<code>gsl_odeiv2_step_reset</code> and
+<code>gsl_odeiv2_evolve_reset</code> before calling this function again.
+</p>
+<p>Otherwise, if the user-supplied functions defined in the system
+<var>sys</var> or the stepping function <var>step</var> return a status other
+than <code>GSL_SUCCESS</code>, the step is retried with a decreased
+step-size. If the step-size decreases below machine precision, a
+status of <code>GSL_FAILURE</code> is returned if the user functions
+returned <code>GSL_SUCCESS</code>. Otherwise the value returned by user
+function is returned. If no acceptable step can be made, <var>t</var> and
+<var>y</var> will be restored to their pre-step values and <var>h</var> contains
+the final attempted step-size.
+</p>
+<p>If the step is successful the function returns a suggested step-size
+for the next step in <var>h</var>. The maximum time <var>t1</var> is guaranteed
+not to be exceeded by the time-step. On the final time-step the value
+of <var>t</var> will be set to <var>t1</var> exactly.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005fapply_005ffixed_005fstep"></a><u>Function:</u> int <b>gsl_odeiv2_evolve_apply_fixed_step</b><i> (gsl_odeiv2_evolve * <var>e</var>, gsl_odeiv2_control * <var>con</var>, gsl_odeiv2_step * <var>step</var>, const gsl_odeiv2_system * <var>sys</var>, double * <var>t</var>, const double <var>h</var>, double <var>y</var>[])</i></dt>
+<dd><p>This function advances the ODE-system (<var>e</var>, <var>sys</var>, <var>con</var>)
+from time <var>t</var> and position <var>y</var> using the stepping function
+<var>step</var> by a specified step size <var>h</var>. If the local error
+estimated by the stepping function exceeds the desired error level,
+the step is not taken and the function returns
+<code>GSL_FAILURE</code>. Otherwise the value returned by user function is
+returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005freset"></a><u>Function:</u> int <b>gsl_odeiv2_evolve_reset</b><i> (gsl_odeiv2_evolve * <var>e</var>)</i></dt>
+<dd><p>This function resets the evolution function <var>e</var>.  It should be used
+whenever the next use of <var>e</var> will not be a continuation of a
+previous step.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005ffree"></a><u>Function:</u> void <b>gsl_odeiv2_evolve_free</b><i> (gsl_odeiv2_evolve * <var>e</var>)</i></dt>
+<dd><p>This function frees all the memory associated with the evolution function
+<var>e</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fevolve_005fset_005fdriver"></a><u>Function:</u> int <b>gsl_odeiv2_evolve_set_driver</b><i> (gsl_odeiv2_evolve * <var>e</var>, const gsl_odeiv2_driver * <var>d</var>)</i></dt>
+<dd><p>This function sets a pointer of the driver object <var>d</var> for evolve
+object <var>e</var>.
+</p></dd></dl>
+
+
+<a name="index-discontinuities_002c-in-ODE-systems"></a>
+<p>If a system has discontinuous changes in the derivatives at known
+points, it is advisable to evolve the system between each discontinuity
+in sequence.  For example, if a step-change in an external driving
+force occurs at times <em>t_a, t_b</em> and <em>t_c</em> then evolution
+should be carried out over the ranges <em>(t_0,t_a)</em>,
+<em>(t_a,t_b)</em>, <em>(t_b,t_c)</em>, and <em>(t_c,t_1)</em> separately
+and not directly over the range <em>(t_0,t_1)</em>.
+</p>
+<hr size="6">
+<a name="Driver"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Evolution" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ODE-Example-programs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Evolution" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#ODE-Example-programs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Driver-1"></a>
+<h2 class="section">5. Driver</h2>
+
+<p>The driver object is a high level wrapper that combines the evolution,
+control and stepper objects for easy use.
+</p>
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005falloc_005fy_005fnew"></a><u>Function:</u> gsl_odeiv2_driver * <b>gsl_odeiv2_driver_alloc_y_new</b><i> (const gsl_odeiv2_system * <var>sys</var>, const gsl_odeiv2_step_type * <var>T</var>, const double <var>hstart</var>, const double <var>epsabs</var>, const double <var>epsrel</var>)</i></dt>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005falloc_005fyp_005fnew"></a><u>Function:</u> gsl_odeiv2_driver * <b>gsl_odeiv2_driver_alloc_yp_new</b><i> (const gsl_odeiv2_system * <var>sys</var>, const gsl_odeiv2_step_type * <var>T</var>, const double <var>hstart</var>, const double <var>epsabs</var>, const double <var>epsrel</var>)</i></dt>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005falloc_005fstandard_005fnew"></a><u>Function:</u> gsl_odeiv2_driver * <b>gsl_odeiv2_driver_alloc_standard_new</b><i> (const gsl_odeiv2_system * <var>sys</var>, const gsl_odeiv2_step_type * <var>T</var>, const double <var>hstart</var>, const double <var>epsabs</var>, const double <var>epsrel</var>, const double <var>a_y</var>, const double <var>a_dydt</var>)</i></dt>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005falloc_005fscaled_005fnew"></a><u>Function:</u> gsl_odeiv2_driver * <b>gsl_odeiv2_driver_alloc_scaled_new</b><i> (const gsl_odeiv2_system * <var>sys</var>, const gsl_odeiv2_step_type * <var>T</var>, const double <var>hstart</var>, const double <var>epsabs</var>, const double <var>epsrel</var>, const double <var>a_y</var>, const double <var>a_dydt</var>, const double <var>scale_abs</var>[])</i></dt>
+<dd><p>These functions return a pointer to a newly allocated instance of a
+driver object. The functions automatically allocate and initialise the
+evolve, control and stepper objects for ODE system <var>sys</var> using
+stepper type <var>T</var>. The initial step size is given in
+<var>hstart</var>. The rest of the arguments follow the syntax and
+semantics of the control functions with same name
+(<code>gsl_odeiv2_control_*_new</code>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005fset_005fhmin"></a><u>Function:</u> int <b>gsl_odeiv2_driver_set_hmin</b><i> (gsl_odeiv2_driver * <var>d</var>, const double <var>hmin</var>)</i></dt>
+<dd><p>The function sets a minimum for allowed step size <var>hmin</var> for
+driver <var>d</var>. Default value is 0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005fset_005fhmax"></a><u>Function:</u> int <b>gsl_odeiv2_driver_set_hmax</b><i> (gsl_odeiv2_driver * <var>d</var>, const double <var>hmax</var>)</i></dt>
+<dd><p>The function sets a maximum for allowed step size <var>hmax</var> for
+driver <var>d</var>. Default value is <code>GSL_DBL_MAX</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005fset_005fnmax"></a><u>Function:</u> int <b>gsl_odeiv2_driver_set_nmax</b><i> (gsl_odeiv2_driver * <var>d</var>, const unsigned long int <var>nmax</var>)</i></dt>
+<dd><p>The function sets a maximum for allowed number of steps <var>nmax</var> for
+driver <var>d</var>. Default value of 0 sets no limit for steps.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005fapply"></a><u>Function:</u> int <b>gsl_odeiv2_driver_apply</b><i> (gsl_odeiv2_driver * <var>d</var>, double * <var>t</var>, const double <var>t1</var>, double <var>y</var>[])</i></dt>
+<dd><p>This function evolves the driver system <var>d</var> from <var>t</var> to
+<var>t1</var>. Initially vector <var>y</var> should contain the values of
+dependent variables at point <var>t</var>. If the function is unable to
+complete the calculation, an error code from
+<code>gsl_odeiv2_evolve_apply</code> is returned, and <var>t</var> and <var>y</var>
+contain the values from last successful step. 
+</p>
+<p>If maximum number of steps is reached, a value of <code>GSL_EMAXITER</code>
+is returned. If the step size drops below minimum value, the function
+returns with <code>GSL_ENOPROG</code>. If the user-supplied functions
+defined in the system <var>sys</var> returns <code>GSL_EBADFUNC</code>, the
+function returns immediately with the same return code. In this case
+the user must call <code>gsl_odeiv2_driver_reset</code> before calling this
+function again.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005fapply_005ffixed_005fstep"></a><u>Function:</u> int <b>gsl_odeiv2_driver_apply_fixed_step</b><i> (gsl_odeiv2_driver * <var>d</var>, double * <var>t</var>, const double <var>h</var>, const unsigned long int <var>n</var>, double <var>y</var>[])</i></dt>
+<dd><p>This function evolves the driver system <var>d</var> from <var>t</var> with
+<var>n</var> steps of size <var>h</var>. If the function is unable to complete
+the calculation, an error code from
+<code>gsl_odeiv2_evolve_apply_fixed_step</code> is returned, and <var>t</var> and
+<var>y</var> contain the values from last successful step.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005freset"></a><u>Function:</u> int <b>gsl_odeiv2_driver_reset</b><i> (gsl_odeiv2_driver * <var>d</var>)</i></dt>
+<dd><p>This function resets the evolution and stepper objects.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005freset_005fhstart"></a><u>Function:</u> int <b>gsl_odeiv2_driver_reset_hstart</b><i> (gsl_odeiv2_driver * <var>d</var>, const double <var>hstart</var>)</i></dt>
+<dd><p>The routine resets the evolution and stepper objects and sets new
+initial step size to <var>hstart</var>. This function can be used e.g. to
+change the direction of integration.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gsl_005fodeiv2_005fdriver_005ffree"></a><u>Function:</u> int <b>gsl_odeiv2_driver_free</b><i> (gsl_odeiv2_driver * <var>d</var>)</i></dt>
+<dd><p>This function frees the driver object, and the related evolution,
+stepper and control objects.
+</p></dd></dl>
+
+<hr size="6">
+<a name="ODE-Example-programs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Driver" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ODE-References-and-Further-Reading" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Driver" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#ODE-References-and-Further-Reading" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Examples"></a>
+<h2 class="section">6. Examples</h2>
+<a name="index-Van-der-Pol-oscillator_002c-example"></a>
+<p>The following program solves the second-order nonlinear Van der Pol
+oscillator equation,
+This can be converted into a first order system suitable for use with
+the routines described in this chapter by introducing a separate
+variable for the velocity, <em>v = u&rsquo;(t)</em>,
+The program begins by defining functions for these derivatives and
+their Jacobian. The main function uses driver level functions to solve
+the problem. The program evolves the solution from <em>(u, v) = (1,
+0)</em> at <em>t=0</em> to <em>t=100</em>.  The step-size <em>h</em> is
+automatically adjusted by the controller to maintain an absolute
+accuracy of <em>10^-6</em> in the function values <em>(u, v)</em>.  
+The loop in the example prints the solution at the points
+<em>t_i = 1, 2, \dots, 100</em>.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">#include &lt;stdio.h&gt;
+#include &lt;gsl/gsl_errno.h&gt;
+#include &lt;gsl/gsl_matrix.h&gt;
+#include &lt;gsl/gsl_odeiv2.h&gt;
+
+int
+func (double t, const double y[], double f[],
+      void *params)
+{
+  double mu = *(double *)params;
+  f[0] = y[1];
+  f[1] = -y[0] - mu*y[1]*(y[0]*y[0] - 1);
+  return GSL_SUCCESS;
+}
+
+int
+jac (double t, const double y[], double *dfdy, 
+     double dfdt[], void *params)
+{
+  double mu = *(double *)params;
+  gsl_matrix_view dfdy_mat 
+    = gsl_matrix_view_array (dfdy, 2, 2);
+  gsl_matrix * m = &amp;dfdy_mat.matrix; 
+  gsl_matrix_set (m, 0, 0, 0.0);
+  gsl_matrix_set (m, 0, 1, 1.0);
+  gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
+  gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0));
+  dfdt[0] = 0.0;
+  dfdt[1] = 0.0;
+  return GSL_SUCCESS;
+}
+
+int
+main (void)
+{
+  double mu = 10;
+  gsl_odeiv2_system sys = {func, jac, 2, &amp;mu};
+
+  gsl_odeiv2_driver * d = 
+    gsl_odeiv2_driver_alloc_y_new (&amp;sys, gsl_odeiv2_step_rk8pd,
+				  1e-6, 1e-6, 0.0);
+  int i;
+  double t = 0.0, t1 = 100.0;
+  double y[2] = { 1.0, 0.0 };
+
+  for (i = 1; i &lt;= 100; i++)
+    {
+      double ti = i * t1 / 100.0;
+      int status = gsl_odeiv2_driver_apply (d, &amp;t, ti, y);
+
+      if (status != GSL_SUCCESS)
+	{
+	  printf (&quot;error, return value=%d\n&quot;, status);
+	  break;
+	}
+
+      printf (&quot;%.5e %.5e %.5e\n&quot;, t, y[0], y[1]);
+    }
+
+  gsl_odeiv2_driver_free (d);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>The user can work with the lower level functions directly, as in
+the following example. In this case an intermediate result is printed
+after each successful step instead of equidistant time points. 
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">int
+main (void)
+{
+  const gsl_odeiv2_step_type * T 
+    = gsl_odeiv2_step_rk8pd;
+
+  gsl_odeiv2_step * s 
+    = gsl_odeiv2_step_alloc (T, 2);
+  gsl_odeiv2_control * c 
+    = gsl_odeiv2_control_y_new (1e-6, 0.0);
+  gsl_odeiv2_evolve * e 
+    = gsl_odeiv2_evolve_alloc (2);
+
+  double mu = 10;
+  gsl_odeiv2_system sys = {func, jac, 2, &amp;mu};
+
+  double t = 0.0, t1 = 100.0;
+  double h = 1e-6;
+  double y[2] = { 1.0, 0.0 };
+
+  while (t &lt; t1)
+    {
+      int status = gsl_odeiv2_evolve_apply (e, c, s,
+                                           &amp;sys, 
+                                           &amp;t, t1,
+                                           &amp;h, y);
+
+      if (status != GSL_SUCCESS)
+          break;
+
+      printf (&quot;%.5e %.5e %.5e\n&quot;, t, y[0], y[1]);
+    }
+
+  gsl_odeiv2_evolve_free (e);
+  gsl_odeiv2_control_free (c);
+  gsl_odeiv2_step_free (s);
+  return 0;
+}
+</pre></pre></td></tr></table>
+
+<p>For functions with multiple parameters, the appropriate information
+can be passed in through the <var>params</var> argument in
+<code>gsl_odeiv2_system</code> definition (<var>mu</var> in this example) by using
+a pointer to a struct.
+</p>
+
+<p>It is also possible to work with a non-adaptive integrator, using only
+the stepping function itself,
+<code>gsl_odeiv2_driver_apply_fixed_step</code> or
+<code>gsl_odeiv2_evolve_apply_fixed_step</code>. The following program uses
+the driver level function, with fourth-order
+Runge-Kutta stepping function with a fixed stepsize of
+0.001.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"><pre class="verbatim">int
+main (void)
+{
+  double mu = 10;
+  gsl_odeiv2_system sys = { func, jac, 2, &amp;mu };
+
+  gsl_odeiv2_driver *d =
+    gsl_odeiv2_driver_alloc_y_new (&amp;sys, gsl_odeiv2_step_rk4,
+                                   1e-3, 1e-8, 1e-8);
+
+  double t = 0.0;
+  double y[2] = { 1.0, 0.0 };
+  int i, s;
+
+  for (i = 0; i &lt; 100; i++)
+    {
+      s = gsl_odeiv2_driver_apply_fixed_step (d, &amp;t, 1e-3, 1000, y);
+
+      if (s != GSL_SUCCESS)
+        {
+          printf (&quot;error: driver returned %d\n&quot;, s);
+          break;
+        }
+
+      printf (&quot;%.5e %.5e %.5e\n&quot;, t, y[0], y[1]);
+    }
+
+  gsl_odeiv2_driver_free (d);
+  return s;
+}
+</pre></pre></td></tr></table>
+
+<hr size="6">
+<a name="ODE-References-and-Further-Reading"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ODE-Example-programs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#ODE-Example-programs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="References-and-Further-Reading"></a>
+<h2 class="section">7. References and Further Reading</h2>
+
+<ul class="toc">
+<li>
+Ascher, U.M., Petzold, L.R., <cite>Computer Methods for Ordinary
+Differential and Differential-Algebraic Equations</cite>, SIAM, 
+Philadelphia, 1998.
+</li></ul>
+
+<ul class="toc">
+<li>
+Hairer, E., Norsett, S. P., Wanner, G., <cite>Solving Ordinary Differential 
+Equations I: Nonstiff Problems</cite>, Springer, Berlin, 1993.
+</li></ul>
+
+<ul class="toc">
+<li>
+Hairer, E., Wanner, G., <cite>Solving Ordinary Differential 
+Equations II: Stiff and Differential-Algebraic Problems</cite>,
+Springer, Berlin, 1996.
+</li></ul>
+
+<p>Many of the basic Runge-Kutta formulas can be found in the Handbook of
+Mathematical Functions,
+</p>
+<ul class="toc">
+<li>
+Abramowitz &amp; Stegun (eds.), <cite>Handbook of Mathematical Functions</cite>,
+Section 25.5.
+</li></ul>
+
+<p>The implicit Bulirsch-Stoer algorithm <code>bsimp</code> is described in the
+following paper,
+</p>
+<ul class="toc">
+<li>
+G. Bader and P. Deuflhard, &ldquo;A Semi-Implicit Mid-Point Rule for Stiff
+Systems of Ordinary Differential Equations.&rdquo;, Numer. Math. 41, 373&ndash;398,
+1983.
+</li></ul>
+
+<p>The Adams and BDF multistep methods <code>msadams</code> and <code>msbdf</code>
+are based on the following articles,
+</p>
+<ul class="toc">
+<li>
+G. D. Byrne and A. C. Hindmarsh, &ldquo;A Polyalgorithm for the
+Numerical Solution of Ordinary Differential Equations.&rdquo;,
+ACM Trans. Math. Software, 1, 71&ndash;96, 1975.
+
+</li><li>
+P. N. Brown, G. D. Byrne and A. C. Hindmarsh, &ldquo;VODE: A
+Variable-coefficient ODE Solver.&rdquo;, SIAM J. Sci. Stat. Comput. 10,
+1038&ndash;1051, 1989.
+
+</li><li>
+A. C. Hindmarsh, P. N. Brown, K. E. Grant, S. L. Lee, R. Serban,
+D. E. Shumaker and C. S. Woodward, &ldquo;SUNDIALS: Suite of
+Nonlinear and Differential/Algebraic Equation Solvers.&rdquo;, ACM
+Trans. Math. Software 31, 363&ndash;396, 2005.
+</li></ul>
+
+<hr size="6">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Defining-the-ODE-System" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[Contents]</td>
+<td valign="middle" align="left">[Index]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>A. Gerow</em> on <em>April 2, 2015</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>
